@@ -1,0 +1,6 @@
+*.dll
+DataModel
+*.pbix
+.vscode
+bin
+obj
