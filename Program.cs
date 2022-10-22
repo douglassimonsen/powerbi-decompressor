@@ -12,22 +12,23 @@ namespace HelloWorld{
     public Stream stream;
     public Decompressor(Stream streamIn){
       stream = streamIn;
-      compressedBuffer = new byte[(int) ushort.MaxValue];
-      decompressedBuffer = new byte[(int) ushort.MaxValue];
-      compressionHeader = new byte[8];
+      this.compressedBuffer = new byte[(int) ushort.MaxValue];
+      this.decompressedBuffer = new byte[(int) ushort.MaxValue];
+      this.compressionHeader = new byte[8];
+      decompressHandle = new IntPtr();
     }
 
     public void InitDecompress(){
-
+      this.compressedBuffer = new byte[(int) ushort.MaxValue];
+      this.decompressedBuffer = new byte[(int) ushort.MaxValue];
+      this.compressionHeader = new byte[8];
     }
     public bool ReadCompressedPacket(){
       int offset1 = 0;
       int num1;
-      for (; offset1 < 8; offset1 += num1)
-      {
+      for (; offset1 < 8; offset1 += num1){
         num1 = this.stream.Read(this.compressionHeader, offset1, 8 - offset1);
-        if (num1 == 0)
-        {
+        if (num1 == 0){
           if (offset1 == 0)
             return false;
           throw new Exception("Unknown");
@@ -40,14 +41,15 @@ namespace HelloWorld{
       byte[] buffer = flag ? this.compressedBuffer : this.decompressedBuffer;
       int offset2 = 0;
       int num3;
-      for (; offset2 < (int) num2; offset2 += num3)
-      {
+      for (; offset2 < (int) num2; offset2 += num3){
         num3 = this.stream.Read(buffer, offset2, (int) num2 - offset2);
-        if (num3 == 0)
+        if (num3 == 0){
           throw new Exception("Could not read all expected data");
+        }
       }
-      if (flag)
+      if (flag){
         this.Decompress((int) compressedDataSize, (int) decompressedDataSize);
+      }
       this.decompressedBufferOffset = (ushort) 0;
       this.decompressedBufferSize = decompressedDataSize;
       return true;
@@ -58,8 +60,7 @@ namespace HelloWorld{
         throw new Exception("Decompression Failed");
       }
     }
-    public void Read()
-    {
+    public void Read(){
       this.InitDecompress();
       while (this.decompressedBufferSize <= (ushort) 0){
         this.ReadCompressedPacket();
@@ -67,12 +68,9 @@ namespace HelloWorld{
     }
   }
   class Program {
-   static void Open(){
+    static void Main(string[] args){
       Stream streamToOpen = File.Open("api.pbix", FileMode.Open);
       new Decompressor(streamToOpen).Read();
-    }
-    static void Main(string[] args){
-       Open();
     }
   }
 }
