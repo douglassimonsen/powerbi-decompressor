@@ -13,10 +13,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
 {
   internal class LibraryHandle : SafeHandle
   {
-    protected LibraryHandle()
-      : base(IntPtr.Zero, true)
-    {
-    }
+    protected LibraryHandle(): base(IntPtr.Zero, true){}
 
     public override bool IsInvalid => this.handle == IntPtr.Zero || this.IsClosed;
 
@@ -34,15 +31,13 @@ namespace Microsoft.AnalysisServices.AdomdClient
 
     protected void ThrowOnError() => throw new Win32Exception((int) LibraryHandle.GetLastError());
 
-    protected IntPtr CheckEmptyHandle(IntPtr handle)
-    {
+    protected IntPtr CheckEmptyHandle(IntPtr handle){
       if (handle == IntPtr.Zero)
         this.ThrowOnError();
       return handle;
     }
 
-    protected Delegate GetDelegate(string functionName, Type delegateType)
-    {
+    protected Delegate GetDelegate(string functionName, Type delegateType){
       IntPtr procAddress = LibraryHandle.GetProcAddress(this, functionName);
       return !(procAddress == IntPtr.Zero) ? Marshal.GetDelegateForFunctionPointer(procAddress, delegateType) : throw new Win32Exception((int) LibraryHandle.GetLastError());
     }

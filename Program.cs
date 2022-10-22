@@ -4,18 +4,14 @@ namespace HelloWorld{
   class Decompressor{
     public ushort decompressedBufferSize = 0;
     public ushort decompressedBufferOffset = 0;
-    public byte[] compressedBuffer;
-    public byte[] decompressedBuffer;
-    public byte[] compressionHeader;
-    IntPtr decompressHandle;
+    public byte[] compressedBuffer = new byte[(int) ushort.MaxValue];
+    public byte[] decompressedBuffer = new byte[(int) ushort.MaxValue];
+    public byte[] compressionHeader = new byte[8];
+    IntPtr decompressHandle = IntPtr.Zero;
     private XpressMethodsWrapper XpressWrapper = XpressMethodsWrapper.XpressWrapper;
     public Stream stream;
     public Decompressor(Stream streamIn){
       stream = streamIn;
-      this.compressedBuffer = new byte[(int) ushort.MaxValue];
-      this.decompressedBuffer = new byte[(int) ushort.MaxValue];
-      this.compressionHeader = new byte[8];
-      decompressHandle = new IntPtr();
     }
 
     public void InitDecompress(){
@@ -29,8 +25,9 @@ namespace HelloWorld{
       for (; offset1 < 8; offset1 += num1){
         num1 = this.stream.Read(this.compressionHeader, offset1, 8 - offset1);
         if (num1 == 0){
-          if (offset1 == 0)
+          if (offset1 == 0){
             return false;
+          }
           throw new Exception("Unknown");
         }
       }
@@ -55,8 +52,16 @@ namespace HelloWorld{
       return true;
     }
     private void Decompress(int compressedDataSize, int decompressedDataSize){
-      int actualDecompressedSize = this.XpressWrapper.Decompress(this.decompressHandle, this.compressedBuffer, compressedDataSize, this.decompressedBuffer, decompressedDataSize, decompressedDataSize);
+      int actualDecompressedSize = this.XpressWrapper.Decompress(
+        this.decompressHandle, 
+        this.compressedBuffer, 
+        compressedDataSize, 
+        this.decompressedBuffer, 
+        decompressedDataSize, 
+        decompressedDataSize
+      );
       if (actualDecompressedSize != decompressedDataSize){
+        Console.WriteLine($"{actualDecompressedSize} {decompressedDataSize} {compressedDataSize}");
         throw new Exception("Decompression Failed");
       }
     }

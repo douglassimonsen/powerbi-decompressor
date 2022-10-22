@@ -26,8 +26,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
     internal static readonly bool XpressAvailable;
     internal const int MaxBlock = 65536;
 
-    static XpressMethodsWrapper()
-    {
+    static XpressMethodsWrapper(){
       if (!File.Exists(XpressMethodsWrapper.XpressPath))
         XpressMethodsWrapper.XpressPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\Microsoft SQL Server\\150\\shared\\msasxpress.dll";
       XpressMethodsWrapper.XpressAvailable = File.Exists(XpressMethodsWrapper.XpressPath);
@@ -49,32 +48,19 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    private XpressMethodsWrapper()
-    {
-    }
+    private XpressMethodsWrapper(){}
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, BestFitMapping = false)]
     private static extern XpressMethodsWrapper LoadLibrary([MarshalAs(UnmanagedType.LPTStr), In] string fileName);
 
     private void SetDelegates()
     {
-      if (XpressMethodsWrapper.xpressMethodsWrapper.IsInvalid)
-        throw new Win32Exception(Marshal.GetHRForLastWin32Error());
-      try
-      {
-        this.compressInitDelegate = (XpressMethodsWrapper.CompressInitDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("CompressInit", typeof (XpressMethodsWrapper.CompressInitDelegate));
-        this.compressDelegate = (XpressMethodsWrapper.CompressDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("Compress", typeof (XpressMethodsWrapper.CompressDelegate));
-        this.compressCloseDelegate = (XpressMethodsWrapper.CompressCloseDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("CompressClose", typeof (XpressMethodsWrapper.CompressCloseDelegate));
-        this.decompressInitDelegate = (XpressMethodsWrapper.DecompressInitDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("DecompressInit", typeof (XpressMethodsWrapper.DecompressInitDelegate));
-        this.decompressDelegate = (XpressMethodsWrapper.DecompressDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("Decompress", typeof (XpressMethodsWrapper.DecompressDelegate));
-        this.decompressCloseDelegate = (XpressMethodsWrapper.DecompressCloseDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("DecompressClose", typeof (XpressMethodsWrapper.DecompressCloseDelegate));
-      }
-      catch
-      {
-        XpressMethodsWrapper.xpressMethodsWrapper.Close();
-        XpressMethodsWrapper.xpressMethodsWrapper.SetHandleAsInvalid();
-        throw;
-      }
+      this.compressInitDelegate = (XpressMethodsWrapper.CompressInitDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("CompressInit", typeof (XpressMethodsWrapper.CompressInitDelegate));
+      this.compressDelegate = (XpressMethodsWrapper.CompressDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("Compress", typeof (XpressMethodsWrapper.CompressDelegate));
+      this.compressCloseDelegate = (XpressMethodsWrapper.CompressCloseDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("CompressClose", typeof (XpressMethodsWrapper.CompressCloseDelegate));
+      this.decompressInitDelegate = (XpressMethodsWrapper.DecompressInitDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("DecompressInit", typeof (XpressMethodsWrapper.DecompressInitDelegate));
+      this.decompressDelegate = (XpressMethodsWrapper.DecompressDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("Decompress", typeof (XpressMethodsWrapper.DecompressDelegate));
+      this.decompressCloseDelegate = (XpressMethodsWrapper.DecompressCloseDelegate) XpressMethodsWrapper.xpressMethodsWrapper.GetDelegate("DecompressClose", typeof (XpressMethodsWrapper.DecompressCloseDelegate));
     }
 
     internal IntPtr CompressInit(int maxInputSize, int compressionLevel) => this.CheckEmptyHandle(this.compressInitDelegate(maxInputSize, compressionLevel));
@@ -86,8 +72,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       int inputSize,
       byte[] output,
       int outputOffset,
-      int outputSize)
-    {
+      int outputSize){
       return this.compressDelegate(compressHandle, input, inputOffset, inputSize, output, outputOffset, outputSize);
     }
 
@@ -101,16 +86,13 @@ namespace Microsoft.AnalysisServices.AdomdClient
       int inputSize,
       byte[] output,
       int outputSize,
-      int bytesToDecompress)
-    {
+      int bytesToDecompress){
       return this.decompressDelegate(decompressHandle, input, inputSize, output, outputSize, bytesToDecompress);
     }
 
     internal void DecompressClose(IntPtr decompressHandle) => this.decompressCloseDelegate(decompressHandle);
 
-    private class Lock
-    {
-    }
+    private class Lock{}
 
     private delegate IntPtr CompressInitDelegate([In] int maxInputSize, [In] int compressionLevel);
 
