@@ -10,11 +10,12 @@ using System.IO;
 
 namespace Microsoft.AnalysisServices.AdomdClient
 {
-  internal class CompressedStream : XmlaStream
+  internal class CompressedStream
   {
-    private XmlaStream baseXmlaStream;
+    private Stream baseStream;
     private IntPtr compressHandle = IntPtr.Zero;
     private IntPtr decompressHandle = IntPtr.Zero;
+    private bool disposed = false;
     private byte[] compressionHeader;
     private byte[] compressedBuffer;
     private byte[] decompressedBuffer;
@@ -35,11 +36,11 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    internal CompressedStream(XmlaStream xmlaStream, int compressionLevel)
+    internal CompressedStream(Stream stream, int compressionLevel)
     {
       try
       {
-        this.baseXmlaStream = xmlaStream;
+        this.baseStream = stream;
         this.compressionLevel = compressionLevel;
       }
       catch (Win32Exception ex)
@@ -48,55 +49,55 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    internal XmlaStream BaseXmlaStream => this.baseXmlaStream;
+    internal Stream BaseStream => this.baseStream;
 
-    public override bool IsCompressionEnabled
+    public bool IsCompressionEnabled
     {
-      get => this.baseXmlaStream.IsCompressionEnabled;
-      set => this.baseXmlaStream.IsCompressionEnabled = value;
+      get => this.baseStream.IsCompressionEnabled;
+      set => this.baseStream.IsCompressionEnabled = value;
     }
 
-    public override string SessionID
+    public string SessionID
     {
-      get => this.baseXmlaStream.SessionID;
-      set => this.baseXmlaStream.SessionID = value;
+      get => this.baseStream.SessionID;
+      set => this.baseStream.SessionID = value;
     }
 
-    public override bool IsSessionTokenNeeded
+    public bool IsSessionTokenNeeded
     {
-      get => this.baseXmlaStream.IsSessionTokenNeeded;
-      set => this.baseXmlaStream.IsSessionTokenNeeded = value;
+      get => this.baseStream.IsSessionTokenNeeded;
+      set => this.baseStream.IsSessionTokenNeeded = value;
     }
 
-    public override Guid ActivityID
+    public Guid ActivityID
     {
-      get => this.baseXmlaStream.ActivityID;
-      set => this.baseXmlaStream.ActivityID = value;
+      get => this.baseStream.ActivityID;
+      set => this.baseStream.ActivityID = value;
     }
 
-    public override Guid RequestID
+    public Guid RequestID
     {
-      get => this.baseXmlaStream.RequestID;
-      set => this.baseXmlaStream.RequestID = value;
+      get => this.baseStream.RequestID;
+      set => this.baseStream.RequestID = value;
     }
 
-    public override bool CanTimeout => this.baseXmlaStream.CanTimeout;
+    public bool CanTimeout => this.baseStream.CanTimeout;
 
-    public override int ReadTimeout
+    public int ReadTimeout
     {
-      get => this.baseXmlaStream.ReadTimeout;
-      set => this.baseXmlaStream.ReadTimeout = value;
+      get => this.baseStream.ReadTimeout;
+      set => this.baseStream.ReadTimeout = value;
     }
 
-    public virtual void SetBaseXmlaStream(XmlaStream xmlaStream)
+    public virtual void SetBaseStream(Stream stream)
     {
       try
       {
-        if (this.baseXmlaStream == xmlaStream)
+        if (this.baseStream == stream)
           return;
-        if (this.baseXmlaStream != null)
-          this.baseXmlaStream.Dispose();
-        this.baseXmlaStream = xmlaStream;
+        if (this.baseStream != null)
+          this.baseStream.Dispose();
+        this.baseStream = stream;
       }
       catch (Win32Exception ex)
       {
@@ -104,11 +105,11 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    public override XmlaDataType GetResponseDataType()
+    public XmlaDataType GetResponseDataType()
     {
       try
       {
-        switch (this.baseXmlaStream.GetResponseDataType())
+        switch (this.baseStream.GetResponseDataType())
         {
           case XmlaDataType.BinaryXml:
           case XmlaDataType.CompressedBinaryXml:
@@ -123,11 +124,11 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    public override XmlaDataType GetRequestDataType()
+    public XmlaDataType GetRequestDataType()
     {
       try
       {
-        switch (this.baseXmlaStream.GetRequestDataType())
+        switch (this.baseStream.GetRequestDataType())
         {
           case XmlaDataType.BinaryXml:
           case XmlaDataType.CompressedBinaryXml:
@@ -142,20 +143,20 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    public override void WriteSoapActionHeader(string action)
+    public void WriteSoapActionHeader(string action)
     {
-      if (this.baseXmlaStream == null)
+      if (this.baseStream == null)
         return;
-      this.baseXmlaStream.WriteSoapActionHeader(action);
+      this.baseStream.WriteSoapActionHeader(action);
     }
 
-    public override string GetExtendedErrorInfo() => this.baseXmlaStream == null ? string.Empty : this.baseXmlaStream.GetExtendedErrorInfo();
+    public string GetExtendedErrorInfo() => this.baseStream == null ? string.Empty : this.baseStream.GetExtendedErrorInfo();
 
-    public override void Close() => this.baseXmlaStream.Close();
+    public void Close() => this.baseStream.Close();
 
-    public override void Dispose() => this.Dispose(true);
+    public void Dispose() => this.Dispose(true);
 
-    protected override void Dispose(bool disposing)
+    protected void Dispose(bool disposing)
     {
       if (this.disposed)
         return;
@@ -163,7 +164,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       {
         this.CloseCompressionHandlesAndBuffers();
         if (disposing)
-          this.baseXmlaStream.Dispose();
+          this.baseStream.Dispose();
         this.xpressWrapper = (XpressMethodsWrapper) null;
         this.disposed = true;
         if (!disposing)
@@ -184,7 +185,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
 
     ~CompressedStream() => this.Dispose(false);
 
-    public override void WriteEndOfMessage()
+    public void WriteEndOfMessage()
     {
       if (this.disposed)
         throw new ObjectDisposedException((string) null);
@@ -192,7 +193,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       {
         if (this.CompressedWriteEnabled && this.writeCacheOffset > (ushort) 8)
           this.FlushCache();
-        this.baseXmlaStream.WriteEndOfMessage();
+        this.baseStream.WriteEndOfMessage();
       }
       catch (Win32Exception ex)
       {
@@ -200,7 +201,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    public override void Write(byte[] buffer, int offset, int size)
+    public void Write(byte[] buffer, int offset, int size)
     {
       if (this.disposed)
         throw new ObjectDisposedException((string) null);
@@ -214,7 +215,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
         throw new ArgumentException(XmlaSR.InvalidArgument, nameof (buffer));
       if (!this.CompressedWriteEnabled)
       {
-        this.baseXmlaStream.Write(buffer, offset, size);
+        this.baseStream.Write(buffer, offset, size);
       }
       else
       {
@@ -242,7 +243,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    public override int Read(byte[] buffer, int offset, int size)
+    public int Read(byte[] buffer, int offset, int size)
     {
       if (this.disposed)
         throw new ObjectDisposedException((string) null);
@@ -265,14 +266,14 @@ namespace Microsoft.AnalysisServices.AdomdClient
         }
         else
         {
-          XmlaDataType responseDataType = this.baseXmlaStream.GetResponseDataType();
+          XmlaDataType responseDataType = Microsoft.AnalysisServices.AdomdClient.XmlaDataType.CompressedBinaryXml;
           switch (responseDataType)
           {
             case XmlaDataType.Undetermined:
               break;
             case XmlaDataType.TextXml:
             case XmlaDataType.BinaryXml:
-              num = this.baseXmlaStream.Read(buffer, offset, size);
+              num = this.baseStream.Read(buffer, offset, size);
               break;
             case XmlaDataType.CompressedXml:
             case XmlaDataType.CompressedBinaryXml:
@@ -300,16 +301,16 @@ namespace Microsoft.AnalysisServices.AdomdClient
       }
     }
 
-    public override void Skip()
+    public void Skip()
     {
       if (this.disposed)
         throw new ObjectDisposedException((string) null);
-      this.baseXmlaStream.Skip();
+      this.baseStream.Skip();
       this.decompressedBufferOffset = (ushort) 0;
       this.decompressedBufferSize = (ushort) 0;
     }
 
-    public override void Flush()
+    public void Flush()
     {
       if (this.disposed)
         throw new ObjectDisposedException((string) null);
@@ -317,7 +318,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       {
         if (this.CompressedWriteEnabled && this.writeCacheOffset > (ushort) 8)
           this.FlushCache();
-        this.baseXmlaStream.Flush();
+        this.baseStream.Flush();
       }
       catch (Win32Exception ex)
       {
@@ -379,7 +380,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       int num1;
       for (; offset1 < 8; offset1 += num1)
       {
-        num1 = this.baseXmlaStream.Read(this.compressionHeader, offset1, 8 - offset1);
+        num1 = this.baseStream.Read(this.compressionHeader, offset1, 8 - offset1);
         if (num1 == 0)
         {
           if (offset1 == 0)
@@ -396,7 +397,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       int num3;
       for (; offset2 < (int) num2; offset2 += num3)
       {
-        num3 = this.baseXmlaStream.Read(buffer, offset2, (int) num2 - offset2);
+        num3 = this.baseStream.Read(buffer, offset2, (int) num2 - offset2);
         if (num3 == 0)
           throw new Exception(XmlaSR.UnknownServerResponseFormat);
       }
@@ -420,9 +421,9 @@ namespace Microsoft.AnalysisServices.AdomdClient
     {
       get
       {
-        if (this.baseXmlaStream == null)
+        if (this.baseStream == null)
           return false;
-        XmlaDataType requestDataType = this.baseXmlaStream.GetRequestDataType();
+        XmlaDataType requestDataType = Microsoft.AnalysisServices.AdomdClient.XmlaDataType.CompressedBinaryXml;
         return requestDataType == XmlaDataType.CompressedXml || requestDataType == XmlaDataType.CompressedBinaryXml;
       }
     }
@@ -461,7 +462,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       buffer[5] = (byte) (num2 >> 8 & (int) byte.MaxValue);
       buffer[6] = (byte) 0;
       buffer[7] = (byte) 0;
-      this.baseXmlaStream.Write(buffer, 0, count);
+      this.baseStream.Write(buffer, 0, count);
       this.writeCacheOffset = (ushort) 8;
     }
   }
