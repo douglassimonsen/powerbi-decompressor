@@ -398,7 +398,7 @@ namespace Microsoft.AnalysisServices.AdomdClient
       {
         num3 = this.baseXmlaStream.Read(buffer, offset2, (int) num2 - offset2);
         if (num3 == 0)
-          throw new AdomdUnknownResponseException(XmlaSR.UnknownServerResponseFormat, "Could not read all expected data");
+          throw new Exception(XmlaSR.UnknownServerResponseFormat);
       }
       if (flag)
         this.Decompress((int) compressedDataSize, (int) decompressedDataSize);
