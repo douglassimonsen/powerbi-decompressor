@@ -9,86 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.InformationProtection.File" Version="1.12.61" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-    <Reference Include="Microsoft.Mashup.Client.UI">
-      <HintPath>dll\Microsoft.Mashup.Client.UI.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.PowerBI.Client.Shared">
-      <HintPath>dll\Microsoft.PowerBI.Client.Shared.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.PowerBI.Client.Windows">
-      <HintPath>dll\Microsoft.PowerBI.Client.Windows.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.Mashup.DocumentServices">
-      <HintPath>dll\Microsoft.Mashup.DocumentServices.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.PowerBI.Client.Shared">
-      <HintPath>dll\Microsoft.PowerBI.Client.Shared.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.Mashup.Document">
-      <HintPath>dll\Microsoft.Mashup.Document.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>dll\Microsoft.Practices.Unity.dll</HintPath>
-    </Reference>    
-    <Reference Include="Microsoft.Practices.Prism.PubSubEvents">
-      <HintPath>dll\Microsoft.Practices.Prism.PubSubEvents.dll</HintPath>
-    </Reference>   
-    <Reference Include="Microsoft.Mashup.Client.UI">
-      <HintPath>dll\Microsoft.Mashup.Client.UI.dll</HintPath>
-    </Reference>   
-
-    <Reference Include="Microsoft.PowerBI.DiagramView">
-      <HintPath>dll\Microsoft.PowerBI.DiagramView.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.ExploreHost">
-      <HintPath>dll\Microsoft.PowerBI.ExploreHost.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.ExploreServiceCommon">
-      <HintPath>dll\Microsoft.PowerBI.ExploreServiceCommon.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Modeling.Contracts">
-      <HintPath>dll\Microsoft.PowerBI.Modeling.Contracts.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Modeling.Engine">
-      <HintPath>dll\Microsoft.PowerBI.Modeling.Engine.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.ReportingServicesHost">
-      <HintPath>dll\Microsoft.PowerBI.ReportingServicesHost.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.Mashup.Client.UI.Extension">
-      <HintPath>dll\Microsoft.Mashup.Client.UI.Extension.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Lucia.Contracts">
-      <HintPath>dll\Microsoft.PowerBI.Lucia.Contracts.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.Mashup.Client.Packaging">
-      <HintPath>dll\Microsoft.Mashup.Client.Packaging.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Telemetry">
-      <HintPath>dll\Microsoft.PowerBI.Telemetry.dll</HintPath>
-    </Reference>     
-
-
-
-    <Reference Include="Microsoft.Mashup.OAuth">
-      <HintPath>dll\Microsoft.Mashup.OAuth.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Telemetry">
-      <HintPath>dll\Microsoft.PowerBI.Telemetry.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Telemetry">
-      <HintPath>dll\Microsoft.PowerBI.Telemetry.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Telemetry">
-      <HintPath>dll\Microsoft.PowerBI.Telemetry.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.PowerBI.Telemetry">
-      <HintPath>dll\Microsoft.PowerBI.Telemetry.dll</HintPath>
-    </Reference>     
-    <Reference Include="Microsoft.InfoNav.Common">
-      <HintPath>dll\Microsoft.InfoNav.Common.dll</HintPath>
+    <Reference Include="Microsoft.PowerBI.AdomdClient">
+      <HintPath>dll\Microsoft.PowerBI.AdomdClient.dll</HintPath>
     </Reference>     
   </ItemGroup>
 
