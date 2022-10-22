@@ -20,7 +20,11 @@ namespace Microsoft.AnalysisServices.AdomdClient
     private XpressMethodsWrapper.DecompressInitDelegate decompressInitDelegate;
     private XpressMethodsWrapper.DecompressDelegate decompressDelegate;
     private XpressMethodsWrapper.DecompressCloseDelegate decompressCloseDelegate;
+    #pragma warning disable CS8600 // fields are initialized on get
+    #pragma warning disable CS8625 // fields are initialized on get
     private static XpressMethodsWrapper xpressMethodsWrapper = (XpressMethodsWrapper) null;
+    #pragma warning restore CS8600 // fields are initialized on get
+    #pragma warning restore CS8625 // fields are initialized on get
     private static XpressMethodsWrapper.Lock LockForCreatingWrapper = new XpressMethodsWrapper.Lock();
     private static readonly string XpressPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\msasxpress.dll";
     internal static readonly bool XpressAvailable;
@@ -47,8 +51,9 @@ namespace Microsoft.AnalysisServices.AdomdClient
         }
       }
     }
-
+    #pragma warning disable CS8618 // fields are initialized on get
     private XpressMethodsWrapper(){}
+    #pragma warning restore CS8618 // fields are initialized on get
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true, BestFitMapping = false)]
     private static extern XpressMethodsWrapper LoadLibrary([MarshalAs(UnmanagedType.LPTStr), In] string fileName);
