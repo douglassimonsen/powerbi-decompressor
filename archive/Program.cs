@@ -29,6 +29,7 @@ namespace HelloWorld{
       ushort decompressedDataSize = (ushort) ((uint) this.compressionHeader[0] + ((uint) this.compressionHeader[1] << 8));
       ushort compressedDataSize = (ushort) ((uint) this.compressionHeader[4] + ((uint) this.compressionHeader[5] << 8));
       bool flag = (ushort) 0 < compressedDataSize && (int) compressedDataSize < (int) decompressedDataSize;
+      Console.WriteLine($"{decompressedDataSize} {compressedDataSize}");
       ushort num2 = flag ? compressedDataSize : decompressedDataSize;
       byte[] buffer = flag ? this.compressedBuffer : this.decompressedBuffer;
       int offset2 = 0;
@@ -55,8 +56,9 @@ namespace HelloWorld{
         decompressedDataSize, 
         decompressedDataSize
       );
+      Console.WriteLine($"{actualDecompressedSize}, {decompressedDataSize}");
+      Console.WriteLine(System.Text.Encoding.UTF8.GetString(this.decompressedBuffer, 0, this.decompressedBuffer.Length));
       if (actualDecompressedSize != decompressedDataSize){
-        Console.WriteLine($"{actualDecompressedSize} {decompressedDataSize} {compressedDataSize}");
         throw new Exception("Decompression Failed");
       }
     }
@@ -68,7 +70,7 @@ namespace HelloWorld{
   }
   class Program {
     static void Main(string[] args){
-      Stream streamToOpen = File.Open("api.pbix", FileMode.Open);
+      Stream streamToOpen = File.Open("DataModel", FileMode.Open);
       new Decompressor(streamToOpen).Read();
     }
   }
