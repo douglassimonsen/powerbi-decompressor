@@ -7,17 +7,11 @@ namespace HelloWorld{
     public byte[] compressedBuffer = new byte[(int) ushort.MaxValue];
     public byte[] decompressedBuffer = new byte[(int) ushort.MaxValue];
     public byte[] compressionHeader = new byte[8];
-    IntPtr decompressHandle = IntPtr.Zero;
+    IntPtr decompressHandle = new IntPtr();
     private XpressMethodsWrapper XpressWrapper = XpressMethodsWrapper.XpressWrapper;
     public Stream stream;
     public Decompressor(Stream streamIn){
       stream = streamIn;
-    }
-
-    public void InitDecompress(){
-      this.compressedBuffer = new byte[(int) ushort.MaxValue];
-      this.decompressedBuffer = new byte[(int) ushort.MaxValue];
-      this.compressionHeader = new byte[8];
     }
     public bool ReadCompressedPacket(){
       int offset1 = 0;
@@ -31,6 +25,7 @@ namespace HelloWorld{
           throw new Exception("Unknown");
         }
       }
+      
       ushort decompressedDataSize = (ushort) ((uint) this.compressionHeader[0] + ((uint) this.compressionHeader[1] << 8));
       ushort compressedDataSize = (ushort) ((uint) this.compressionHeader[4] + ((uint) this.compressionHeader[5] << 8));
       bool flag = (ushort) 0 < compressedDataSize && (int) compressedDataSize < (int) decompressedDataSize;
@@ -66,7 +61,6 @@ namespace HelloWorld{
       }
     }
     public void Read(){
-      this.InitDecompress();
       while (this.decompressedBufferSize <= (ushort) 0){
         this.ReadCompressedPacket();
       }

@@ -9,9 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.PowerBI.AdomdClient">
-      <HintPath>dll\Microsoft.PowerBI.AdomdClient.dll</HintPath>
-    </Reference>     
   </ItemGroup>
 
 </Project>
