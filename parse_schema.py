@@ -12,12 +12,12 @@ def handle_child(doc):
             return records.strip()
 
     section = []
-    for row in doc.find_all('row'):
+    for row in doc.find_all("row"):
         row_dict = {}
         for field in row:
             if field.name is None:
                 continue
-            val =  field.text
+            val = field.text
             try:
                 val = json.loads(val)
             except:
@@ -37,17 +37,17 @@ def handle_child(doc):
 
 def parse_schema(schema):
     full_schema = {}
-    xml = bs4.BeautifulSoup(schema, 'xml')
+    xml = bs4.BeautifulSoup(schema, "xml")
     for child in xml.results:
         if not isinstance(child, bs4.element.Tag):
             continue
-        if 'name' not in child.attrs:
+        if "name" not in child.attrs:
             continue
-        print(child['name'])
-        full_schema[child['name']] = handle_child(child)
-    with open('test.json', 'w') as f:
+        print(child["name"])
+        full_schema[child["name"]] = handle_child(child)
+    with open("test.json", "w") as f:
         json.dump(full_schema, f, indent=4)
 
 
-if __name__ == '__main__':
-    parse_schema(open('test.xml').read())
+if __name__ == "__main__":
+    parse_schema(open("test.xml").read())
