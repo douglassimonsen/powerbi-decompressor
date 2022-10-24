@@ -1,5 +1,8 @@
-<ImageSave xmlns="http://schemas.microsoft.com/analysisservices/2003/engine" xmlns:ddl100="http://schemas.microsoft.com/analysisservices/2008/engine/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl700_700="http://schemas.microsoft.com/analysisservices/2018/engine/700/700">
-                            <ddl700_700:PackagePath>C:\Users\mwham\AppData\Local\Microsoft\Power BI Desktop\TempSaves\apid696d80f-ade9-425e-ab58-c537b2ee9820.pbix</ddl700_700:PackagePath>
-                            <ddl700_700:PackagePartUri>/DataModel</ddl700_700:PackagePartUri>
-                            <Object><DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID></Object>
-                        </ImageSave>
+<ImageSave xmlns="http://schemas.microsoft.com/analysisservices/2003/engine" 
+           xmlns:ddl100="http://schemas.microsoft.com/analysisservices/2008/engine/100" 
+           xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" 
+           xmlns:ddl700_700="http://schemas.microsoft.com/analysisservices/2018/engine/700/700">
+    <ddl700_700:PackagePath>C:\Users\mwham\AppData\Local\Microsoft\Power BI Desktop\TempSaves\a.pbix</ddl700_700:PackagePath>
+    <ddl700_700:PackagePartUri>/DataModel</ddl700_700:PackagePartUri>
+    <Object><DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID></Object>
+</ImageSave>
