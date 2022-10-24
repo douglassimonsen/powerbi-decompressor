@@ -18,7 +18,9 @@ class PowerBi:
         self.schema = None
         self.AnalysisService = None
         self.conn_str = None
-    
+        self.init_backend()
+        self.load_image()
+
     def init_backend(self):
         env = initialization.AnalysisService()
         env.init()
@@ -27,7 +29,7 @@ class PowerBi:
 
     def load_image(self):
         with Pyadomd(self.conn_str) as conn:  # need to generate a random GUID
-            return conn.cursor().executeXML(
+            conn.cursor().executeXML(
                 xmls["image_load"].format(guid=self.guid, source_path=self.source_path)
             )
 
@@ -40,6 +42,6 @@ class PowerBi:
 
     def read_schema(self):
         with Pyadomd(self.conn_str) as conn:
-            schema = conn.cursor().executeXML(xmls["schema_query"])
-        self.schema = parse_schema.main(schema)
+            schema = conn.cursor().executeXML(xmls["schema_query"].format(guid=self.guid))
+        self.schema = parse_schema.parse_schema(schema)
         return self.schema

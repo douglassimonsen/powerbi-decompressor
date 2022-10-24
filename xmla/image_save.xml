@@ -4,5 +4,5 @@
            xmlns:ddl700_700="http://schemas.microsoft.com/analysisservices/2018/engine/700/700">
     <ddl700_700:PackagePath>{target_path}</ddl700_700:PackagePath>
     <ddl700_700:PackagePartUri>/DataModel</ddl700_700:PackagePartUri>
-    <Object><DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID></Object>
+    <Object><DatabaseID>{guid}</DatabaseID></Object>
 </ImageSave>

@@ -37,15 +37,15 @@ def handle_child(doc):
 
 def parse_schema(schema):
     full_schema = {}
-    xml = bs4.BeautifulSoup(schema, "xml")
-    for child in xml.results:
+    if not isinstance(schema, bs4.BeautifulSoup):
+        schema = bs4.BeautifulSoup(schema, "xml")
+    for child in schema.results:
         if not isinstance(child, bs4.element.Tag):
             continue
         if "name" not in child.attrs:
             continue
         full_schema[child["name"]] = handle_child(child)
-    with open("test.json", "w") as f:
-        json.dump(full_schema, f, indent=4)
+    return full_schema
 
 
 if __name__ == "__main__":
