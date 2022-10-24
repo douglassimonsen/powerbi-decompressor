@@ -35,9 +35,9 @@ def handle_child(doc):
         return section
 
 
-def parse_schema():
+def parse_schema(schema):
     full_schema = {}
-    xml = bs4.BeautifulSoup(open('test.xml').read(), 'xml')
+    xml = bs4.BeautifulSoup(schema, 'xml')
     for child in xml.results:
         if not isinstance(child, bs4.element.Tag):
             continue
@@ -50,4 +50,4 @@ def parse_schema():
 
 
 if __name__ == '__main__':
-    parse_schema()
+    parse_schema(open('test.xml').read())

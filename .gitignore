@@ -5,3 +5,4 @@ DataModel
 bin
 obj
 test*
+*.pyc
