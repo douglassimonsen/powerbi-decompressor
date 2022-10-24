@@ -1,84 +1,33 @@
-// Assembly location: C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.AdomdClient.dll
+# Goal
 
-C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll
-Report Factory, lines 479-480
+Data lineage is important, but it's focused in the data engineer's world with tools like DBT. This is despite the fact that analysts are often the messiest data people. One big issue with tracking data lineage through to the final reports is the PowerBI is a black box. 
 
-C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll
-Load To Database From PBix, line 21
+Although the .pbix is a simple zip file, the core data structures are stored in a DataModel file within the zip file. The DataModel file is compressed with XPress9, which appears to be different from the XPress algorithm. In any case, this compression is essentially undocumented and there are no simple utilities for decompressing the file.
 
+Therefore, to get the data out of the PowerBI, we take a somewhat circuitous route. We instantiate a Microsoft Analysis Server locally, sending XMLA commands to load/save the PowerBI. 
 
-XMLA sent
-"C:\Users\mwham\AppData\Local\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces\AnalysisServicesWorkspace_8d363818-c720-4e18-89c1-294fc2027b96\Data\FlightRecorderCurrent.trc"
-
-Update Tables
-<Batch Transaction="false" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
-  <Delete xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID>
-    <Annotations>
-      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
-        <xs:element>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element type="row"/>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:complexType name="row">
-          <xs:sequence>
-            <xs:element name="ID" type="xs:unsignedLong" sql:field="ID" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:schema>
-      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
-        <ID>879</ID>
-      </row>
-    </Annotations>
-  </Delete>
-  <Refresh xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID>
-    <Tables>
-      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
-        <xs:element>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element type="row"/>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:complexType name="row">
-          <xs:sequence>
-            <xs:element name="ID" type="xs:unsignedLong" sql:field="ID" minOccurs="0"/>
-            <xs:element name="ID.Table" type="xs:string" sql:field="ID.Table" minOccurs="0"/>
-            <xs:element name="RefreshType" type="xs:long" sql:field="RefreshType" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:schema>
-      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
-        <ID>789</ID>
-        <RefreshType>4</RefreshType>
-      </row>
-    </Tables>
-    <Model>
-      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
-        <xs:element>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element type="row"/>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:complexType name="row">
-          <xs:sequence>
-            <xs:element name="RefreshType" type="xs:long" sql:field="RefreshType" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:schema>
-      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
-        <RefreshType>3</RefreshType>
-      </row>
-    </Model>
-  </Refresh>
-  <SequencePoint xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID>
-  </SequencePoint>
-</Batch>
+# Example
+```
+from powerbi import PowerBI
+pbi = PowerBI('test.pbix')
+pbi.load_image()
+pbi.save_image('test2.pbix')  # currently not that valuable, since there are no updates
+schema = pbi.read_schema()
+print(schema)
+```
+```
+  {
+    "Model": {},
+    "DataSource": {},
+    "Table": {},
+    "Column": {},
+    "AttributeHierarchy": {},
+    "Partition": {},
+    "Relationship": {},
+    "Measure": {},
+    "Hierarchy": {},
+    "Level": {},
+    "Annotation": {},
+    ...
+}
+```

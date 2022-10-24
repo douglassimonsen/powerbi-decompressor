@@ -34,3 +34,4 @@ class PowerBi:
         with Pyadomd(CONN_STR) as conn:
             schema = conn.cursor().executeXML(xmls["schema_query"])
         self.schema = parse_schema.main(schema)
+        return self.schema

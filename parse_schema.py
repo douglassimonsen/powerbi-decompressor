@@ -43,7 +43,6 @@ def parse_schema(schema):
             continue
         if "name" not in child.attrs:
             continue
-        print(child["name"])
         full_schema[child["name"]] = handle_child(child)
     with open("test.json", "w") as f:
         json.dump(full_schema, f, indent=4)
