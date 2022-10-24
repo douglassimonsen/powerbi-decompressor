@@ -20,9 +20,17 @@ def save_pbix():
         conn.cursor().executeNonQuery(xmls['image_save'])
 
 
+def read_schema():
+    with Pyadomd(conn_str) as conn:
+        schema = conn.cursor().executeXML(xmls['schema_query'])
+    with open('test.xml', 'w') as f:
+        f.write(schema.prettify())
+
+
 def main():
-    save_pbix()
-    load_pbix()
+    read_schema()
+    # save_pbix()
+    # load_pbix()
 
 
 if __name__ == '__main__':

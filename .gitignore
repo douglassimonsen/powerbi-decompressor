@@ -4,3 +4,4 @@ DataModel
 .vscode
 bin
 obj
+test*
