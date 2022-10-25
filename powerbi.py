@@ -44,21 +44,34 @@ class PowerBi:
         with Pyadomd(self.conn_str) as conn:
             schema = conn.cursor().executeXML(xmls["schema_query"].render(guid=self.guid))
         self.schema = parse_schema.parse_schema(schema)
+        self.table_dict = {t['Name']: t['ID'] for t in self.schema['Table']}
         return self.schema
+
+    def get_table(self, table_name):
+        with Pyadomd(self.conn_str) as conn:
+            cur = conn.cursor()
+            data = cur.execute(f"Evaluate '{table_name}'").fetchall()
+            columns = [x.name.split('[')[1].split(']')[0] for x in cur.description]
+            data = [dict(zip(columns, row)) for row in data]
+        return data
 
     def update_tables(self, table_names=None):
         if not self.schema:
             self.read_schema()
 
-        table_dict = {t['Name']: t['ID'] for t in self.schema['Table']}
         if isinstance(table_names, str):
-            table_ids = [table_dict[table_names]]
+            table_ids = [self.table_dict[table_names]]
         elif isinstance(table_names, list):
-            table_ids = [table_dict[t] for t in table_names]
+            table_ids = [self.table_dict[t] for t in table_names]
         elif table_names is None:
-            table_ids = list(table_dict.values())
+            table_ids = list(self.table_dict.values())
         else:
             raise TypeError("I don't understand the object: ", table_names)
-
         with Pyadomd(self.conn_str) as conn:
             return conn.cursor().executeXML(xmls["update_table"].render(guid=self.guid, table_ids=table_ids))
+
+    def __str__(self):
+        return f'''
+            path: {self.source_path}
+            backend: {self.AnalysisService}
+        '''

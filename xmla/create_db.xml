@@ -1,0 +1,58 @@
+<Batch xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
+  <Create AllowOverwrite="true" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
+    <ObjectDefinition>
+      <Database xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200">
+        <ID>34ad5baf-8ac1-429e-b976-1a5fa4af741a</ID>
+        <Name>34ad5baf-8ac1-429e-b976-1a5fa4af741a</Name>
+        <ddl200_200:StorageEngineUsed>TabularMetadata</ddl200_200:StorageEngineUsed>
+        <ddl200:CompatibilityLevel>1550</ddl200:CompatibilityLevel>
+      </Database>
+    </ObjectDefinition>
+  </Create>
+  <Create AllowOverwrite="true" xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
+    <DatabaseID>34ad5baf-8ac1-429e-b976-1a5fa4af741a</DatabaseID>
+    <Cultures>
+      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
+        <xs:element>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="row"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:complexType name="row">
+          <xs:sequence>
+            <xs:element name="Name" type="xs:string" sql:field="Name" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:schema>
+      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
+        <Name>en-US</Name>
+      </row>
+    </Cultures>
+    <LinguisticMetadata>
+      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
+        <xs:element>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="row"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:complexType name="row">
+          <xs:sequence>
+            <xs:element name="CultureID" type="xs:unsignedLong" sql:field="CultureID" minOccurs="0"/>
+            <xs:element name="CultureID.Culture" type="xs:string" sql:field="CultureID.Culture" minOccurs="0"/>
+            <xs:element name="Content" type="xs:string" sql:field="Content" minOccurs="0"/>
+            <xs:element name="ContentType" type="xs:long" sql:field="ContentType" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:schema>
+      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
+        <CultureID.Culture>en-US</CultureID.Culture>
+        <Content>{"Version":"1.0.0","Language":"en-US","DynamicImprovement":"HighConfidence"}</Content>
+        <ContentType>1</ContentType>
+      </row>
+    </LinguisticMetadata>
+  </Create>
+</Batch>
