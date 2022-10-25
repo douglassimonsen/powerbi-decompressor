@@ -9,14 +9,18 @@ import time
 
 
 def _check_active(directory):
-    port = int(open(os.path.join(directory, 'msmdsrv.port.txt'), 'r', encoding='utf-16-le').read().strip())
+    try:
+        port = int(open(os.path.join(directory, 'msmdsrv.port.txt'), 'r', encoding='utf-16-le').read().strip())
+    except FileNotFoundError:
+        return False, None
+
     CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
-    with Pyadomd(CONN_STR) as conn:
-        try:
+    try:
+        with Pyadomd(CONN_STR) as conn:
             conn.cursor().executeNonQuery("SELECT [catalog_name] as [Database Name] FROM $SYSTEM.DBSCHEMA_CATALOGS")
             return True, port
-        except:
-            return False, None
+    except:
+        return False, None
 
 
 class AnalysisService:
@@ -49,25 +53,29 @@ class AnalysisService:
     def create_environment(self):
         # C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll
         # AnalysisServiceProcess line 169
-        def get_port(pid):
-            pass
+        def get_port():
+            for p in psutil.process_iter():
+                if p.name() != 'msmdsrv.exe':
+                    continue
+                return p.connections()[0].laddr.port
 
         self.guid = uuid.uuid4()
-        command = fr'"C:\Program Files\Microsoft Power BI Desktop\bin\msmdsrv.exe" -c {self.instance_name()} -n  -s "{self.data_directory()}"'
-        command2 = [
-            r'"C:\Program Files\Microsoft Power BI Desktop\bin\msmdsrv.exe"', 
+        os.makedirs(self.data_directory())
+        command = [
+            r'C:\Program Files\Microsoft Power BI Desktop\bin\msmdsrv.exe', 
             "-c", 
-            self.instance_name(), 
             "-n", 
+            self.instance_name(), 
             "-s", 
-            f'"{self.data_directory()}"'
+            f'{self.data_directory()}'
         ]
-        return # currently broken??
-        x = subprocess.Popen(command, shell=True, check=True)  # running multiple times doesn't cause multiple processes, thank god
-        folder_template = fr'{self.temp_folder}\AnalysisServicesWorkspace_{self.guid}\Data'
-        os.makedirs(folder_template)
-        # with open(f'{folder_template}\msmdsrv.port.txt', 'w', encoding='utf-16-le') as f:
-        #     f.write()
+        subprocess.Popen(command)  # running multiple times doesn't cause multiple processes, thank god
+        port = get_port()
+        self.active = True
+        self.port = port
+        with open(f'{self.data_directory()}\msmdsrv.port.txt', 'w', encoding='utf-16-le') as f:
+            f.write(str(port))
+
 
     def __str__(self):
         return f'''

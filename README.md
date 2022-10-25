@@ -31,3 +31,6 @@ print(schema)
     ...
 }
 ```
+
+
+netstat -ab | findstr msmd
