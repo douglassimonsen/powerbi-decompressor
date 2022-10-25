@@ -6,7 +6,9 @@ Although the .pbix is a simple zip file, the core data structures are stored in 
 
 Therefore, to get the data out of the PowerBI, we take a somewhat circuitous route. We instantiate a Microsoft Analysis Server locally, sending XMLA commands to load/save the PowerBI. 
 
-# Example
+# Examples
+
+## Getting Schema Information
 ```
 from powerbi import PowerBI
 pbi = PowerBI('test.pbix')
@@ -32,5 +34,10 @@ print(schema)
 }
 ```
 
+## Updating Tables
 
-netstat -ab | findstr msmd
+```
+from powerbi import PowerBI
+pbi = PowerBI('test.pbix')
+pbi.update_tables()
+```
