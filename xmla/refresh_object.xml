@@ -1,6 +1,28 @@
 <Batch Transaction="false" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
   <Refresh xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID>
+    <DatabaseID>{guid}</DatabaseID>
+    <Tables>
+      <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
+        <xs:element>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="row"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:complexType name="row">
+          <xs:sequence>
+            <xs:element name="ID" type="xs:unsignedLong" sql:field="ID" minOccurs="0"/>
+            <xs:element name="ID.Table" type="xs:string" sql:field="ID.Table" minOccurs="0"/>
+            <xs:element name="RefreshType" type="xs:long" sql:field="RefreshType" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:schema>
+      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
+        <ID>{table_id}</ID>
+        <RefreshType>4</RefreshType>
+      </row>
+    </Tables>
     <Model>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
         <xs:element>
@@ -22,17 +44,6 @@
     </Model>
   </Refresh>
   <SequencePoint xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>15dfc18a-0908-493c-8f21-8162ba250dab</DatabaseID>
+    <DatabaseID>{guid}</DatabaseID>
   </SequencePoint>
 </Batch>
-
-<PropertyList xmlns="urn:schemas-microsoft-com:xml-analysis">
-          <LocaleIdentifier>1033</LocaleIdentifier>
-          <SspropInitAppName>Power BI Desktopba944772-9a98-4961-9cdb-965c136dc7e3</SspropInitAppName>
-          <SQLQueryMode>DataKeys</SQLQueryMode>
-          <ClientProcessID>17572</ClientProcessID>
-          <DbpropMsmdActivityID>0e6c8234-9949-49fd-a9a5-b93bd9844032</DbpropMsmdActivityID>
-          <DbpropMsmdRequestID>a0272515-cec1-44a7-8529-c70e8cd36db2</DbpropMsmdRequestID>
-          <DbpropMsmdCurrentActivityID>d93d5f49-0460-4530-bce6-31490fc76138</DbpropMsmdCurrentActivityID>
-          <ReturnAffectedObjects>-1</ReturnAffectedObjects>
-        </PropertyList>

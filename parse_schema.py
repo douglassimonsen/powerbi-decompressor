@@ -10,6 +10,8 @@ def handle_child(doc):
             return [clean(v) for v in records]
         elif isinstance(records, str):
             return records.strip()
+        else:
+            return records
 
     section = []
     for row in doc.find_all("row"):
@@ -49,4 +51,4 @@ def parse_schema(schema):
 
 
 if __name__ == "__main__":
-    parse_schema(open("test.xml").read())
+    print(parse_schema(open("test.xml").read())['Table'][0])

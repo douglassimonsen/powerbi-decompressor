@@ -45,3 +45,12 @@ class PowerBi:
             schema = conn.cursor().executeXML(xmls["schema_query"].format(guid=self.guid))
         self.schema = parse_schema.parse_schema(schema)
         return self.schema
+
+    def update_table(self, table_name):
+        if not self.schema:
+            self.read_schema()
+
+        table_dict = {t['Name']: t['ID'] for t in self.schema['Table']}
+        table_id = table_dict[table_name]
+        with Pyadomd(self.conn_str) as conn:
+            ret = conn.cursor().executeXML(xmls["refresh_object"].format(guid=self.guid, table_id=table_id))
