@@ -1,6 +1,6 @@
 <Batch Transaction="false" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
   <Refresh xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>{guid}</DatabaseID>
+    <DatabaseID>{{guid}}</DatabaseID>
     <Tables>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
         <xs:element>
@@ -18,10 +18,12 @@
           </xs:sequence>
         </xs:complexType>
       </xs:schema>
-      <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
-        <ID>{table_id}</ID>
-        <RefreshType>4</RefreshType>
-      </row>
+      {% for t_id in table_ids %}
+        <row xmlns="urn:schemas-microsoft-com:xml-analysis:rowset">
+          <ID>{{t_id}}</ID>
+          <RefreshType>4</RefreshType>
+        </row>
+      {% endfor %}
     </Tables>
     <Model>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
@@ -44,6 +46,6 @@
     </Model>
   </Refresh>
   <SequencePoint xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>{guid}</DatabaseID>
+    <DatabaseID>{{guid}}</DatabaseID>
   </SequencePoint>
 </Batch>
