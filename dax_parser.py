@@ -25,13 +25,20 @@ let
 in
     #"Changed Type"
 '''
+expression = r"""
+Kris_Sheet = Source{[Item="Kris",Kind="Sheet"]}[Data],
+"""
 l = lark.Lark('''
     start: line*
     line: "let" | "in" | statement | variable
     statement: variable "=" command
 
 
-    command: /.+/
+    command: function ","?
+    function: /[\w\.]+/ "(" (function | arg)* ")"
+    arg: /[^\(\)]+/
+
+    unknown: /.+/ 
 
     variable: no_space_variable | space_variable
     no_space_variable: /[\w_]+/
