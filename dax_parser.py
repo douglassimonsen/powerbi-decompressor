@@ -26,7 +26,7 @@ in
     #"Changed Type"
 '''
 expression = r"""
-Kris_Sheet = Source{[Item="Kris",Kind="Sheet"]}[Data],
+    Kris_Sheet = Source{[Item="Kris",Kind="Sheet"]}[Data],
 """
 l = lark.Lark('''
     start: line*
@@ -34,11 +34,12 @@ l = lark.Lark('''
     statement: variable "=" command
 
 
-    command: function ","?
+    command: function | source_filter ","?
     function: /[\w\.]+/ "(" (function | arg)* ")"
     arg: /[^\(\)]+/
 
-    unknown: /.+/ 
+    source_filter: variable "{[" (sf_var ","?)* "]}[Data]"
+    sf_var: no_space_variable "=" "\\"" no_space_variable "\\""
 
     variable: no_space_variable | space_variable
     no_space_variable: /[\w_]+/
