@@ -6,6 +6,36 @@ Although the .pbix is a simple zip file, the core data structures are stored in 
 
 Therefore, to get the data out of the PowerBI, we take a somewhat circuitous route. We instantiate a Microsoft Analysis Server locally, sending XMLA commands to load/save the PowerBI. 
 
+# Journey
+
+The core issue with programmatically accessing PowerBI data is that the `/DataModel` file is compressed with the  XPRESS9 algorithm. When searched online, you'll find [this](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/fccm2014kim_cr.pdf) paper and 100's of engineers asking how to decompress *pbix* with people answering "this is how to extract it from *pbit*". After getting an unhelpful response from the researchers in the paper, we explore other options.
+
+The first avenue was using [dotpeek](https://www.jetbrains.com/decompiler/) to extract the source code from the `powerbi.exe` file to replicate the compression algorithm. Sadly it turns out, the algorithm is in another castle. PowerBI uses a SSAS instance on the backend to manage the data and does no compression/decompression itself. With some more code spelunking, I was able to decypher how PowerBI instantiates and communicates with the SSAS service.
+
+For reference, 
+1. `powerbi.exe` links to the DLL `Microsoft.PowerBI.Client`. 
+2. In the program function, an instance of `IAnalysisServicesService` is instantiated (see below for partial source)
+3. This class is implemented in `Microsoft.PowerBI.Client.Windows.AnalysisServices.AnalysisServicesService`
+4. Within this class are two functions that we care about (see below for source)
+    - `CreateDatabase`
+    - `LoadDatabaseFromPbix`
+5. Going through the layers of code in these two functions becomes fuzzy due to the Injection-heavy code. However, two things become apparent:
+    - Most of the configs, etc. connecting PowerBI to SSAS is stored in a folder named `C:\Users\[username]\AppData\Local\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces\AnalysisServicesWorkspace_[GUID]\Data`
+    - All communications between the two services go through XMLA
+6. Going into the folder, SSAS thankfully provides us with a trace file (`FlightRecorderCurrent.trc`) that records every XMLA command sent to SSAS. Copying and editing these commands (see `/xmla`), we can load our own .pbix files and automatically retrieve the information in `/DataModel`! 
+7. The final step involve(s/d) looking through another section of the source code to identify:
+    - the exact executable running SSAS
+    - the command line arguments PowerBI supplies to the executable
+    - the initial XMLA commands PowerBI sends to enable PowerBI specific functionality
+
+![main program](documents/program_analysis_services.png)
+
+![Analysis Services](documents/analysis_services_db.png)
+
+![Trace File](documents/trace_file.png)
+
+Note: all DLLs can be found in `C:\Program Files\Microsoft Power BI Desktop\bin`
+
 # Examples
 
 ## Getting Schema Information

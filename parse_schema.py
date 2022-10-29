@@ -51,4 +51,7 @@ def parse_schema(schema):
 
 
 if __name__ == "__main__":
-    print(parse_schema(open("test.xml").read())['Table'][0])
+    x = parse_schema(open("test.xml").read())
+    with open('test.json', 'w') as f:
+        json.dump(x, f, indent=4)
+    # print(x['Table'][0])
