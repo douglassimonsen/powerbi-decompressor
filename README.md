@@ -36,6 +36,38 @@ For reference,
 
 Note: all DLLs can be found in `C:\Program Files\Microsoft Power BI Desktop\bin`
 
+# How it works
+## Initialization
+Initialization first checks if there is an existing Workspace. If there is, it checks whether the corresponding port is an active SSAS instance by attempting to query a list of databases in the instance. If there are no workspaces with a corresponding active SSAS instance, the program attempts to generate its own SSAS instance.
+
+To create its own instance, the library generates a random UUID4, creates a corresponding workspace, and runs the command:
+
+`'C:\Program Files\Microsoft Power BI Desktop\bin\msmdsrv.exe' "-c" "-n" {self.instance_name()} -s {self.data_directory()}`
+
+It then iterates over every process currently running to find one with the name `msmdsrv.exe`.
+
+It then gets the port of the first socket associated with that executable, saving that value to `msmdsrv.port.txt` to match PowerBI-generated workspaces.
+
+[WIP] we then run [create_db](xmla/create_db.xml) to generate a database to load to with the appropriate permissions and PowerBI-specific extensions
+
+## Loading PBIX to SSAS
+
+We simply run [image_load](xmla/image_load.xml) with the appropriate values
+
+## Saving PBIX from SSAS
+
+Since the SSAS instance only saves a `/DataModel` and can only save files to the workspace, this has a few steps:
+
+1. Copy PBIX to workspace
+2. Run [image_save](xmla/image_save.xml) to update the PBIX `/DataModel`
+3. Move the workspace PBIX to the intended save location
+
+## Extracting Schema
+
+After loading the PBIX to SSAS, we simply run [schema_query](xmla/schema_query.xml), returning an XML. We then run a simple process to convert that XML to JSON.
+
+[WIP] We then use [lark](https://lark-parser.readthedocs.io/en/latest/) to implement a [grammar](dax_parser.py) for DAX(MDX?), allowing us to parse the source information to identify the type/details of source as well as any additional manipulations being done to it.
+
 # Examples
 
 ## Getting Schema Information
