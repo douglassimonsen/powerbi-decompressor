@@ -1,4 +1,3 @@
-import json
 import lark
 # with open('test.json') as f:
 #     data = json.load(f)
@@ -39,9 +38,8 @@ l = lark.Lark('''
     line: "let" | "in" | statement | variable
     statement: variable "=" command
 
-
     command: (function | source_filter) ","?
-    function: /[\w\.]+/ "(" (function | arg)* ")"
+    function: /[\w\.]+/ "(" (function | arg) ("," (function | arg))* ")"
     arg: /[^\(\)]+/
 
     source_filter: variable "{[" (sf_var ","?)* "]}[Data]"
@@ -63,27 +61,64 @@ class ExcelSource:
 
 
 
-class RPN(lark.Transformer):
+class Sources(lark.Transformer):
     def __init__(self):
-        source_var = None
+        self.sources = []
 
-    def command(self, args):
-        if args[0].children[0] == 'Excel.Workbook':
-            source_loc = args[0].children[1].children
-            if source_loc[0] == 'File.Contents':
-                source_path = source_loc[1].children[0].value
-            
-            self.source_var = ExcelSource(source_path=source_path)
+    def arg(self, args):
+        return args[0].value
 
-        else:
-            print(args[0])
+    def function(self, args):
+        f = {
+            'func': args[0].value,
+            'args': args[1:]
+        }
+        return f
 
-    def start(self, args):
+    def source_filter(self, args):
+        return dict(x.children for x in args[1:])
+
+    def command(self, args):  # command is just a convenience around two values
+        return args[0]
+    
+    def no_space_variable(self, args):
+        return args[0].value
+
+    def space_variable(self, args):
+        return args[0].value
+
+    def variable(self, args):
+        return args[0]
+
+    def statement(self, args):
+        return {
+            'var': args[0],
+            'expr': args[1],
+        }
+
+    def line(self, args):
+        if len(args) == 0:
+            return None
+        args = args[0]
+        if isinstance(args, str):  # variable
+            args = {'var': args}
         return args
+
+    def start(self, lines):
+        lines = [x for x in lines if x is not None]
+        for line in lines:
+            if line.get('expr', {}).get('func') == 'Excel.Workbook':
+                self.sources.append({
+                    'type': 'Excel.Workbook',
+                    'path': line['expr']['args'][0]['args'][0].strip('"'),
+                    'sheet': None
+                })
+        return self
   
 
 x = l.parse(expression)
-RPN().transform(x)
+sources = Sources().transform(x)
+print(sources.sources[0])
 exit()
 
 for n in x.iter_subtrees():
