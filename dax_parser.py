@@ -1,38 +1,7 @@
 import lark
-# with open('test.json') as f:
-#     data = json.load(f)
-# for x in data['Partition']:
-#     print(x['QueryDefinition'])
-#     print('==' * 10)
-# exit()
+import json
 
-expression = r'''
-let
-    Source = List.Generate(() =>
-  [Result = try country(1) otherwise null, Page=1],
-  each [Result] <> null,
-  each [Result = try country([Page] + 1) otherwise null, Page=[Page] + 1],
-  each [Result]
-),
-    #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
-    #"Expanded Column1" = Table.ExpandTableColumn(#"Converted to Table", "Column1", {"iso2Code", "name", "region", "adminregion", "incomeLevel", "lendingType", "capitalCity", "longitude", "latitude", "Attribute:id"}, {"Column1.iso2Code", "Column1.name", "Column1.region", "Column1.adminregion", "Column1.incomeLevel", "Column1.lendingType", "Column1.capitalCity", "Column1.longitude", "Column1.latitude", "Column1.Attribute:id"}),
-    #"Column1 region" = #"Expanded Column1"{11}[Column1.region],
-    #"Changed Type" = Table.TransformColumnTypes(#"Column1 region",{{"Element:Text", type text}, {"Attribute:id", type text}, {"Attribute:iso2code", type text}})
-in
-    #"Changed Type"
-'''
-expression = r'''
-Calendar(Date(2015,1,1), Date(2015,1,1))
-'''
-expression = r"""
-let
-    Source = Excel.Workbook(File.Contents("C:\Users\mwham\Desktop\test.xlsx"), null, true),
-    Kris_Sheet = Source{[Item="Kris",Kind="Sheet"]}[Data],
-    #"Promoted Headers" = Table.PromoteHeaders(Kris_Sheet, [PromoteAllScalars=true]),
-    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"a", Int64.Type}, {"b", Int64.Type}})
-in
-    #"Changed Type"
-"""
+
 l = lark.Lark('''
     start: line*
     line: "let" | "in" | statement | variable
@@ -71,12 +40,17 @@ class Sources(lark.Transformer):
     def function(self, args):
         f = {
             'func': args[0].value,
-            'args': args[1:]
+            'args': args[1:],
+            'type': 'function',
         }
         return f
 
     def source_filter(self, args):
-        return dict(x.children for x in args[1:])
+        return {
+            'var': args[0],
+            'args': dict(x.children for x in args[1:]),
+            'type': 'source_filter',
+        }
 
     def command(self, args):  # command is just a convenience around two values
         return args[0]
@@ -113,18 +87,36 @@ class Sources(lark.Transformer):
                     'path': line['expr']['args'][0]['args'][0].strip('"'),
                     'sheet': None
                 })
-        return self
-  
+            if line.get('expr', {}).get('type') == 'source_filter':
+                self.sources[-1]['sheet'] = line.get('expr', {}).get('args', {}).get('Item')
+        return self.sources
 
-x = l.parse(expression)
-sources = Sources().transform(x)
-print(sources.sources[0])
-exit()
 
-for n in x.iter_subtrees():
-    if n.data != 'command':
-        continue
-    if n.children[0].children[0] == 'Excel.Workbook':
-        pass
-    print()
-    exit()
+def get_sources():
+    with open('test.json') as f:
+        data = json.load(f)
+    return [x['QueryDefinition'] for x in data['Partition']]
+
+
+def clean_sources(sources):
+    ret = []
+    for source in sources:
+        try:
+            tree = l.parse(source)
+            ret.extend(Sources().transform(tree))
+        except lark.exceptions.UnexpectedCharacters:
+            ret.append({
+                'type': 'Unknown',
+                'source': source
+            })
+    return ret
+
+
+def main():
+    sources = get_sources()
+    sources = clean_sources(sources)
+    return sources
+
+
+if __name__ == '__main__':
+    print(main())
