@@ -10,7 +10,9 @@ for f in os.listdir(pathlib.Path(__file__).parent / 'queries'):
 def main(source, data):
     gen_ids = {
         'report': None,
-        'pages': {}
+        'pages': {},
+        'visuals': {},
+        'datasources': {},
     }
 
     with util.get_conn() as conn:
@@ -23,6 +25,30 @@ def main(source, data):
             cursor.execute(insert_queries['pages'], page)
             ret = cursor.fetchone()
             gen_ids['pages'][ret[0]] = ret[1]
+
+        for visual in data['visuals']:
+            visual['page_id'] = gen_ids['pages'][visual['page_ordinal']]
+            cursor.execute(insert_queries['visuals'], visual)
+            ret = cursor.fetchone()
+            gen_ids['visuals'][ret[0]] = ret[1]
+
+
+        for datasource in data['datasources']:
+
+            page['report_id'] = gen_ids['report']
+            cursor.execute(insert_queries['datasources'], datasource)
+            ret = cursor.fetchone()
+            gen_ids['datasources'][ret[0]] = ret[1]
+
+
+        for column in data['columns']:
+            column['datasource_id'] = gen_ids['datasources'][column['datasource_pbi_id']]
+            cursor.execute(insert_queries['datasource_columns'], column)
+            ret = cursor.fetchone()
+            gen_ids['datasources'][ret[0]] = ret[1]
+
+        # TODO connect visual to ds columns
+        conn.commit()
 
 if __name__ == '__main__':
     main()

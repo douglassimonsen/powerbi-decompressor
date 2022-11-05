@@ -18,6 +18,7 @@ create table pbi.pages (
 );
 create table pbi.visuals (
   id serial primary key not null,
+  pbi_id text,
   page_id int references pbi.pages(id),
 
   height float,
@@ -26,17 +27,19 @@ create table pbi.visuals (
   y float,
   z float
 );
-create table pbi.data_sources (
+create table pbi.datasources (
   id serial primary key not null,
+  pbi_id int,
   report_id int references pbi.reports(id),
   source_type text,
   source_details jsonb,
-  pbi_id text,
   name text
 );
-create table pbi.data_source_columns (
+create table pbi.datasource_columns (
   id serial primary key not null,
-  data_source_id int references pbi.data_sources(id),
+  pbi_id int,
+  datasource_id int references pbi.datasources(id),
   name text,
-  data_type text
+  data_type text,
+  isHidden boolean
 );

@@ -27,12 +27,13 @@ def main(data):
         ret['pages'].append(page_info)
         for visual in section['visualContainers']:
             visual_info = {
+                'pbi_id': json.loads(visual['config'])['name'],
                 'height': visual['height'],
                 'width': visual['width'],
                 'x': visual['x'],
                 'y': visual['y'],
                 'z': visual['z'],
-                'section_ordinal': page_info['ordinal'],
+                'page_ordinal': page_info['ordinal'],
             }
             ret['visuals'].append(visual_info)
             visual_info['filters'] = []

@@ -17,7 +17,8 @@ def get_datasource_columns(columns):
     for column in columns:
         ret.append({
             'pbi_id': column['ID'],
-            'table_pbi_id': column['TableID'],
+            'datasource_pbi_id': column['TableID'],
+            'data_type': column['ExplicitDataType'],
             'name': column.get('ExplicitName'),
             'isHidden': column.get('isHidden', False)
         })
