@@ -26,22 +26,25 @@ def main(data):
         }
         ret['pages'].append(page_info)
         for visual in section['visualContainers']:
+            visual['config'] = json.loads(visual['config'])
             visual_info = {
-                'pbi_id': json.loads(visual['config'])['name'],
+                'pbi_id': visual['config']['name'],
                 'height': visual['height'],
                 'width': visual['width'],
                 'x': visual['x'],
                 'y': visual['y'],
                 'z': visual['z'],
                 'page_ordinal': page_info['ordinal'],
+                'visual_type': visual['config']['singleVisual']['visualType'],
             }
             ret['visuals'].append(visual_info)
             visual_info['filters'] = []
             visual_info['selects'] = []
             if 'dataTransforms' in visual:
-                for f in json.loads(visual['dataTransforms'])['queryMetadata'].get('Filters', []):
+                visual['dataTransforms'] = json.loads(visual['dataTransforms'])
+                for f in visual['dataTransforms']['queryMetadata'].get('Filters', []):
                     visual_info['filters'].append(find_source(f))
-                for f in json.loads(visual['dataTransforms'])['selects']:
+                for f in visual['dataTransforms']['selects']:
                     visual_info['selects'].append(find_source(f))
     return ret
 

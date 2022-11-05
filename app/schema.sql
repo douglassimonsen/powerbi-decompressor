@@ -20,7 +20,7 @@ create table pbi.visuals (
   id serial primary key not null,
   pbi_id text,
   page_id int references pbi.pages(id),
-
+  visual_type text,
   height float,
   width float,
   x float,
