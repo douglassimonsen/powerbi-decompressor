@@ -8,7 +8,9 @@ import parse_schema
 import shutil
 import initialization
 import jinja2
-xmls = {f[:-4]: jinja2.Template(open(f"xmla/{f}").read()) for f in os.listdir("xmla")}
+import pathlib
+base_path = pathlib.Path(__file__).parent / "xmla"
+xmls = {f[:-4]: jinja2.Template(open(base_path / f).read()) for f in os.listdir(base_path)}
 
 
 class PowerBi:
