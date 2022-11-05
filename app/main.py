@@ -1,5 +1,5 @@
 import psycopg2
-import parse_datasources
+import parse_pbi
 import os, pathlib; os.chdir(pathlib.Path(__file__).parent)
 schema = open('schema.sql').read()
 
@@ -14,12 +14,18 @@ def get_conn():
     )
 
 
-def main():
+def initialize_db():
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute(schema)
-        conn.commit()
-    data = 
+        conn.commit()    
+
+
+def main():
+    initialize_db()
+    source = ''
+    data = parse_pbi.main(source)
+    load_data.main(source, data)
 
 
 if __name__ == '__main__':

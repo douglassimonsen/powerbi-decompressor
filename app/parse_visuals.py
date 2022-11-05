@@ -15,28 +15,33 @@ def find_source(data):
 
 
 def main(data):
+    ret = {
+        'sections': [],
+        'visuals': [],
+    }
     for section in data['sections']:
         section_info = {
             'section_name': section['name'],
             'ordinal': section['ordinal'],
         }
+        ret['sections'].append(section_info)
         for visual in section['visualContainers']:
-            ret = {
+            visual_info = {
                 'height': visual['height'],
                 'width': visual['width'],
                 'x': visual['x'],
                 'y': visual['y'],
                 'z': visual['z'],
+                'section_ordinal': section_info['ordinal'],
             }
-            # filters
-            # query
-            # config
-            ret['filters'] = []
-            ret['selects'] = []
-            for f in json.loads(visual['dataTransforms'])['queryMetadata']['Filters']:
-                ret['filters'].append(find_source(f))
-            for f in json.loads(visual['dataTransforms'])['selects']:
-                ret['selects'].append(find_source(f))
+            ret['visuals'].append(visual_info)
+            visual_info['filters'] = []
+            visual_info['selects'] = []
+            if 'dataTransforms' in visual:
+                for f in json.loads(visual['dataTransforms'])['queryMetadata'].get('Filters', []):
+                    visual_info['filters'].append(find_source(f))
+                for f in json.loads(visual['dataTransforms'])['selects']:
+                    visual_info['selects'].append(find_source(f))
     return ret
 
 
