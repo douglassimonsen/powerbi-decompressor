@@ -13,6 +13,7 @@ def main(source, data):
         'pages': {},
         'visuals': {},
         'datasources': {},
+        'datasource_columns': {},
     }
 
     with util.get_conn() as conn:
@@ -45,9 +46,13 @@ def main(source, data):
             column['datasource_id'] = gen_ids['datasources'][column['datasource_pbi_id']]
             cursor.execute(insert_queries['datasource_columns'], column)
             ret = cursor.fetchone()
-            gen_ids['datasources'][ret[0]] = ret[1]
+            gen_ids['datasource_columns'][ret[0]] = ret[1]
 
-        # TODO connect visual to ds columns
+        for visual_dsc in data['visual_datasource_columns']:
+            visual_dsc['visual_id'] = gen_ids['visuals'][visual_dsc['visual_pbi_id']]
+            visual_dsc['datasource_column_id'] = gen_ids['datasource_columns'][visual_dsc['datasource_column_pbi_id']]
+            cursor.execute(insert_queries['visual_datasource_columns'], visual_dsc)
+
         conn.commit()
 
 if __name__ == '__main__':

@@ -43,3 +43,9 @@ create table pbi.datasource_columns (
   data_type text,
   isHidden boolean
 );
+create table pbi.visual_datasource_columns (
+  id serial primary key not null,
+  visual_id int references pbi.visuals(id),
+  datasource_column_id int references pbi.datasource_columns(id),
+  visual_use text
+);
