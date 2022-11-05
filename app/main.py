@@ -1,21 +1,12 @@
-import psycopg2
+import util
 import parse_pbi
+import load_data
 import os, pathlib; os.chdir(pathlib.Path(__file__).parent)
 schema = open('schema.sql').read()
 
 
-def get_conn():
-    return psycopg2.connect(
-        host="localhost",
-        port=5432,
-        dbname='postgres',
-        user='postgres',
-        password='postgres'
-    )
-
-
 def initialize_db():
-    with get_conn() as conn:
+    with util.get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute(schema)
         conn.commit()    
@@ -23,7 +14,7 @@ def initialize_db():
 
 def main():
     initialize_db()
-    source = ''
+    source = 'dummy'
     data = parse_pbi.main(source)
     load_data.main(source, data)
 

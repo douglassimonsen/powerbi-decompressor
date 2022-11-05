@@ -16,15 +16,15 @@ def find_source(data):
 
 def main(data):
     ret = {
-        'sections': [],
+        'pages': [],
         'visuals': [],
     }
     for section in data['sections']:
-        section_info = {
-            'section_name': section['name'],
+        page_info = {
+            'name': section['displayName'],
             'ordinal': section['ordinal'],
         }
-        ret['sections'].append(section_info)
+        ret['pages'].append(page_info)
         for visual in section['visualContainers']:
             visual_info = {
                 'height': visual['height'],
@@ -32,7 +32,7 @@ def main(data):
                 'x': visual['x'],
                 'y': visual['y'],
                 'z': visual['z'],
-                'section_ordinal': section_info['ordinal'],
+                'section_ordinal': page_info['ordinal'],
             }
             ret['visuals'].append(visual_info)
             visual_info['filters'] = []
