@@ -7,3 +7,5 @@ obj
 test*
 *.pyc
 pbi
+*/*.egg-info
+*/dist
