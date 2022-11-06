@@ -9,14 +9,15 @@ import shutil
 import initialization
 import jinja2
 import pathlib
+import logging
 base_path = pathlib.Path(__file__).parent / "xmla"
 xmls = {f[:-4]: jinja2.Template(open(base_path / f).read()) for f in os.listdir(base_path)}
-
+logger = logging.getLogger()
 
 class PowerBi:
     def __init__(self, source_path):
         self.source_path = source_path
-        self.guid = uuid.uuid4()
+        self.guid = str(uuid.uuid4())  # this is important to compare with values in SSAS since they return as str's (_get_ssas_dbs)
         self.schema = None
         self.AnalysisService = None
         self.conn_str = None
@@ -29,7 +30,15 @@ class PowerBi:
         self.AnalysisService = env
         self.conn_str = f"Provider=MSOLAP;Data Source=localhost:{self.AnalysisService.port};"
 
+    def _get_ssas_dbs(self):
+        query = 'SELECT [catalog_name] as [Database Name] FROM $SYSTEM.DBSCHEMA_CATALOGS'
+        with Pyadomd(self.conn_str) as conn:
+            return [x[0] for x in conn.cursor().execute(query).fetchall()]
+
     def load_image(self):
+        if self.guid in self._get_ssas_dbs():
+            logger.warning("This database has already been loaded")
+            return
         with Pyadomd(self.conn_str) as conn:
             conn.cursor().executeXML(
                 xmls["image_load"].render(guid=self.guid, source_path=self.source_path)

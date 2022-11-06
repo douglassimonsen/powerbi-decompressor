@@ -5,6 +5,7 @@ import initialization
 
 def main():
     pbi = powerbi.PowerBi(r"C:\Users\mwham\Documents\repos\test-decompressor\pbis\api.pbix")
+    pbi.load_image()
     print(pbi.read_schema())
 
 

@@ -97,7 +97,7 @@ class AnalysisService:
             "-s", 
             f'{self.data_directory()}'
         ]
-        subprocess.Popen(command)  # running multiple times doesn't cause multiple processes, thank god
+        subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # running multiple times doesn't cause multiple processes, thank god
         port = get_port()
         self.active = True
         self.port = port
