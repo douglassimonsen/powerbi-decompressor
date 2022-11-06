@@ -1,1 +1,2 @@
 include extract_library/xmla/*
+include extract_library/pyadomd/Microsoft.AnalysisServices.AdomdClient.dll

@@ -10,3 +10,4 @@ pbi
 */*.egg-info
 */dist
 debug.log
+!Microsoft.AnalysisServices.AdomdClient.dll

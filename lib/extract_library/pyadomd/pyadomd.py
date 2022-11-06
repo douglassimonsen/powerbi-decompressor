@@ -25,24 +25,17 @@ class Description(NamedTuple):
     name:str
     type_code:str
 
-try:
-    clr.AddReference('Microsoft.AnalysisServices.AdomdClient')
-    from Microsoft.AnalysisServices.AdomdClient import AdomdConnection, AdomdCommand # type: ignore
-except FileNotFoundException as e:
-    print('========================================================================================')
-    print(e.ToString())
-    print()
-    print('This error is raised when Pyadomd is not able to find the AdomdClient.dll file')
-    print('The error might be solved by adding the dll to your path. ')
-    print('Make sure that the dll is added, to the path, before you import Pyadomd.')
-    print()
-    print('If in doubt how to do that, please have a look at Getting Stated in the docs.')
-    print('========================================================================================')
+
+from sys import path
+from pathlib import Path
+
+path.append(str(Path(__file__).parent)[2:])
+clr.AddReference('Microsoft.AnalysisServices.AdomdClient')
+from Microsoft.AnalysisServices.AdomdClient import AdomdConnection, AdomdCommand # type: ignore
 
 from ._type_code import adomd_type_map, convert
 
 class Cursor:
-    
     def __init__(self, connection:AdomdConnection):
         self._conn = connection
         self._description:List[Description] = []

@@ -1,6 +1,3 @@
-from sys import path
-
-path.append("\\Program Files\\Microsoft.NET\\ADOMD.NET\\150")
 import os
 from .pyadomd.pyadomd import Pyadomd
 import uuid

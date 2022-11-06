@@ -1,6 +1,4 @@
-from sys import path
 import os
-path.append("\\Program Files\\Microsoft.NET\\ADOMD.NET\\150")
 from .pyadomd.pyadomd import Pyadomd
 import uuid
 import subprocess
