@@ -12,7 +12,7 @@ limitations under the License.
 """
 
 from __future__ import annotations
-from pyadomd import *
+from . import *
 from bs4 import BeautifulSoup
 
 #Types
@@ -39,7 +39,7 @@ except FileNotFoundException as e:
     print('If in doubt how to do that, please have a look at Getting Stated in the docs.')
     print('========================================================================================')
 
-from pyadomd._type_code import adomd_type_map, convert
+from ._type_code import adomd_type_map, convert
 
 class Cursor:
     

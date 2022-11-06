@@ -2,11 +2,10 @@ from sys import path
 
 path.append("\\Program Files\\Microsoft.NET\\ADOMD.NET\\150")
 import os
-from pyadomd import Pyadomd
+from .pyadomd.pyadomd import Pyadomd
 import uuid
-import parse_schema
+from . import parse_schema, initialization
 import shutil
-import initialization
 import jinja2
 import pathlib
 import logging

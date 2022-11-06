@@ -103,3 +103,6 @@ from powerbi import PowerBI
 pbi = PowerBI('test.pbix')
 pbi.update_tables()
 ```
+
+## Contributions
+The pyadomd sublibrary in this library is a fork of [here](https://pypi.org/project/pyadomd/), by [SCOUT](https://github.com/S-C-O-U-T)
