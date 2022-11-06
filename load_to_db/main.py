@@ -20,7 +20,7 @@ def get_pbis():
     for f in os.listdir(source_dir):
         if not f.endswith('.pbix'):
             continue
-        ret.append(os.path.join(source_dir, f))
+        ret.append(os.path.join(source_dir, f).replace('\\', '/'))
     return ret
 
 
