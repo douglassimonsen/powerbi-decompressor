@@ -33,7 +33,6 @@ class PowerBi:
             x = conn.cursor().executeXML(
                 xmls['create_db'].render(guid=self.guid)
             )
-        exit()
 
     def load_image(self):
         with Pyadomd(self.conn_str) as conn:  # need to generate a random GUID

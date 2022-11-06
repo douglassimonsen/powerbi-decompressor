@@ -10,5 +10,5 @@ def main():
 
 
 if __name__ == "__main__":
-    initialization.kill_current_server()
+    initialization.kill_current_servers()
     main()
