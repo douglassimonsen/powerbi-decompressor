@@ -34,8 +34,9 @@ def main(source, data):
             gen_ids["visuals"][ret[0]] = ret[1]
 
         for datasource in data["datasources"]:
-
-            page["report_id"] = gen_ids["report"]
+            datasource["report_id"] = gen_ids["report"]
+            datasource['source_type'] = None
+            datasource['source_details'] = None
             cursor.execute(insert_queries["datasources"], datasource)
             ret = cursor.fetchone()
             gen_ids["datasources"][ret[0]] = ret[1]

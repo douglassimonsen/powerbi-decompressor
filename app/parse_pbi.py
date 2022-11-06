@@ -2,17 +2,17 @@ import parse_datasources
 import parse_visuals
 import json
 import zipfile
+import extract_library
 
 
 def extract_data(source):
     ret = {}
-    with zipfile.ZipFile("api.pbix") as zf:
+    with zipfile.ZipFile(source) as zf:
         ret["layout"] = json.loads(
             zf.open("Report/Layout", "r").read().decode("utf-16-le")
         )
-
-    with open("test.json") as f:
-        ret["data_model"] = json.load(f)
+    pbi = extract_library.PowerBi(source)
+    ret["data_model"] = pbi.read_schema()
     return ret
 
 
