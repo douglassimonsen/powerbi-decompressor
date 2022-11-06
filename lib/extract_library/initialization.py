@@ -6,6 +6,9 @@ import uuid
 import subprocess
 import psutil
 import time
+import pathlib
+
+trace_start_xmla = open(pathlib.Path(__file__).parent / 'xmla/create_trace.xml').read()
 
 
 def _check_active(directory):
@@ -57,7 +60,13 @@ class AnalysisService:
             for p in psutil.process_iter():
                 if p.name() != 'msmdsrv.exe':
                     continue
-                return p.connections()[0].laddr.port
+                for _ in range(5):
+                    conns = p.connections()
+                    if len(conns) == 0:
+                        print("sleep 2")
+                        time.sleep(2)
+                        continue
+                    return conns[0].laddr.port
 
         self.guid = uuid.uuid4()
         os.makedirs(self.data_directory())
@@ -75,6 +84,7 @@ class AnalysisService:
         self.port = port
         with open(f'{self.data_directory()}\msmdsrv.port.txt', 'w', encoding='utf-16-le') as f:
             f.write(str(port))
+        
 
 
     def __str__(self):
@@ -85,6 +95,14 @@ class AnalysisService:
         folder: {self.data_directory()}
         '''
 
+
+def kill_current_server():
+    
+    for p in psutil.process_iter():
+            if p.name() != 'msmdsrv.exe':
+                continue
+            p.terminate()
+            print("Killing PID", p.pid)
 
 if __name__ == '__main__':
     x = AnalysisService()

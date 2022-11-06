@@ -1,5 +1,6 @@
 import powerbi
 import json
+import initialization
 
 
 def main():
@@ -9,4 +10,5 @@ def main():
 
 
 if __name__ == "__main__":
+    initialization.kill_current_server()
     main()

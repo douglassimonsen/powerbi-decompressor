@@ -2,15 +2,15 @@
   <Create AllowOverwrite="true" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
     <ObjectDefinition>
       <Database xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200">
-        <ID>34ad5baf-8ac1-429e-b976-1a5fa4af741a</ID>
-        <Name>34ad5baf-8ac1-429e-b976-1a5fa4af741a</Name>
+        <ID>{{guid}}</ID>
+        <Name>{{guid}}</Name>
         <ddl200_200:StorageEngineUsed>TabularMetadata</ddl200_200:StorageEngineUsed>
         <ddl200:CompatibilityLevel>1550</ddl200:CompatibilityLevel>
       </Database>
     </ObjectDefinition>
   </Create>
   <Create AllowOverwrite="true" xmlns="http://schemas.microsoft.com/analysisservices/2014/engine">
-    <DatabaseID>34ad5baf-8ac1-429e-b976-1a5fa4af741a</DatabaseID>
+    <DatabaseID>{{guid}}</DatabaseID>
     <Cultures>
       <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sql="urn:schemas-microsoft-com:xml-sql">
         <xs:element>

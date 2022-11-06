@@ -16,7 +16,7 @@ xmls = {f[:-4]: jinja2.Template(open(base_path / f).read()) for f in os.listdir(
 class PowerBi:
     def __init__(self, source_path):
         self.source_path = source_path
-        self.guid = uuid.uuid4()
+        self.guid = None
         self.schema = None
         self.AnalysisService = None
         self.conn_str = None
@@ -27,7 +27,15 @@ class PowerBi:
         env = initialization.AnalysisService()
         env.init()
         self.AnalysisService = env
+        self.guid = env.guid
         self.conn_str = f"Provider=MSOLAP;Data Source=localhost:{self.AnalysisService.port};"
+        with Pyadomd(self.conn_str) as conn:
+            x = conn.cursor().executeXML(
+                xmls['create_db'].render(guid=self.guid)
+            )
+            print('\n' * 5)
+            print(xmls['create_db'].render(guid=self.guid))
+        exit()
 
     def load_image(self):
         with Pyadomd(self.conn_str) as conn:  # need to generate a random GUID
