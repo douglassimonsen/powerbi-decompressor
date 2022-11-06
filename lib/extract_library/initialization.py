@@ -8,15 +8,23 @@ import psutil
 import time
 import pathlib
 import jinja2
+import shutil
 
 
 config = jinja2.Template(open(pathlib.Path(__file__).parent / 'xmla/msmdsrv.ini').read())
+
+
+def _delete_workspace(directory):
+    # the directory points to the Data directory, but we really want the parent workspace folder
+    shutil.rmtree(pathlib.Path(directory).parent)
+    
 
 
 def _check_active(directory):
     try:
         port = int(open(os.path.join(directory, 'msmdsrv.port.txt'), 'r', encoding='utf-16-le').read().strip())
     except (FileNotFoundError, ValueError):
+        _delete_workspace(directory)
         return False, None
 
     CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
@@ -25,6 +33,7 @@ def _check_active(directory):
             conn.cursor().executeNonQuery("SELECT [catalog_name] as [Database Name] FROM $SYSTEM.DBSCHEMA_CATALOGS")
             return True, port
     except:
+        _delete_workspace(directory)
         return False, None
 
 
