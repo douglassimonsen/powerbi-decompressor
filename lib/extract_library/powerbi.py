@@ -33,8 +33,6 @@ class PowerBi:
             x = conn.cursor().executeXML(
                 xmls['create_db'].render(guid=self.guid)
             )
-            print('\n' * 5)
-            print(xmls['create_db'].render(guid=self.guid))
         exit()
 
     def load_image(self):

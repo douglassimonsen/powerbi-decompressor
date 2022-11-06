@@ -7,14 +7,16 @@ import subprocess
 import psutil
 import time
 import pathlib
+import jinja2
 
-trace_start_xmla = open(pathlib.Path(__file__).parent / 'xmla/create_trace.xml').read()
+
+config = jinja2.Template(open(pathlib.Path(__file__).parent / 'xmla/msmdsrv.ini').read())
 
 
 def _check_active(directory):
     try:
         port = int(open(os.path.join(directory, 'msmdsrv.port.txt'), 'r', encoding='utf-16-le').read().strip())
-    except FileNotFoundError:
+    except (FileNotFoundError, ValueError):
         return False, None
 
     CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
@@ -53,6 +55,13 @@ class AnalysisService:
                 self.guid = f.split('_')[-1]
                 break
     
+    def init_data_directory(self):
+        data_dir = self.data_directory()
+        os.makedirs(data_dir)
+        with open(os.path.join(data_dir, 'msmdsrv.ini'), 'w') as f:
+            f.write(config.render(data_directory=data_dir))
+
+
     def create_environment(self):
         # C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll
         # AnalysisServiceProcess line 169
@@ -66,10 +75,11 @@ class AnalysisService:
                         print("sleep 2")
                         time.sleep(2)
                         continue
+                    print("Port:", conns[0].laddr.port)
                     return conns[0].laddr.port
 
         self.guid = uuid.uuid4()
-        os.makedirs(self.data_directory())
+        self.init_data_directory()
         command = [
             r'C:\Program Files\Microsoft Power BI Desktop\bin\msmdsrv.exe', 
             "-c", 
@@ -96,15 +106,23 @@ class AnalysisService:
         '''
 
 
-def kill_current_server():
-    
+def kill_current_servers():
     for p in psutil.process_iter():
             if p.name() != 'msmdsrv.exe':
                 continue
             p.terminate()
             print("Killing PID", p.pid)
 
+
+def find_current_servers():
+    for p in psutil.process_iter():
+            if p.name() != 'msmdsrv.exe':
+                continue
+            print(f"{p.name()} at {p.connections()[0].laddr.port}")
+
+
 if __name__ == '__main__':
+    kill_current_servers()
     x = AnalysisService()
     x.init()
     print(x)
