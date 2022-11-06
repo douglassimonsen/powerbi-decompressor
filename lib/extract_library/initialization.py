@@ -9,15 +9,19 @@ import time
 import pathlib
 import jinja2
 import shutil
-
+import logging
+logger = logging.getLogger()
 
 config = jinja2.Template(open(pathlib.Path(__file__).parent / 'xmla/msmdsrv.ini').read())
 
 
 def _delete_workspace(directory):
     # the directory points to the Data directory, but we really want the parent workspace folder
-    shutil.rmtree(pathlib.Path(directory).parent)
-    
+    try:
+        shutil.rmtree(pathlib.Path(directory).parent)
+    except PermissionError:
+        logger.info(f"Could not remove {pathlib.Path(directory).parent}")
+        pass
 
 
 def _check_active(directory):
