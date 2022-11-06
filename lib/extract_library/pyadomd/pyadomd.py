@@ -15,30 +15,34 @@ from __future__ import annotations
 from . import *
 from bs4 import BeautifulSoup
 
-#Types
-T = TypeVar('T')
+# Types
+T = TypeVar("T")
+
+
 class Description(NamedTuple):
     """
     :param [name]: Column name
     :param [type_code]: The column data type
     """
-    name:str
-    type_code:str
+
+    name: str
+    type_code: str
 
 
 from sys import path
 from pathlib import Path
 
 path.append(str(Path(__file__).parent)[2:])
-clr.AddReference('Microsoft.AnalysisServices.AdomdClient')
-from Microsoft.AnalysisServices.AdomdClient import AdomdConnection, AdomdCommand # type: ignore
+clr.AddReference("Microsoft.AnalysisServices.AdomdClient")
+from Microsoft.AnalysisServices.AdomdClient import AdomdConnection, AdomdCommand  # type: ignore
 
 from ._type_code import adomd_type_map, convert
 
+
 class Cursor:
-    def __init__(self, connection:AdomdConnection):
+    def __init__(self, connection: AdomdConnection):
         self._conn = connection
-        self._description:List[Description] = []
+        self._description: List[Description] = []
 
     def close(self) -> None:
         """
@@ -56,11 +60,11 @@ class Cursor:
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteXmlReader()
         lines = [self._reader.ReadOuterXml()]
-        while(lines[-1] != ''):
+        while lines[-1] != "":
             lines.append(self._reader.ReadOuterXml())
-        return BeautifulSoup(''.join(lines), 'xml')
+        return BeautifulSoup("".join(lines), "xml")
 
-    def execute(self, query:str) -> Cursor:
+    def execute(self, query: str) -> Cursor:
         """
         Executes a query against the data source
         :params [query]: The query to be executed
@@ -68,19 +72,21 @@ class Cursor:
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteReader()
         self._field_count = self._reader.FieldCount
-        
+
         for i in range(self._field_count):
-            self._description.append(Description(
-                    self._reader.GetName(i), 
-                    adomd_type_map[self._reader.GetFieldType(i).ToString()].type_name
-                    ))
+            self._description.append(
+                Description(
+                    self._reader.GetName(i),
+                    adomd_type_map[self._reader.GetFieldType(i).ToString()].type_name,
+                )
+            )
         return self
 
-    def executeNonQuery(self, command:str) -> Cursor:
+    def executeNonQuery(self, command: str) -> Cursor:
         """
-            Executes a Analysis Services Command agains the database
-            
-            :params [command]: The command to be executed
+        Executes a Analysis Services Command agains the database
+
+        :params [command]: The command to be executed
         """
         self._cmd = AdomdCommand(command, self._conn)
         self._reader = self._cmd.ExecuteNonQuery()
@@ -91,16 +97,23 @@ class Cursor:
         """
         Fetches the current line from the last executed query
         """
-        while(self._reader.Read()):
-            yield tuple(convert(self._reader.GetFieldType(i).ToString(), self._reader[i], adomd_type_map) for i in range(self._field_count))
+        while self._reader.Read():
+            yield tuple(
+                convert(
+                    self._reader.GetFieldType(i).ToString(),
+                    self._reader[i],
+                    adomd_type_map,
+                )
+                for i in range(self._field_count)
+            )
 
     def fetchmany(self, size=1) -> List[Tuple[T, ...]]:
         """
         Fetches one or more lines from the last executed query
-        :params [size]: The number of rows to fetch. 
+        :params [size]: The number of rows to fetch.
                         If the size parameter exceeds the number of rows returned from the last executed query then fetchmany will return all rows from that query.
         """
-        l:List[Tuple[T, ...]] = []
+        l: List[Tuple[T, ...]] = []
         try:
             for i in range(size):
                 l.append(next(self.fetchone()))
@@ -112,15 +125,15 @@ class Cursor:
         """
         Fetches all the rows from the last executed query
         """
-        # mypy issues with list comprehension :-( 
-        return [i for i in self.fetchone()] # type: ignore
+        # mypy issues with list comprehension :-(
+        return [i for i in self.fetchone()]  # type: ignore
 
     @property
     def is_closed(self) -> bool:
         try:
             state = self._reader.IsClosed
         except AttributeError:
-            return True        
+            return True
         return state
 
     @property
@@ -133,9 +146,9 @@ class Cursor:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.close()
 
-class Pyadomd:
 
-    def __init__(self, conn_str:str):
+class Pyadomd:
+    def __init__(self, conn_str: str):
         self.conn = AdomdConnection()
         self.conn.ConnectionString = conn_str
 
@@ -144,7 +157,7 @@ class Pyadomd:
         Closes the connection
         """
         self.conn.Close()
-    
+
     def open(self) -> None:
         """
         Opens the connection
@@ -157,7 +170,7 @@ class Pyadomd:
         """
         c = Cursor(self.conn)
         return c
-    
+
     @property
     def state(self) -> int:
         """
@@ -165,7 +178,7 @@ class Pyadomd:
         0 = Closed
         """
         return self.conn.State
-    
+
     def __enter__(self) -> Pyadomd:
         self.open()
         return self
