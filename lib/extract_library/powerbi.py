@@ -14,6 +14,7 @@ base_path = pathlib.Path(__file__).parent / "xmla"
 xmls = {f[:-4]: jinja2.Template(open(base_path / f).read()) for f in os.listdir(base_path)}
 logger = logging.getLogger()
 
+
 class PowerBi:
     def __init__(self, source_path):
         self.source_path = source_path
