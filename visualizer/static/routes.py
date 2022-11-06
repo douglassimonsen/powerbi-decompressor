@@ -13,7 +13,7 @@ queries = {
 
 @app.route('/api/<query>', methods=['GET', 'POST'])
 def reports(query):
-    args = flask.request.get_json() or []
+    args = flask.request.get_json() or dict(flask.request.args) or {}  # dict not really necessary, but prints nicer
     return flask.jsonify(
-        util.read_query(queries[query].format(*args))
+        util.read_query(queries[query].format(**args))
     )

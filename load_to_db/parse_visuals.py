@@ -23,6 +23,8 @@ def main(data):
         page_info = {
             "name": section["displayName"],
             "ordinal": section["ordinal"],
+            "width": section["width"],
+            "height": section["height"]
         }
         ret["pages"].append(page_info)
         for visual in section["visualContainers"]:
