@@ -89,7 +89,10 @@ class AnalysisService:
                 if p.name() != "msmdsrv.exe":
                     continue
                 for _ in range(5):
-                    conns = p.connections()
+                    try:
+                        conns = p.connections()
+                    except psutil.NoSuchProcess:  # happened when the previous process was still running
+                        continue
                     if len(conns) == 0:
                         print("sleep 2")
                         time.sleep(2)

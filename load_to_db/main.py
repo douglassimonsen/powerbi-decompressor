@@ -27,10 +27,16 @@ def get_pbis():
 def main():
     initialize_db()
     pbis = get_pbis()
+    failed = 0
     for pbi_path in pbis:
         print(pbi_path)
-        data = parse_pbi.main(pbi_path)
-        load_data.main(pbi_path, data)
+        try:
+            data = parse_pbi.main(pbi_path)
+            load_data.main(pbi_path, data)
+        except:
+            print("failed to load")
+            failed += 1
+    print(f"{failed} / {len(pbis)} failed")
 
 
 if __name__ == "__main__":

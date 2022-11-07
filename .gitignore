@@ -11,3 +11,4 @@ pbi
 */dist
 debug.log
 !Microsoft.AnalysisServices.AdomdClient.dll
+*.pbiviz
