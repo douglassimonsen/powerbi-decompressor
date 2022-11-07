@@ -22,7 +22,7 @@ def main(data):
     for section in data["sections"]:
         page_info = {
             "name": section["displayName"],
-            "ordinal": section["ordinal"],
+            "ordinal": section.get("ordinal", 0),  # initial overview pages can be blank? 2018SU04 Blog Demo - April.pbix
             "width": section["width"],
             "height": section["height"]
         }
