@@ -18,10 +18,15 @@ def get_pbis():
     ret = []
     source_dir = "C:/Users/mwham/Documents/repos/powerbi-decompressor/pbis"
     for f in os.listdir(source_dir):
-        if not f.endswith('.pbix'):
+        if not f.endswith(".pbix"):
             continue
-        ret.append(os.path.join(source_dir, f).replace('\\', '/'))
-    return ret
+        ret.append(os.path.join(source_dir, f).replace("\\", "/"))
+    return [
+        x
+        for x in ret
+        if x
+        >= "C:/Users/mwham/Documents/repos/powerbi-decompressor/pbis/2018SU08 Blog Demo - August.pbix"
+    ]
 
 
 def main():
@@ -30,6 +35,8 @@ def main():
     failed = 0
     for pbi_path in pbis:
         print(pbi_path)
+        data = parse_pbi.main(pbi_path)
+        load_data.main(pbi_path, data)
         try:
             data = parse_pbi.main(pbi_path)
             load_data.main(pbi_path, data)

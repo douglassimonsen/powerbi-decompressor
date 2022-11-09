@@ -3,7 +3,7 @@ import util
 import flask
 import os, pathlib
 
-query_folder = pathlib.Path(__file__).parent / 'queries'
+query_folder = pathlib.Path(__file__).parent / "queries"
 queries = {
     f[:-4]: open(query_folder / f).read()
     for f in os.listdir(query_folder)
@@ -11,9 +11,9 @@ queries = {
 }
 
 
-@app.route('/api/<query>', methods=['GET', 'POST'])
+@app.route("/api/<query>", methods=["GET", "POST"])
 def reports(query):
-    args = flask.request.get_json() or dict(flask.request.args) or {}  # dict not really necessary, but prints nicer
-    return flask.jsonify(
-        util.read_query(queries[query].format(**args))
-    )
+    args = (
+        flask.request.get_json() or dict(flask.request.args) or {}
+    )  # dict not really necessary, but prints nicer
+    return flask.jsonify(util.read_query(queries[query].format(**args)))

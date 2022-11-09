@@ -5,8 +5,30 @@ from pprint import pprint
 def get_datasources(tables):
     ret = []
     for table in tables:
-        ret.append({"pbi_id": table["ID"], "name": table["Name"]})
+        ret.append(
+            {
+                "pbi_id": table["ID"],
+                "name": table["Name"],
+                "parent": None,
+                "node_type": "datasource",
+            }
+        )
     return ret
+
+
+def get_measures(measures):
+    ret = []
+    for measure in measures:
+        ret.append(
+            {
+                "pbi_id": measure["ID"],
+                "name": measure["Name"],
+                "parent": measure["TableID"],
+                "expression": measure['Expression'],
+                "node_type": "measure",
+            }
+        )
+    return
 
 
 def get_datasource_columns(columns):
@@ -26,8 +48,9 @@ def get_datasource_columns(columns):
 
 def main(data):
     datasources = get_datasources(data["Table"])
+    measures = get_measures(data["Measure"])
     columns = get_datasource_columns(data["Column"])
-    return {"datasources": datasources, "columns": columns}
+    return {"datasources": datasources, "measures": measures, "columns": columns}
 
 
 if __name__ == "__main__":

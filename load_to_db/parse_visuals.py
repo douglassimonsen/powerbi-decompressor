@@ -22,9 +22,11 @@ def main(data):
     for section in data["sections"]:
         page_info = {
             "name": section["displayName"],
-            "ordinal": section.get("ordinal", 0),  # initial overview pages can be blank? 2018SU04 Blog Demo - April.pbix
+            "ordinal": section.get(
+                "ordinal", 0
+            ),  # initial overview pages can be blank? 2018SU04 Blog Demo - April.pbix
             "width": section["width"],
-            "height": section["height"]
+            "height": section["height"],
         }
         ret["pages"].append(page_info)
         for visual in section["visualContainers"]:
