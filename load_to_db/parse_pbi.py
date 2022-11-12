@@ -73,7 +73,7 @@ def discover_dependencies(data):
     for visual in data['visuals']:
         for ds in visual['selects']:
             if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
-                logger.warning("visual select parse issue", expr=ds)
+                logger.warning("visual select parse issue", expr=ds, name=visual['pbi_id'])
                 continue
             ds_name = ds['Expression']['SourceRef']['Entity']
             ds_column_name = ds['Property']
@@ -88,7 +88,7 @@ def discover_dependencies(data):
             })
         for ds in visual['filters']:
             if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
-                logger.warning("visual select parse issue", expr=ds)
+                logger.warning("visual filter parse issue", expr=ds, name=visual['pbi_id'])
                 continue
             ds_name = ds['Expression']['SourceRef']['Entity']
             ds_column_name = ds['Property']

@@ -23,7 +23,7 @@ def get_pbis():
     ret = []
     source_dir = pathlib.Path(__file__).parents[1] / "pbis"
     for f in os.listdir(source_dir):
-        if not f.endswith(".pbix"):
+        if not f.endswith(".pbix") or f != 'Sales & Returns Sample v201912.pbix':
             continue
         ret.append(os.path.join(source_dir, f).replace("\\", "/"))
     return ret

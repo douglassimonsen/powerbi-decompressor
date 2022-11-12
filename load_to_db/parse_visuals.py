@@ -23,7 +23,7 @@ def main(data):
         elif 'singleVisualGroup' in vis_config:
             return vis_config['singleVisualGroup']['displayName']
         else:
-            logger.warning("unparseable_visual", config=vis_config)
+            logger.warning("unparseable_visual", config=vis_config, visual=visual["config"]['name'])
 
     ret = {
         "pages": [],
@@ -58,9 +58,13 @@ def main(data):
                 visual["dataTransforms"] = json.loads(visual["dataTransforms"])
                 visual['dataTransforms']['queryMetadata'] = visual['dataTransforms']['queryMetadata'] or {}  # occasionally is null???
                 for f in visual["dataTransforms"]["queryMetadata"].get("Filters", []):
-                    visual_info["filters"].append(find_source(f))
+                    source = find_source(f)
+                    source = source if source is not None else f
+                    visual_info["filters"].append(source)
                 for f in visual["dataTransforms"]["selects"]:
-                    visual_info["selects"].append(find_source(f))
+                    source = find_source(f)
+                    source = source if source is not None else f
+                    visual_info["selects"].append(source)
     return ret
 
 
