@@ -67,6 +67,7 @@ class AnalysisService:
             self.create_environment()
 
     def check_existing_process(self):
+        os.makedirs(self.temp_folder, exist_ok=True)  # If powerbi has never been opened here, it won't exist    
         for f in os.listdir(self.temp_folder):
             active, port = _check_active(os.path.join(self.temp_folder, f, "Data"))
             if active:
@@ -79,7 +80,7 @@ class AnalysisService:
         data_dir = self.data_directory()
         os.makedirs(data_dir)
         with open(os.path.join(data_dir, "msmdsrv.ini"), "w") as f:
-            f.write(config.render(data_directory=data_dir))
+            f.write(config.render(data_directory=data_dir, certificate_directory=rf"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\CertifiedExtensions"))
 
     def create_environment(self):
         # C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll

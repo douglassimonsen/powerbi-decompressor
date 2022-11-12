@@ -9,3 +9,7 @@ def get_conn():
         user="postgres",
         password="postgres",
     )
+
+
+if __name__ == '__main__':
+    get_conn()

@@ -7,8 +7,8 @@ obj
 test*
 *.pyc
 pbi
-*/*.egg-info
-*/dist
+**/*.egg-info
+**/dist
 debug.log
 !Microsoft.AnalysisServices.AdomdClient.dll
 *.pbiviz

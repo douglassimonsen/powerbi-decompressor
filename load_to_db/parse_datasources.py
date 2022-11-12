@@ -2,15 +2,15 @@ import json
 from pprint import pprint
 
 
-def get_datasources(tables):
+def get_tables(tables, datasources):
+    datasource_dict = {x["TableID"]: x['pbi_id'] for x in datasources}
     ret = []
     for table in tables:
         ret.append(
             {
                 "pbi_id": table["ID"],
                 "name": table["Name"],
-                "parent": None,
-                "node_type": "datasource",
+                "datasourceID": datasource_dict[table['ID']],
             }
         )
     return ret
@@ -25,7 +25,6 @@ def get_measures(measures):
                 "name": measure["Name"],
                 "parent": measure["TableID"],
                 "expression": measure['Expression'],
-                "node_type": "measure",
             }
         )
     return
@@ -37,23 +36,37 @@ def get_datasource_columns(columns):
         ret.append(
             {
                 "pbi_id": column["ID"],
-                "datasource_pbi_id": column["TableID"],
+                "TableID": column["TableID"],
                 "data_type": column["ExplicitDataType"],
                 "name": column.get("ExplicitName"),
                 "isHidden": column.get("isHidden", False),
+                "Expression": column.get("Expression"),
             }
         )
     return ret
 
 
+def get_datasources(datasources):
+    ret = []
+    for datasource in datasources:
+        ret.append({
+            'pbi_id': datasource['ID'],
+            'name': datasource['Name'],
+            'QueryDefinition': datasource['QueryDefinition'],
+            'TableID': datasource['TableID'],
+        })
+    return ret
+
+
 def main(data):
-    datasources = get_datasources(data["Table"])
+    datasources = get_datasources(data["Partition"])
+    tables = get_tables(data["Table"], datasources)
     measures = get_measures(data["Measure"])
     columns = get_datasource_columns(data["Column"])
-    return {"datasources": datasources, "measures": measures, "columns": columns}
+    return {"tables": tables, "datasources": datasources, "measures": measures, "columns": columns}
 
 
 if __name__ == "__main__":
     with open("test.json") as f:
-        data = json.load(f)
+        data = json.load(f)['data_model']
     main(data)

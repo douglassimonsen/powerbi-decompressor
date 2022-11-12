@@ -27,7 +27,7 @@ create table pbi.visuals (
   y float,
   z float
 );
-create table pbi.datasources (
+create table pbi.tables (
   id serial primary key not null,
   pbi_id int,
   report_id int references pbi.reports(id),
@@ -35,17 +35,17 @@ create table pbi.datasources (
   source_details jsonb,
   name text
 );
-create table pbi.datasource_columns (
+create table pbi.table_columns (
   id serial primary key not null,
   pbi_id int,
-  datasource_id int references pbi.datasources(id),
+  table_id int references pbi.tables(id),
   name text,
   data_type text,
   isHidden boolean
 );
-create table pbi.visual_datasource_columns (
+create table pbi.visual_table_columns (
   id serial primary key not null,
   visual_id int references pbi.visuals(id),
-  datasource_column_id int references pbi.datasource_columns(id),
+  table_column_id int references pbi.table_columns(id),
   visual_use text
 );

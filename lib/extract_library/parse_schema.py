@@ -28,13 +28,7 @@ def handle_child(doc):
             row_dict[field.name] = val
         section.append(row_dict)
 
-    section = clean(section)
-    if len(section) == 0:
-        return {}
-    elif len(section) == 1:
-        return section[0]
-    else:
-        return section
+    return clean(section)
 
 
 def parse_schema(schema):

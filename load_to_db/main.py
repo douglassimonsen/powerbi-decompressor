@@ -16,17 +16,12 @@ def initialize_db():
 
 def get_pbis():
     ret = []
-    source_dir = "C:/Users/mwham/Documents/repos/powerbi-decompressor/pbis"
+    source_dir = pathlib.Path(__file__).parents[1] / "pbis"
     for f in os.listdir(source_dir):
-        if not f.endswith(".pbix"):
+        if not f.endswith(".pbix") or f < '2018SU08 Blog Demo - August.pbix':
             continue
         ret.append(os.path.join(source_dir, f).replace("\\", "/"))
-    return [
-        x
-        for x in ret
-        if x
-        >= "C:/Users/mwham/Documents/repos/powerbi-decompressor/pbis/2018SU08 Blog Demo - August.pbix"
-    ]
+    return ret
 
 
 def main():
