@@ -53,7 +53,7 @@ class Cursor:
             return
         self._reader.Close()
 
-    def executeXML(self, query: str) -> Cursor:
+    def executeXML(self, query: str) -> BeautifulSoup:
         """
         Executes a query against the data source
         :params [query]: The query to be executed
@@ -66,6 +66,13 @@ class Cursor:
         while lines[-1] != "":
             lines.append(self._reader.ReadOuterXml())
         return BeautifulSoup("".join(lines), "xml")
+
+    def executeXMLNonQuery(self, query: str, transaction: bool=True) -> None:
+        logger.debug("executeXMLNonQuery")
+        transaction = self._conn.BeginTransaction()
+        self._cmd = AdomdCommand(query, self._conn)
+        self._reader = self._cmd.ExecuteXmlReader()
+        transaction.Commit()
 
     def execute(self, query: str) -> Cursor:
         """
@@ -89,7 +96,7 @@ class Cursor:
 
     def executeNonQuery(self, command: str) -> Cursor:
         """
-        Executes a Analysis Services Command agains the database
+        Executes a Analysis Services Command against the database
 
         :params [command]: The command to be executed
         """

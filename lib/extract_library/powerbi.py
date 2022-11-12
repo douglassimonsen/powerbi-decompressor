@@ -109,8 +109,9 @@ class PowerBi:
             table_ids = list(self.table_dict.values())
         else:
             raise TypeError("I don't understand the object: ", table_names)
-        with Pyadomd(self.conn_str) as conn:
-            return conn.cursor().executeXML(
+        raise NotImplementedError
+        with Pyadomd(self.conn_str + ";ReturnAffectedObjects=-1") as conn:
+            return conn.cursor().executeXMLNonQuery(
                 xmls["update_table"].render(guid=self.guid, table_ids=table_ids)
             )
 
