@@ -1,7 +1,7 @@
 import os, pathlib
 import util
-
-
+import structlog
+logger = structlog.getLogger()
 insert_queries = {}
 for f in os.listdir(pathlib.Path(__file__).parent / "queries"):
     insert_queries[f[:-4]] = open(pathlib.Path(__file__).parent / "queries" / f).read()
@@ -17,7 +17,7 @@ def main(source, data):
         "datasources": {},
         "datasource_columns": {},
     }
-
+    logger.info("loading_to_postgres")
     with util.get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute(insert_queries["reports"], {"name": source})

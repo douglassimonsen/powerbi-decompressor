@@ -1,5 +1,7 @@
 import json
 from pprint import pprint
+import structlog
+logger = structlog.getLogger()
 
 
 def get_tables(tables, datasources):
@@ -20,6 +22,7 @@ def get_measures(measures):
     ret = []
     for measure in measures:
         if 'Expression' not in measure:
+            logger.warning("measure_parse_issue", measure=measure)
             continue
         ret.append(
             {

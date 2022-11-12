@@ -7,9 +7,9 @@ import time
 import pathlib
 import jinja2
 import shutil
-import logging
+import structlog
 
-logger = logging.getLogger()
+logger = structlog.getLogger()
 
 config = jinja2.Template(
     open(pathlib.Path(__file__).parent / "xmla/msmdsrv.ini").read()
@@ -21,7 +21,7 @@ def _delete_workspace(directory):
     try:
         shutil.rmtree(pathlib.Path(directory).parent)
     except PermissionError:
-        logger.info(f"Could not remove {pathlib.Path(directory).parent}")
+        logger.info("PermissionError", directory=pathlib.Path(directory).parent)
         pass
 
 
@@ -78,6 +78,7 @@ class AnalysisService:
 
     def init_data_directory(self):
         data_dir = self.data_directory()
+        logger.debug("initializing_data_directory", directory=data_dir)
         os.makedirs(data_dir)
         with open(os.path.join(data_dir, "msmdsrv.ini"), "w") as f:
             f.write(config.render(data_directory=data_dir, certificate_directory=rf"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\CertifiedExtensions"))
@@ -95,10 +96,10 @@ class AnalysisService:
                     except psutil.NoSuchProcess:  # happened when the previous process was still running
                         continue
                     if len(conns) == 0:
-                        print("sleep 2")
+                        logger.info("waiting_for_ssas_port", time=2)
                         time.sleep(2)
                         continue
-                    print("Port:", conns[0].laddr.port)
+                    logger.info("Port", port_number=conns[0].laddr.port)
                     return conns[0].laddr.port
 
         self.guid = uuid.uuid4()
@@ -111,12 +112,14 @@ class AnalysisService:
             "-s",
             f"{self.data_directory()}",
         ]
+        logger.info("initializing_ssas")
         subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )  # running multiple times doesn't cause multiple processes, thank god
         port = get_port()
         self.active = True
         self.port = port
+        logger.debug("saving_port", port_file=f"{self.data_directory()}\msmdsrv.port.txt")
         with open(
             f"{self.data_directory()}\msmdsrv.port.txt", "w", encoding="utf-16-le"
         ) as f:
@@ -135,15 +138,15 @@ def kill_current_servers():
     for p in psutil.process_iter():
         if p.name() != "msmdsrv.exe":
             continue
+        logger.info("killing_PID", pid=p.pid)
         p.terminate()
-        print("Killing PID", p.pid)
 
 
 def find_current_servers():
     for p in psutil.process_iter():
         if p.name() != "msmdsrv.exe":
             continue
-        print(f"{p.name()} at {p.connections()[0].laddr.port}")
+        logger.info("current_ssas_server", name=p.name(), port=p.connections()[0].laddr.port)
 
 
 if __name__ == "__main__":
@@ -151,3 +154,4 @@ if __name__ == "__main__":
     x = AnalysisService()
     x.init()
     print(x)
+

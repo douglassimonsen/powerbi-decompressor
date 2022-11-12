@@ -5,13 +5,13 @@ from . import parse_schema, initialization
 import shutil
 import jinja2
 import pathlib
-import logging
+import structlog
 
 base_path = pathlib.Path(__file__).parent / "xmla"
 xmls = {
     f[:-4]: jinja2.Template(open(base_path / f).read()) for f in os.listdir(base_path)
 }
-logger = logging.getLogger()
+logger = structlog.getLogger()
 
 
 class PowerBi:
@@ -25,8 +25,13 @@ class PowerBi:
         self.conn_str = None
         self.init_backend()
         self.load_image()
+        self.bind_pbix_to_logger()
+
+    def bind_pbix_to_logger(self):
+        structlog.contextvars.bind_contextvars(pbix=self.source_path.replace('\\', '/').split('/')[-1])
 
     def init_backend(self):
+        logger.info("initializing_ssas")
         env = initialization.AnalysisService()
         env.init()
         self.AnalysisService = env
@@ -46,6 +51,7 @@ class PowerBi:
         return txt.replace('&', '&amp;')
 
     def load_image(self):
+        logger.info("loading_image")
         if self.guid in self._get_ssas_dbs():
             logger.warning("This database has already been loaded")
             return
@@ -55,6 +61,7 @@ class PowerBi:
             )
 
     def save_image(self, target_path):
+        logger.info("saving_image")
         shutil.copy(
             self.source_path, target_path
         )  # needs a PBIX to save the datamodel into
@@ -64,6 +71,7 @@ class PowerBi:
             )
 
     def read_schema(self):
+        logger.info("reading_schema")
         with Pyadomd(self.conn_str) as conn:
             schema = conn.cursor().executeXML(
                 xmls["schema_query"].render(guid=self.guid)
@@ -73,6 +81,7 @@ class PowerBi:
         return self.schema
 
     def get_table(self, table_name):
+        logger.info("reading_table", table=table_name)
         with Pyadomd(self.conn_str) as conn:
             cur = conn.cursor()
             data = cur.execute(f"Evaluate '{table_name}'").fetchall()
@@ -81,6 +90,7 @@ class PowerBi:
         return data
 
     def update_tables(self, table_names=None):
+        logger.info("updating_tables", tables=table_names)
         if not self.schema:
             self.read_schema()
 
