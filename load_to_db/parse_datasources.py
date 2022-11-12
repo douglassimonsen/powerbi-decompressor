@@ -8,7 +8,7 @@ def get_tables(tables, datasources):
     for table in tables:
         ret.append(
             {
-                "pbi_id": table["ID"],
+                "pbi_id": str(table["ID"]),
                 "name": table["Name"],
                 "datasourceID": datasource_dict[table['ID']],
             }
@@ -21,22 +21,22 @@ def get_measures(measures):
     for measure in measures:
         ret.append(
             {
-                "pbi_id": measure["ID"],
+                "pbi_id": str(measure["ID"]),
                 "name": measure["Name"],
-                "parent": measure["TableID"],
-                "expression": measure['Expression'],
+                "TableID": str(measure["TableID"]),
+                "Expression": measure['Expression'],
             }
         )
-    return
+    return ret
 
 
-def get_datasource_columns(columns):
+def get_table_columns(columns):
     ret = []
     for column in columns:
         ret.append(
             {
-                "pbi_id": column["ID"],
-                "TableID": column["TableID"],
+                "pbi_id": str(column["ID"]),
+                "TableID": str(column["TableID"]),
                 "data_type": column["ExplicitDataType"],
                 "name": column.get("ExplicitName"),
                 "isHidden": column.get("isHidden", False),
@@ -50,7 +50,7 @@ def get_datasources(datasources):
     ret = []
     for datasource in datasources:
         ret.append({
-            'pbi_id': datasource['ID'],
+            'pbi_id': str(datasource['ID']),
             'name': datasource['Name'],
             'QueryDefinition': datasource['QueryDefinition'],
             'TableID': datasource['TableID'],
@@ -62,7 +62,7 @@ def main(data):
     datasources = get_datasources(data["Partition"])
     tables = get_tables(data["Table"], datasources)
     measures = get_measures(data["Measure"])
-    columns = get_datasource_columns(data["Column"])
+    columns = get_table_columns(data["Column"])
     return {"tables": tables, "datasources": datasources, "measures": measures, "columns": columns}
 
 

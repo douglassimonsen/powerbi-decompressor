@@ -11,6 +11,8 @@ def main(source, data):
     gen_ids = {
         "report": None,
         "pages": {},
+        'tables': {},
+        'table_columns': {},
         "visuals": {},
         "datasources": {},
         "datasource_columns": {},
@@ -41,21 +43,23 @@ def main(source, data):
             ret = cursor.fetchone()
             gen_ids["datasources"][ret[0]] = ret[1]
 
-        for column in data["columns"]:
-            column["datasource_id"] = gen_ids["datasources"][
-                column["datasource_pbi_id"]
-            ]
-            cursor.execute(insert_queries["datasource_columns"], column)
+        for table in data["tables"]:
+            table["report_id"] = gen_ids["report"]
+            table["datasourceID"] = gen_ids["datasources"][table["datasourceID"]]
+            cursor.execute(insert_queries["tables"], table)
             ret = cursor.fetchone()
-            gen_ids["datasource_columns"][ret[0]] = ret[1]
+            gen_ids["tables"][ret[0]] = ret[1]
 
-        for visual_dsc in data["visual_datasource_columns"]:
-            visual_dsc["visual_id"] = gen_ids["visuals"][visual_dsc["visual_pbi_id"]]
-            visual_dsc["datasource_column_id"] = gen_ids["datasource_columns"][
-                visual_dsc["datasource_column_pbi_id"]
+        for column in data["columns"]:
+            column["table_id"] = gen_ids["tables"][
+                column["TableID"]
             ]
-            cursor.execute(insert_queries["visual_datasource_columns"], visual_dsc)
+            cursor.execute(insert_queries["table_columns"], column)
+            ret = cursor.fetchone()
+            gen_ids["table_columns"][ret[0]] = ret[1]
 
+        for dependency in data["dax_dependencies"]:
+            cursor.execute(insert_queries["dax_dependencies"], dependency)
         conn.commit()
 
 

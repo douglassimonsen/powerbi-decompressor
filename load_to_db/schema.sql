@@ -27,25 +27,37 @@ create table pbi.visuals (
   y float,
   z float
 );
+create table pbi.datasources (
+  id serial primary key not null,
+  name text, 
+  pbi_id text, 
+  report_id int, 
+  source_type text, 
+  source_details jsonb
+);
 create table pbi.tables (
   id serial primary key not null,
-  pbi_id int,
-  report_id int references pbi.reports(id),
+  pbi_id text,
+  datasourceID int references pbi.datasources(id),
   source_type text,
   source_details jsonb,
   name text
 );
 create table pbi.table_columns (
   id serial primary key not null,
-  pbi_id int,
+  pbi_id text,
   table_id int references pbi.tables(id),
   name text,
   data_type text,
-  isHidden boolean
+  isHidden boolean,
+  expression text
 );
-create table pbi.visual_table_columns (
+create table pbi.dax_dependencies (
   id serial primary key not null,
-  visual_id int references pbi.visuals(id),
-  table_column_id int references pbi.table_columns(id),
-  visual_use text
+  child_id int, -- can't specify a foreign key because it could be two separate tables
+  child_pbi_id text, 
+  child_type text, 
+  parent_id int, -- can't specify a foreign key because it could be two separate tables
+  parent_pbi_id text, 
+  parent_type text
 );

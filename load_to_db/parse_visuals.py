@@ -32,7 +32,7 @@ def main(data):
         for visual in section["visualContainers"]:
             visual["config"] = json.loads(visual["config"])
             visual_info = {
-                "pbi_id": visual["config"]["name"],
+                "pbi_id": visual["config"]['name'],
                 "height": visual["height"],
                 "width": visual["width"],
                 "x": visual["x"],

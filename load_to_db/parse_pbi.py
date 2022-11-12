@@ -27,16 +27,16 @@ def discover_dependencies(data):
         ret = []
         for parent_name, info in parents.items():
             if parent_name in expr:
-                ret.append({**info, "child": child_id, "child_type": child_type})
+                ret.append({**info, "child_id": child_id, "child_type": child_type})
         return ret
 
     dependencies = []
     parents = {
-        **{x['name']: {"child_id": x["pbi_id"], "child_type": "measure"}
+        **{x['name']: {"parent_id": x["pbi_id"], "parent_type": "measure"}
         for x in data['measures']
         if x['name'] is not None
         },
-        **{x['name']: {"child_id": x["pbi_id"], "child_type": "column"}
+        **{x['name']: {"parent_id": x["pbi_id"], "parent_type": "column"}
         for x in data['columns']
         if x['name'] is not None            
         },
@@ -57,15 +57,15 @@ def discover_dependencies(data):
     parents = {
         **{
             (table_dict[x['TableID']], x['name']): {
-                "child_id": x['pbi_id'],
-                "child_type": "measure"
+                "parent_id": x['pbi_id'],
+                "parent_type": "measure"
             }
             for x in data["measures"]
         },
         **{
             (table_dict[x['TableID']], x['name']): {
-                "child_id": x['pbi_id'],
-                "child_type": "column"
+                "parent_id": x['pbi_id'],
+                "parent_type": "column"
             }
             for x in data["columns"]
         }
@@ -78,8 +78,8 @@ def discover_dependencies(data):
                 logger.warning(f"{(ds_name, ds_column_name)} not in parents")
                 continue
             dependencies.append({
-                "parent_id": visual['pbi_id'],
-                "parent_type": "table",
+                "child_id": visual['pbi_id'],
+                "child_type": "visual",
                 "depdency_type": "visual_select",
                 **parents[(ds_name, ds_column_name)],
             })
@@ -90,11 +90,13 @@ def discover_dependencies(data):
                 logger.warning(f"{(ds_name, ds_column_name)} not in parents")
                 continue
             dependencies.append({
-                "parent_id": visual['pbi_id'],
-                "parent_type": "table",
+                "child_id": visual['pbi_id'],
+                "child_type": "visual",
                 "depdency_type": "visual_filter",
                 **parents[(ds_name, ds_column_name)],
             })
+    return dependencies
+
 
 
 def main(source):
