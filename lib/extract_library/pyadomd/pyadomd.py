@@ -14,7 +14,8 @@ limitations under the License.
 from __future__ import annotations
 from . import *
 from bs4 import BeautifulSoup
-
+import structlog
+logger = structlog.getLogger()
 # Types
 T = TypeVar("T")
 
@@ -57,8 +58,10 @@ class Cursor:
         Executes a query against the data source
         :params [query]: The query to be executed
         """
+        logger.debug("executeXML query")
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteXmlReader()
+        logger.debug("reading query")
         lines = [self._reader.ReadOuterXml()]
         while lines[-1] != "":
             lines.append(self._reader.ReadOuterXml())
@@ -69,10 +72,12 @@ class Cursor:
         Executes a query against the data source
         :params [query]: The query to be executed
         """
+        logger.debug("execute query")
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteReader()
         self._field_count = self._reader.FieldCount
 
+        logger.debug("reading query")
         for i in range(self._field_count):
             self._description.append(
                 Description(

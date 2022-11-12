@@ -30,6 +30,13 @@ class PowerBi:
     def bind_pbix_to_logger(self):
         structlog.contextvars.bind_contextvars(pbix=self.source_path.replace('\\', '/').split('/')[-1])
 
+    def list_tables(self):
+        if not self.schema:
+            self.read_schema()
+        tables = self.schema['Table']
+        return [t['Name'] for t in tables]
+
+
     def init_backend(self):
         logger.info("initializing_ssas")
         env = initialization.AnalysisService()
@@ -71,7 +78,7 @@ class PowerBi:
             )
 
     def read_schema(self):
-        logger.info("reading_schema")
+        logger.info("read_schema")
         with Pyadomd(self.conn_str) as conn:
             schema = conn.cursor().executeXML(
                 xmls["schema_query"].render(guid=self.guid)
