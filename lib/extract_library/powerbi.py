@@ -41,13 +41,17 @@ class PowerBi:
         with Pyadomd(self.conn_str) as conn:
             return [x[0] for x in conn.cursor().execute(query).fetchall()]
 
+    @staticmethod
+    def sanitize_xml(txt):
+        return txt.replace('&', '&amp;')
+
     def load_image(self):
         if self.guid in self._get_ssas_dbs():
             logger.warning("This database has already been loaded")
             return
         with Pyadomd(self.conn_str) as conn:
             conn.cursor().executeXML(
-                xmls["image_load"].render(guid=self.guid, source_path=self.source_path)
+                xmls["image_load"].render(guid=self.guid, source_path=self.sanitize_xml(self.source_path))
             )
 
     def save_image(self, target_path):
