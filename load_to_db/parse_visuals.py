@@ -1,6 +1,8 @@
 import zipfile
 import json
 from pprint import pprint
+import structlog
+logger = structlog.getLogger()
 
 
 def find_source(data):
@@ -21,8 +23,7 @@ def main(data):
         elif 'singleVisualGroup' in vis_config:
             return vis_config['singleVisualGroup']['displayName']
         else:
-            print(vis_config)
-            raise KeyError
+            logger.warning("unparseable_visual", config=vis_config)
 
     ret = {
         "pages": [],

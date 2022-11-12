@@ -4,8 +4,8 @@ import json
 import zipfile
 import extract_library
 from pprint import pprint
-import logging
-logger = logging.getLogger()
+import structlog
+logger = structlog.getLogger()
 
 
 def extract_data(source):
@@ -73,11 +73,12 @@ def discover_dependencies(data):
     for visual in data['visuals']:
         for ds in visual['selects']:
             if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
+                logger.warning("visual select parse issue", expr=ds)
                 continue
             ds_name = ds['Expression']['SourceRef']['Entity']
             ds_column_name = ds['Property']
             if (ds_name, ds_column_name) not in parents:
-                logger.warning(f"{(ds_name, ds_column_name)} not in parents")
+                logger.warning("missing_dependency", tbl_name=ds_name, col_name=ds_column_name)
                 continue
             dependencies.append({
                 "child_id": visual['pbi_id'],
@@ -87,11 +88,12 @@ def discover_dependencies(data):
             })
         for ds in visual['filters']:
             if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
+                logger.warning("visual select parse issue", expr=ds)
                 continue
             ds_name = ds['Expression']['SourceRef']['Entity']
             ds_column_name = ds['Property']
             if (ds_name, ds_column_name) not in parents:
-                logger.warning(f"{(ds_name, ds_column_name)} not in parents")
+                logger.warning("missing_dependency", tbl_name=ds_name, col_name=ds_column_name)
                 continue
             dependencies.append({
                 "child_id": visual['pbi_id'],
@@ -105,8 +107,8 @@ def discover_dependencies(data):
 
 def main(source):
     raw_data = extract_data(source)
-    with open("test.json", "w") as f:
-        json.dump(raw_data, f, indent=4)
+    # with open("test.json", "w") as f:
+    #     json.dump(raw_data, f, indent=4)
 
     data = parse_datasources.main(raw_data["data_model"])
     data = {**data, **parse_visuals.main(raw_data["layout"])}
