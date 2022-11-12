@@ -72,6 +72,8 @@ def discover_dependencies(data):
     }
     for visual in data['visuals']:
         for ds in visual['selects']:
+            if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
+                continue
             ds_name = ds['Expression']['SourceRef']['Entity']
             ds_column_name = ds['Property']
             if (ds_name, ds_column_name) not in parents:
@@ -84,6 +86,8 @@ def discover_dependencies(data):
                 **parents[(ds_name, ds_column_name)],
             })
         for ds in visual['filters']:
+            if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
+                continue
             ds_name = ds['Expression']['SourceRef']['Entity']
             ds_column_name = ds['Property']
             if (ds_name, ds_column_name) not in parents:

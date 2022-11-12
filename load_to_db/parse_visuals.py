@@ -15,6 +15,15 @@ def find_source(data):
 
 
 def main(data):
+    def get_visual_type(vis_config):
+        if 'singleVisual' in vis_config:
+            return vis_config["singleVisual"]["visualType"]
+        elif 'singleVisualGroup' in vis_config:
+            return vis_config['singleVisualGroup']['displayName']
+        else:
+            print(vis_config)
+            raise KeyError
+
     ret = {
         "pages": [],
         "visuals": [],
@@ -39,13 +48,14 @@ def main(data):
                 "y": visual["y"],
                 "z": visual["z"],
                 "page_ordinal": page_info["ordinal"],
-                "visual_type": visual["config"]["singleVisual"]["visualType"],
+                "visual_type": get_visual_type(visual["config"]),
             }
             ret["visuals"].append(visual_info)
             visual_info["filters"] = []
             visual_info["selects"] = []
             if "dataTransforms" in visual:
                 visual["dataTransforms"] = json.loads(visual["dataTransforms"])
+                visual['dataTransforms']['queryMetadata'] = visual['dataTransforms']['queryMetadata'] or {}  # occasionally is null???
                 for f in visual["dataTransforms"]["queryMetadata"].get("Filters", []):
                     visual_info["filters"].append(find_source(f))
                 for f in visual["dataTransforms"]["selects"]:

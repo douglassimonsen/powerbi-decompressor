@@ -19,12 +19,14 @@ def get_tables(tables, datasources):
 def get_measures(measures):
     ret = []
     for measure in measures:
+        if 'Expression' not in measure:
+            continue
         ret.append(
             {
                 "pbi_id": str(measure["ID"]),
                 "name": measure["Name"],
                 "TableID": str(measure["TableID"]),
-                "Expression": measure['Expression'],
+                "Expression": str(measure['Expression']),
             }
         )
     return ret
@@ -40,7 +42,7 @@ def get_table_columns(columns):
                 "data_type": column["ExplicitDataType"],
                 "name": column.get("ExplicitName"),
                 "isHidden": column.get("isHidden", False),
-                "Expression": column.get("Expression"),
+                "Expression": str(column.get("Expression")),
             }
         )
     return ret
