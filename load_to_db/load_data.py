@@ -20,7 +20,7 @@ def main(source, data):
     logger.info("loading_to_postgres")
     with util.get_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute(insert_queries["reports"], {"name": source})
+        cursor.execute(insert_queries["reports"], {"file_path": source})
         gen_ids["report"] = cursor.fetchone()[0]
 
         for page in data["pages"]:

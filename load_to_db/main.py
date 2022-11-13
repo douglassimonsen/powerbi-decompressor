@@ -37,12 +37,6 @@ def main():
         print(pbi_path)
         data = parse_pbi.main(pbi_path)
         load_data.main(pbi_path, data)
-        try:
-            data = parse_pbi.main(pbi_path)
-            load_data.main(pbi_path, data)
-        except:
-            print("failed to load")
-            failed += 1
     structlog.contextvars.clear_contextvars()
     logger.info("results", successes=len(pbis) - failed, failed=failed)
 

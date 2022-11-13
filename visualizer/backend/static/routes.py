@@ -11,7 +11,7 @@ queries = {
 }
 
 
-@app.route("/api/<query>", methods=["GET", "POST"])
+@app.route("/api/query/<query>", methods=["GET", "POST"])
 def reports(query):
     args = (
         flask.request.get_json() or dict(flask.request.args) or {}

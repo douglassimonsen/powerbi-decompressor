@@ -3,7 +3,11 @@ create schema pbi;
 
 create table pbi.reports (
   id serial primary key not null,
-  name text
+  file_path text,
+  name text GENERATED ALWAYS AS (split_part(
+	  file_path, '/', 
+	  array_length(string_to_array(file_path, '/'), 1)
+  )) stored
 );
 create table pbi.pages (
   id serial primary key not null,
