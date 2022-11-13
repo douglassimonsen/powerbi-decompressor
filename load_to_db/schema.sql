@@ -48,6 +48,13 @@ create table pbi.tables (
   source_details jsonb,
   name text
 );
+create table pbi.measures (
+  id serial primary key not null,
+  pbi_id text,
+  TableID int references pbi.tables(id),
+  name text,
+  Expression text
+);
 create table pbi.table_columns (
   id serial primary key not null,
   pbi_id text,

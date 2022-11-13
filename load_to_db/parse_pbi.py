@@ -27,16 +27,16 @@ def discover_dependencies(data):
         ret = []
         for parent_name, info in parents.items():
             if parent_name in expr:
-                ret.append({**info, "child_id": child_id, "child_type": child_type})
+                ret.append({**info, "child_pbi_id": child_id, "child_type": child_type})
         return ret
 
     dependencies = []
     parents = {
-        **{x['name']: {"parent_id": x["pbi_id"], "parent_type": "measure"}
+        **{x['name']: {"parent_pbi_id": x["pbi_id"], "parent_type": "measure"}
         for x in data['measures']
         if x['name'] is not None
         },
-        **{x['name']: {"parent_id": x["pbi_id"], "parent_type": "column"}
+        **{x['name']: {"parent_pbi_id": x["pbi_id"], "parent_type": "column"}
         for x in data['columns']
         if x['name'] is not None            
         },
@@ -57,14 +57,14 @@ def discover_dependencies(data):
     parents = {
         **{
             (table_dict[x['TableID']], x['name']): {
-                "parent_id": x['pbi_id'],
+                "parent_pbi_id": x['pbi_id'],
                 "parent_type": "measure"
             }
             for x in data["measures"]
         },
         **{
             (table_dict[x['TableID']], x['name']): {
-                "parent_id": x['pbi_id'],
+                "parent_pbi_id": x['pbi_id'],
                 "parent_type": "column"
             }
             for x in data["columns"]
@@ -81,7 +81,7 @@ def discover_dependencies(data):
                 logger.info("missing_dependency", tbl_name=ds_name, col_name=ds_column_name)  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
                 continue
             dependencies.append({
-                "child_id": visual['pbi_id'],
+                "child_pbi_id": visual['pbi_id'],
                 "child_type": "visual",
                 "depdency_type": "visual_select",
                 **parents[(ds_name, ds_column_name)],
@@ -96,7 +96,7 @@ def discover_dependencies(data):
                 logger.info("missing_dependency", tbl_name=ds_name, col_name=ds_column_name, visual=visual['pbi_id'])  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
                 continue
             dependencies.append({
-                "child_id": visual['pbi_id'],
+                "child_pbi_id": visual['pbi_id'],
                 "child_type": "visual",
                 "depdency_type": "visual_filter",
                 **parents[(ds_name, ds_column_name)],
