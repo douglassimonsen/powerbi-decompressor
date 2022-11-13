@@ -37,7 +37,8 @@ create table pbi.datasources (
   pbi_id text, 
   report_id int, 
   source_type text, 
-  source_details jsonb
+  source_details jsonb,
+  QueryDefinition text
 );
 create table pbi.tables (
   id serial primary key not null,

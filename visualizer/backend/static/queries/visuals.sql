@@ -2,7 +2,7 @@ select v.*,
        r.id as report_id,
        p.id as page_id,
        p.ordinal,
-       p.name,
+       p.name as page_name,
        p.width as page_width,
        p.height as page_height
 from pbi.reports r
