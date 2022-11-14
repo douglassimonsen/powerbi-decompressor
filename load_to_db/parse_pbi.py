@@ -5,6 +5,7 @@ import zipfile
 import extract_library
 from pprint import pprint
 import structlog
+from frozendict import frozendict
 logger = structlog.getLogger()
 
 
@@ -27,7 +28,7 @@ def discover_dependencies(data):
         ret = []
         for parent_name, info in parents.items():
             if parent_name in expr:
-                ret.append({**info, "child_pbi_id": child_id, "child_type": child_type})
+                ret.append(frozendict({**info, "child_pbi_id": child_id, "child_type": child_type}))
         return ret
 
     dependencies = []
@@ -80,12 +81,12 @@ def discover_dependencies(data):
             if (ds_name, ds_column_name) not in parents:
                 logger.info("missing_dependency", tbl_name=ds_name, col_name=ds_column_name)  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
                 continue
-            dependencies.append({
+            dependencies.append(frozendict({
                 "child_pbi_id": visual['pbi_id'],
                 "child_type": "visual",
                 "depdency_type": "visual_select",
                 **parents[(ds_name, ds_column_name)],
-            })
+            }))
         for ds in visual['filters']:
             if ds is None or 'Property' not in ds or 'Entity' not in ds['Expression']['SourceRef']:
                 logger.info("visual filter parse issue", expr=ds, name=visual['pbi_id'])
@@ -95,13 +96,13 @@ def discover_dependencies(data):
             if (ds_name, ds_column_name) not in parents:
                 logger.info("missing_dependency", tbl_name=ds_name, col_name=ds_column_name, visual=visual['pbi_id'])  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
                 continue
-            dependencies.append({
+            dependencies.append(frozendict({
                 "child_pbi_id": visual['pbi_id'],
                 "child_type": "visual",
                 "depdency_type": "visual_filter",
                 **parents[(ds_name, ds_column_name)],
-            })
-    return dependencies
+            }))
+    return [dict(x) for x in set(dependencies)]
 
 
 
