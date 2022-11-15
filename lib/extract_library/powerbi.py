@@ -28,14 +28,15 @@ class PowerBi:
         self.bind_pbix_to_logger()
 
     def bind_pbix_to_logger(self):
-        structlog.contextvars.bind_contextvars(pbix=self.source_path.replace('\\', '/').split('/')[-1])
+        structlog.contextvars.bind_contextvars(
+            pbix=self.source_path.replace("\\", "/").split("/")[-1]
+        )
 
     def list_tables(self):
         if not self.schema:
             self.read_schema()
-        tables = self.schema['Table']
-        return [t['Name'] for t in tables]
-
+        tables = self.schema["Table"]
+        return [t["Name"] for t in tables]
 
     def init_backend(self):
         logger.info("initializing_ssas")
@@ -55,7 +56,7 @@ class PowerBi:
 
     @staticmethod
     def sanitize_xml(txt):
-        return txt.replace('&', '&amp;')
+        return txt.replace("&", "&amp;")
 
     def load_image(self):
         logger.info("loading_image")
@@ -64,7 +65,9 @@ class PowerBi:
             return
         with Pyadomd(self.conn_str) as conn:
             conn.cursor().executeXML(
-                xmls["image_load"].render(guid=self.guid, source_path=self.sanitize_xml(self.source_path))
+                xmls["image_load"].render(
+                    guid=self.guid, source_path=self.sanitize_xml(self.source_path)
+                )
             )
 
     def save_image(self, target_path):

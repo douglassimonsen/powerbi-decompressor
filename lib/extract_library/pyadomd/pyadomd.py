@@ -15,6 +15,7 @@ from __future__ import annotations
 from . import *
 from bs4 import BeautifulSoup
 import structlog
+
 logger = structlog.getLogger()
 # Types
 T = TypeVar("T")
@@ -67,7 +68,7 @@ class Cursor:
             lines.append(self._reader.ReadOuterXml())
         return BeautifulSoup("".join(lines), "xml")
 
-    def executeXMLNonQuery(self, query: str, transaction: bool=True) -> None:
+    def executeXMLNonQuery(self, query: str, transaction: bool = True) -> None:
         logger.debug("executeXMLNonQuery")
         transaction = self._conn.BeginTransaction()
         self._cmd = AdomdCommand(query, self._conn)

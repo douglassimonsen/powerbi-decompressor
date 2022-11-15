@@ -11,5 +11,5 @@ def get_conn():
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     get_conn()

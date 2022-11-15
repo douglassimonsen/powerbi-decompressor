@@ -15,3 +15,11 @@ pip install -r requirements.txt
 cd lib
 python setup.py sdist
 ```
+
+# Dev extras
+
+Has a black pre-commit hook
+
+```
+git config core.hooksPath hooks
+```

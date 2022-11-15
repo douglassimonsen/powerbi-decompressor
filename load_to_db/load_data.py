@@ -1,6 +1,7 @@
 import os, pathlib
 import util
 import structlog
+
 logger = structlog.getLogger()
 insert_queries = {}
 for f in os.listdir(pathlib.Path(__file__).parent / "queries"):
@@ -9,15 +10,19 @@ for f in os.listdir(pathlib.Path(__file__).parent / "queries"):
 
 def main(source, data):
     def get_ids(dependency):
-        dependency['parent_id'] = gen_ids[dependency['parent_type'] + 's'][dependency['parent_pbi_id']]
-        dependency['child_id'] = gen_ids[dependency['child_type'] + 's'][dependency['child_pbi_id']]
+        dependency["parent_id"] = gen_ids[dependency["parent_type"] + "s"][
+            dependency["parent_pbi_id"]
+        ]
+        dependency["child_id"] = gen_ids[dependency["child_type"] + "s"][
+            dependency["child_pbi_id"]
+        ]
 
     gen_ids = {
         "report": None,
         "pages": {},
-        'tables': {},
-        'columns': {},
-        'measures': {},
+        "tables": {},
+        "columns": {},
+        "measures": {},
         "visuals": {},
         "datasources": {},
         "datasource_columns": {},
@@ -56,20 +61,16 @@ def main(source, data):
             gen_ids["tables"][ret[0]] = ret[1]
 
         for column in data["columns"]:
-            column["table_id"] = gen_ids["tables"][
-                column["TableID"]
-            ]
+            column["table_id"] = gen_ids["tables"][column["TableID"]]
             cursor.execute(insert_queries["table_columns"], column)
             ret = cursor.fetchone()
             gen_ids["columns"][ret[0]] = ret[1]
-        
-        for measure in data['measures']:
-            measure['TableID'] = gen_ids['tables'][
-                measure['TableID']
-            ]
-            cursor.execute(insert_queries['measures'], measure)
+
+        for measure in data["measures"]:
+            measure["TableID"] = gen_ids["tables"][measure["TableID"]]
+            cursor.execute(insert_queries["measures"], measure)
             ret = cursor.fetchone()
-            gen_ids['measures'][ret[0]] = ret[1]
+            gen_ids["measures"][ret[0]] = ret[1]
 
         for dependency in data["dax_dependencies"]:
             get_ids(dependency)

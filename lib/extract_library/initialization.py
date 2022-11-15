@@ -67,7 +67,9 @@ class AnalysisService:
             self.create_environment()
 
     def check_existing_process(self):
-        os.makedirs(self.temp_folder, exist_ok=True)  # If powerbi has never been opened here, it won't exist    
+        os.makedirs(
+            self.temp_folder, exist_ok=True
+        )  # If powerbi has never been opened here, it won't exist
         for f in os.listdir(self.temp_folder):
             active, port = _check_active(os.path.join(self.temp_folder, f, "Data"))
             if active:
@@ -81,7 +83,12 @@ class AnalysisService:
         logger.debug("initializing_data_directory", directory=data_dir)
         os.makedirs(data_dir)
         with open(os.path.join(data_dir, "msmdsrv.ini"), "w") as f:
-            f.write(config.render(data_directory=data_dir, certificate_directory=rf"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\CertifiedExtensions"))
+            f.write(
+                config.render(
+                    data_directory=data_dir,
+                    certificate_directory=rf"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\CertifiedExtensions",
+                )
+            )
 
     def create_environment(self):
         # C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll
@@ -119,7 +126,9 @@ class AnalysisService:
         port = get_port()
         self.active = True
         self.port = port
-        logger.debug("saving_port", port_file=f"{self.data_directory()}\msmdsrv.port.txt")
+        logger.debug(
+            "saving_port", port_file=f"{self.data_directory()}\msmdsrv.port.txt"
+        )
         with open(
             f"{self.data_directory()}\msmdsrv.port.txt", "w", encoding="utf-16-le"
         ) as f:
@@ -146,7 +155,9 @@ def find_current_servers():
     for p in psutil.process_iter():
         if p.name() != "msmdsrv.exe":
             continue
-        logger.info("current_ssas_server", name=p.name(), port=p.connections()[0].laddr.port)
+        logger.info(
+            "current_ssas_server", name=p.name(), port=p.connections()[0].laddr.port
+        )
 
 
 if __name__ == "__main__":
@@ -154,4 +165,3 @@ if __name__ == "__main__":
     x = AnalysisService()
     x.init()
     print(x)
-

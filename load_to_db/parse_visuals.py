@@ -2,6 +2,7 @@ import zipfile
 import json
 from pprint import pprint
 import structlog
+
 logger = structlog.getLogger()
 
 
@@ -18,12 +19,14 @@ def find_source(data):
 
 def main(data):
     def get_visual_type(vis_config):
-        if 'singleVisual' in vis_config:
+        if "singleVisual" in vis_config:
             return vis_config["singleVisual"]["visualType"]
-        elif 'singleVisualGroup' in vis_config:
-            return vis_config['singleVisualGroup']['displayName']
+        elif "singleVisualGroup" in vis_config:
+            return vis_config["singleVisualGroup"]["displayName"]
         else:
-            logger.warning("unparseable_visual", config=vis_config, visual=visual["config"]['name'])
+            logger.warning(
+                "unparseable_visual", config=vis_config, visual=visual["config"]["name"]
+            )
 
     ret = {
         "pages": [],
@@ -42,7 +45,7 @@ def main(data):
         for visual in section["visualContainers"]:
             visual["config"] = json.loads(visual["config"])
             visual_info = {
-                "pbi_id": visual["config"]['name'],
+                "pbi_id": visual["config"]["name"],
                 "height": visual["height"],
                 "width": visual["width"],
                 "x": visual["x"],
@@ -56,7 +59,9 @@ def main(data):
             visual_info["selects"] = []
             if "dataTransforms" in visual:
                 visual["dataTransforms"] = json.loads(visual["dataTransforms"])
-                visual['dataTransforms']['queryMetadata'] = visual['dataTransforms']['queryMetadata'] or {}  # occasionally is null???
+                visual["dataTransforms"]["queryMetadata"] = (
+                    visual["dataTransforms"]["queryMetadata"] or {}
+                )  # occasionally is null???
                 for f in visual["dataTransforms"]["queryMetadata"].get("Filters", []):
                     source = find_source(f)
                     source = source if source is not None else f
