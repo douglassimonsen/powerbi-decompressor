@@ -23,3 +23,9 @@ Has a black pre-commit hook
 ```
 git config core.hooksPath hooks
 ```
+
+# Graphviz
+
+Uses a docker image
+`docker build . -t graphviz`
+`docker run -p 22:22 graphviz`
