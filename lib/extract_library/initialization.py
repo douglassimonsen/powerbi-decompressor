@@ -148,7 +148,10 @@ def kill_current_servers():
         if p.name() != "msmdsrv.exe":
             continue
         logger.info("killing_PID", pid=p.pid)
-        p.terminate()
+        try:
+            p.terminate()
+        except psutil.AccessDenied:
+            logger.warning("Permission_Denied", pid=p.pid)
 
 
 def find_current_servers():
