@@ -32,7 +32,7 @@ def get_measures(measures):
                 "pbi_id": str(measure["ID"]),
                 "name": measure["Name"],
                 "TableID": str(measure["TableID"]),
-                "Expression": str(measure["Expression"]),
+                "Expression": measure["Expression"],
             }
         )
     return ret
@@ -48,7 +48,7 @@ def get_table_columns(columns):
                 "data_type": column["ExplicitDataType"],
                 "name": column.get("ExplicitName"),
                 "isHidden": column.get("isHidden", False),
-                "Expression": str(column.get("Expression")),
+                "Expression": column.get("Expression"),
             }
         )
     return ret

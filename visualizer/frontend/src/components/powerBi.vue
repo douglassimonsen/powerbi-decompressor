@@ -17,6 +17,16 @@ export default {
       selectedPage: 0,
     };
   },
+  mounted: function(){
+    window.addEventListener('keydown', function(evt){
+      if(evt.key === 'ArrowRight'){
+        this.selectedPage = Math.min(this.selectedPage + 1, this.pageNames.length - 1);
+      }
+      if(evt.key === 'ArrowLeft'){
+        this.selectedPage = Math.max(this.selectedPage - 1, 0);
+      }
+    }.bind(this));    
+  },
   computed: {
     pageNames: function(){
       return Object.entries(Object.fromEntries(this.visuals.map(x => [x.ordinal, x.page_name]))).sort((a, b) => +a[0] > +b[0] ? 1 : -1)

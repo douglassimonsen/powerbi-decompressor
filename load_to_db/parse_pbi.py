@@ -27,6 +27,8 @@ def discover_dependencies(data):
         TODO: fix with lark
         """
         ret = []
+        if not isinstance(expr, str):  # some exprs are just a number, like 10
+            return ret
         for parent_name, info in parents.items():
             if parent_name in expr:
                 ret.append(
