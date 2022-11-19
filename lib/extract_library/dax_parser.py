@@ -44,12 +44,17 @@ class Variable(lark.Transformer):
         return frozendict({k: v for arg in args for k, v in arg.items()})
 
     def start(self, args):
-        return [dict(x) for x in {arg for arg in args if isinstance(arg, frozendict)}]
+        return [
+            (x.get("table"), x["column"], x.get("hierarchy"))
+            for x in {arg for arg in args if isinstance(arg, frozendict)}
+        ]
+
+
+_v = Variable()
 
 
 def get_variables(dax_statement):
     dax_statement = dax_statement.replace("\n", " ")
-    _v = Variable()
     return _v.transform(l.parse(dax_statement))
 
 

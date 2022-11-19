@@ -3,6 +3,7 @@ import parse_visuals
 import json
 import zipfile
 import extract_library
+import extract_library.dax_parser
 from pprint import pprint
 import structlog
 from frozendict import frozendict
@@ -29,28 +30,45 @@ def discover_dependencies(data):
         ret = []
         if not isinstance(expr, str):  # some exprs are just a number, like 10
             return ret
-        for parent_name, info in parents.items():
-            if parent_name in expr:
+
+        for var in extract_library.dax_parser.get_variables(expr):
+            if (
+                var[0] is None and var[1] in column_table
+            ):  # temporary since hierarchy has some issues
+                var = (column_table[var[1]], var[1], var[2])
+            if var in parents:
                 ret.append(
-                    frozendict(
-                        {**info, "child_pbi_id": child_id, "child_type": child_type}
-                    )
+                    {
+                        **parents[var],
+                        "child_pbi_id": child_id,
+                        "child_type": child_type,
+                    }
                 )
         return ret
 
     dependencies = []
-    parents = {
-        **{
-            x["name"]: {"parent_pbi_id": x["pbi_id"], "parent_type": "measure"}
-            for x in data["measures"]
-            if x["name"] is not None
-        },
-        **{
-            x["name"]: {"parent_pbi_id": x["pbi_id"], "parent_type": "column"}
-            for x in data["columns"]
-            if x["name"] is not None
-        },
+    table_dict = {t["pbi_id"]: t["name"] for t in data["tables"]}
+    measures = {
+        (table_dict[m["TableID"]], m["name"], None): {
+            "parent_pbi_id": m["pbi_id"],
+            "parent_type": "measure",
+        }
+        for m in data["measures"]
     }
+    columns = {
+        (table_dict[m["TableID"]], m["name"], None): {
+            "parent_pbi_id": m["pbi_id"],
+            "parent_type": "column",
+        }
+        for m in data["columns"]
+    }
+    parents = {**columns, **measures}
+
+    column_table = {}
+    for (tab, col, _) in parents.keys():
+        column_table.setdefault(col, []).append(tab)
+    column_table = {k: v[0] for k, v in column_table.items() if len(v) == 1}
+
     for column in data["columns"]:
         if column["Expression"] is None:
             continue
@@ -127,16 +145,14 @@ def discover_dependencies(data):
                 )  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
                 continue
             dependencies.append(
-                frozendict(
-                    {
-                        "child_pbi_id": visual["pbi_id"],
-                        "child_type": "visual",
-                        "depdency_type": "visual_filter",
-                        **parents[(ds_name, ds_column_name)],
-                    }
-                )
+                {
+                    "child_pbi_id": visual["pbi_id"],
+                    "child_type": "visual",
+                    "depdency_type": "visual_filter",
+                    **parents[(ds_name, ds_column_name)],
+                }
             )
-    return [dict(x) for x in set(dependencies)]
+    return [dict(x) for x in set(map(lambda x: frozendict(x), dependencies))]
 
 
 def main(source):
