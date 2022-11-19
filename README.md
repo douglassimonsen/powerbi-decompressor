@@ -8,6 +8,14 @@ PowerBI is one of the top visualization tools out there. However, it lacks a num
 4. Creating a tool for analysts to allow them to view reports using the same datasources/measures as they are.
 5. A data lineage tool for DEs allowing them to connect datasources to individual visuals in each report.
 
+# Details
+
+[Extract Lib](lib/README.md)
+
+[Schema Parser](load_to_db/README.md)
+
+[Schema Visualizer](visualizer/README.md)
+
 # Set Up
 
 ```

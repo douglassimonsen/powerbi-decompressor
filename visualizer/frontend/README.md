@@ -1,3 +1,7 @@
+# Goal
+
+To allow Data Engineers and Analysts alike to visualize relationships between reports and data sources.
+
 # frontend
 
 This template should help get you started developing with Vue 3 in Vite.
