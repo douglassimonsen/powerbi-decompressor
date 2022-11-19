@@ -60,7 +60,7 @@ export default {
       <div v-for="visual in pageVisuals" :style="visual.style" class="pbi-visual" :key="visual.id">{{visual.visual_type}}</div>
     </div>
     <div class="pbi-tabs">
-      <div v-for="pageName in pageNames" class="pbi-tab" :key="pageName[0]" @click="selectedPage = pageName[0]">{{pageName[1]}}</div>
+      <div v-for="pageName in pageNames" class="pbi-tab" :class="+selectedPage === +pageName[0] ? 'selected': null" :key="pageName[0]" @click="selectedPage = pageName[0]">{{pageName[1]}}</div>
     </div>
   </div>
 </template>
@@ -75,15 +75,24 @@ export default {
   height: 80px;
   width: 1280px;
   background-color: blue;
+  box-sizing: border-box;
+    overflow-y: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    background: red;
 }
-.pbi-tab {
+.selected {
+  background-color: rgb(17, 159, 175) !important;
+}
+.pbi-tabs div {
   height: 80px;
     width: auto;
     background-color: red;
-    float: left;
     padding: 5px 10px;
     border: 1px solid black;
     font-size: 20px;
+    margin: auto;
+    display: inline-block;
 }
 .pbi-tab:hover {
   opacity: .8;
