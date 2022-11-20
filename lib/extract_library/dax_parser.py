@@ -1,7 +1,9 @@
 import re
 from typing import List, Dict
 
-template = re.compile(r"(?P<table>(\w+)|('[^']+'))?(?P<column>\[[^\[\]]+\])(?P<hierarchy>\.\[[^\[\]]+\])?")
+template = re.compile(
+    r"(?P<table>(\w+)|('[^']+'))?(?P<column>\[[^\[\]]+\])(?P<hierarchy>\.\[[^\[\]]+\])?"
+)
 
 
 def get_variables(dax_statement: str) -> List[Dict[str, str]]:
@@ -15,10 +17,7 @@ def get_variables(dax_statement: str) -> List[Dict[str, str]]:
 
     matches = re.findall(template, dax_statement)
 
-    return list({
-        (m[0].strip("'"), m[3][1:-1], m[4][2:-1])
-        for m in matches
-    })
+    return list({(m[0].strip("'"), m[3][1:-1], m[4][2:-1]) for m in matches})
 
 
 if __name__ == "__main__":
@@ -28,6 +27,6 @@ if __name__ == "__main__":
     with open(Path(__file__).parent / "test.json") as f:
         data = json.load(f)
     for row in set(data):
-        print('\n' * 2)
+        print("\n" * 2)
         print(row)
         print(get_variables(row))

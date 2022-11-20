@@ -1,27 +1,18 @@
 <script>
-import axios from "axios";
 import * as d3Dag from "d3-dag";
 import * as d3 from "d3";
-//import * as d3 from 'd3';
-const HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-};
-const ENDPOINT = 'http://127.0.0.1:5000/api/'
+import { mapState, mapStores } from 'pinia';
+import { useReportStore } from "../stores/report";
 export default {
-  data: function(){
-    return {
-      dependencies: [],
-    };
-  },
-  mounted: function(){
-    this.getData();
-  },
   computed: {
+    ...mapStores(useReportStore),
+    ...mapState(useReportStore, 'report_dependencies'),
     dependency_tree: function(){
-      let pbiIds = [...new Set(this.dependencies.map(x => x.child_id).concat(this.dependencies.map(x => x.parent_id)))];
+      let deps = this.reportStore.report_dependencies
+      let pbiIds = [...new Set(deps.map(x => x.child_id).concat(deps.map(x => x.parent_id)))];
       pbiIds = pbiIds.map(x => {return {id: x.toString(), parentIds: []}});
-      for(let i=0;i<this.dependencies.length;i++){
-        let dep = this.dependencies[i];
+      for(let i=0;i<deps.length;i++){
+        let dep = deps[i];
         pbiIds.find(x => +x.id === dep.child_id).parentIds.push(dep.parent_id.toString());
       }
       return pbiIds;
@@ -111,20 +102,10 @@ export default {
         .attr("fill", "white");
     },
   },
-  methods: {
-    getData: function(){
-      axios.post(ENDPOINT + 'query/report_dependencies', {id: 2}, {
-        headers: HEADERS,
-      }).then(function(response){
-        this.dependencies = response.data;
-      }.bind(this));
-    },
-  },
 }
 </script>
 <template>
   <div>
-    hi
     <svg id="deps"></svg>
   </div>
 </template>

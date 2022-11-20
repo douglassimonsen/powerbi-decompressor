@@ -1,33 +1,25 @@
 <script>
-import axios from "axios";
 import powerBi from '../components/powerBi.vue';
-const HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-};
-const ENDPOINT = 'http://127.0.0.1:5000/api/'
+import { useReportStore } from '../stores/report';
+import { mapStores, mapState } from "pinia";
+
 export default {
   components: { powerBi },
-  data: function(){
-    return {
-      reports: [],
-      selectedReport: 2,
-      visuals: [],
-    };
+  computed: {
+    ...mapStores(useReportStore),
+    ...mapState(useReportStore, ['reports', 'visuals']),
+    selectedReport: {
+      get: function(){return this.reportStore.selectedReport},
+      set: function(val){
+        this.reportStore.selectedReport = val;
+        this.reportStore.getData();
+      },
+    },
   },
   mounted: function(){
-    this.getData('reports');
-    this.getData('visuals');
+    this.reportStore.getData();
   },
   methods: {
-    getData: function(apiEndpoint){
-      axios.post(ENDPOINT + `query/${apiEndpoint}`, {
-        id: this.selectedReport
-      }, {
-        headers: HEADERS,
-      }).then(function(apiEndpoint, response){
-        this.$data[apiEndpoint] = response.data;
-      }.bind(this, apiEndpoint));
-    },
     visualClick: function(evt){
       debugger;
     },
