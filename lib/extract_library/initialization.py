@@ -55,6 +55,7 @@ class AnalysisService:
         self.guid = None
         self.active = False
         self.temp_folder = fr"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces"
+        self._bad_ports = []
 
     def instance_name(self):
         return f"AnalysisServicesWorkspace_{self.guid}"
@@ -84,6 +85,9 @@ class AnalysisService:
                     == "ImageLoad/Save Parameters (PackagePath, PackagePartUri) are not valid in the current Server SKU"
                 ):
                     active = False  # means this server can't load or save /DataModels
+                    self._bad_ports.append(
+                        port
+                    )  # we need the _bad_ports otherwise when looking for ports we could accidentally join to the wrong one in get_port (happens if this bad port is lower than the new good port)
                 else:
                     pass
             if active:
@@ -117,7 +121,7 @@ class AnalysisService:
                         conns = p.connections()
                     except psutil.NoSuchProcess:  # happened when the previous process was still running
                         continue
-                    if len(conns) == 0:
+                    if len(conns) == 0 or conns[0].laddr.port in self._bad_ports:
                         logger.info("waiting_for_ssas_port", time=2)
                         time.sleep(2)
                         continue
