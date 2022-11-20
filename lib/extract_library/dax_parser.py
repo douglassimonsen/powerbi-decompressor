@@ -1,75 +1,33 @@
-from frozendict import frozendict
-import lark
+import re
 from typing import List, Dict
 
-l = lark.Lark(
-    """
-start: variable? (other* variable)* other* variable?
-
-other: /.+?/
-
-variable.2: table_var? col_var hier_var?
-
-table_var.2: quote_tab_var | unquote_tab_var 
-quote_tab_var.2: "'" /[^\']+/ "'"
-unquote_tab_var.2: /[^\w]\w+/
-
-col_var.2: "[" /[^\[\]]+/ "]"
-
-hier_var.2: "." col_var
-%import common.WS
-"""
-)
-
-
-class Variable(lark.Transformer):
-    def other(self, args):
-        return lark.Discard
-
-    def quote_tab_var(self, args):
-        return args[0].value
-
-    def unquote_tab_var(self, args):
-        return args[0].value[1:]
-
-    def table_var(self, args):
-        return {"table": args[0]}
-
-    def col_var(self, args):
-        return {"column": args[0].value}
-
-    def hier_var(self, args):
-        return {"hierarchy": args[0]["column"]}
-
-    def variable(self, args):
-        return frozendict({k: v for arg in args for k, v in arg.items()})
-
-    def start(self, args):
-        return [
-            (x.get("table"), x["column"], x.get("hierarchy"))
-            for x in {arg for arg in args if isinstance(arg, frozendict)}
-        ]
-
-
-_v = Variable()
+template = re.compile(r"(?P<table>(\w+)|('[^']+'))?(?P<column>\[[^\[\]]+\])(?P<hierarchy>\.\[[^\[\]]+\])?")
 
 
 def get_variables(dax_statement: str) -> List[Dict[str, str]]:
-    dax_statement = dax_statement.replace("\n", " ")
-    return _v.transform(l.parse(dax_statement))
+    """
+    The template contains named capture groups for legibility, but not currently being used
+    first looks like either "Table1" or 'table 1', so we need to strip off any possible "'"s
+    second looks like [Column Name]
+    third looks like .[Hierarchy Name]
+    Matches look like [(table), (table if single word), (table if parenthesis), (column), (hierarchy)]
+    """
+
+    matches = re.findall(template, dax_statement)
+
+    return list({
+        (m[0].strip("'"), m[3][1:-1], m[4][2:-1])
+        for m in matches
+    })
 
 
 if __name__ == "__main__":
     import json
     from pathlib import Path
 
-    print(
-        get_variables(
-            "CALCULATE(SUM(Sales[Sales Amount]),PREVIOUSYEAR('Calendar'[Date]))"
-        )
-    )
-    exit()
     with open(Path(__file__).parent / "test.json") as f:
         data = json.load(f)
     for row in set(data):
+        print('\n' * 2)
+        print(row)
         print(get_variables(row))
