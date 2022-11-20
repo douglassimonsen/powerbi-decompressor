@@ -161,7 +161,14 @@ def main(source):
         json.dump(raw_data, f, indent=4)
 
     data = parse_datasources.main(raw_data["data_model"])
-    data = {**data, **parse_visuals.main(raw_data["layout"])}
+    data = {
+        **data,
+        **parse_visuals.main(raw_data["layout"]),
+        "report": {
+            "file_path": source,
+            "created_dt": raw_data["data_model"]["Model"][0]["ModifiedTime"],
+        },
+    }
     data["dax_dependencies"] = discover_dependencies(data)
     return data
 

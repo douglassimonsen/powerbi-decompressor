@@ -7,7 +7,8 @@ create table pbi.reports (
   name text GENERATED ALWAYS AS (split_part(
 	  file_path, '/', 
 	  array_length(string_to_array(file_path, '/'), 1)
-  )) stored
+  )) stored,
+  created_dt timestamp
 );
 create table pbi.pages (
   id serial primary key not null,
