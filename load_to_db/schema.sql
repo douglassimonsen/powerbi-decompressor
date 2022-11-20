@@ -44,6 +44,7 @@ create table pbi.tables (
   id serial primary key not null,
   pbi_id text,
   datasourceID int references pbi.datasources(id),
+  report_id int references pbi.reports(id),
   source_type text,
   source_details jsonb,
   name text
@@ -58,7 +59,7 @@ create table pbi.measures (
 create table pbi.table_columns (
   id serial primary key not null,
   pbi_id text,
-  table_id int references pbi.tables(id),
+  TableID int references pbi.tables(id),
   name text,
   data_type text,
   isHidden boolean,

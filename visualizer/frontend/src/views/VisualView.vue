@@ -15,25 +15,21 @@ export default {
     };
   },
   mounted: function(){
-    this.getData();
-    this.getReport();
+    this.getData('reports');
+    this.getData('visuals');
   },
   methods: {
-    getData: function(){
-      axios.post(ENDPOINT + 'query/reports', {
-        headers: HEADERS,
-      }).then(function(response){
-        this.reports = response.data;
-      }.bind(this));
-    },
-    getReport: function(){
-      axios.post(ENDPOINT + 'query/visuals', {
+    getData: function(apiEndpoint){
+      axios.post(ENDPOINT + `query/${apiEndpoint}`, {
         id: this.selectedReport
       }, {
         headers: HEADERS,
-      }).then(function(response){
-        this.visuals = response.data;
-      }.bind(this));
+      }).then(function(apiEndpoint, response){
+        this.$data[apiEndpoint] = response.data;
+      }.bind(this, apiEndpoint));
+    },
+    visualClick: function(evt){
+      debugger;
     },
   },
 }
@@ -44,6 +40,6 @@ export default {
       <option v-for="report in reports" :value="report.id">{{report.name}}</option>
     </select>
     <button @click="getReport">Open</button>
-    <power-bi :visuals="visuals"></power-bi>
+    <power-bi :visuals="visuals" @visual-click="visualClick"></power-bi>
   </div>
 </template>

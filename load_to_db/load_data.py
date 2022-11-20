@@ -61,7 +61,7 @@ def main(source, data):
             gen_ids["tables"][ret[0]] = ret[1]
 
         for column in data["columns"]:
-            column["table_id"] = gen_ids["tables"][column["TableID"]]
+            column["TableID"] = gen_ids["tables"][column["TableID"]]
             cursor.execute(insert_queries["table_columns"], column)
             ret = cursor.fetchone()
             gen_ids["columns"][ret[0]] = ret[1]

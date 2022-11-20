@@ -52,12 +52,23 @@ export default {
       })
     },
   },
+  methods: {
+    visualClick: function(id){
+      this.$emit('visualClick', {id: id});
+    },
+  },
 }
 </script>
 <template>
   <div>
     <div class="pbi-container">
-      <div v-for="visual in pageVisuals" :style="visual.style" class="pbi-visual" :key="visual.id">{{visual.visual_type}}</div>
+      <div 
+        v-for="visual in pageVisuals" 
+        :style="visual.style" 
+        class="pbi-visual" 
+        :key="visual.id"
+        @click="visualClick(visual.id)"
+      >{{visual.visual_type}}</div>
     </div>
     <div class="pbi-tabs">
       <div v-for="pageName in pageNames" class="pbi-tab" :class="+selectedPage === +pageName[0] ? 'selected': null" :key="pageName[0]" @click="selectedPage = pageName[0]">{{pageName[1]}}</div>

@@ -29,13 +29,6 @@ export default {
   },
   watch: {
     dependency_tree: function(){
-      const data = [{
-        "id": "0",
-        "parentIds": ["8"]
-      }, {
-        "id": "8",
-        "parentIds": []
-      }];
       const dag = d3Dag.dagStratify()(this.dependency_tree);
       const nodeRadius = 20;
       const layout = d3Dag
