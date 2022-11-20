@@ -1,0 +1,12 @@
+{
+  "data": [
+    {"pbi_id": "1", "Name": "Text"},
+    {"pbi_id": "2", "Name": "Text"},
+    {"pbi_id": "6", "Name": "Whole Number"},
+    {"pbi_id": "8", "Name": "Decimal Number"},
+    {"pbi_id": "9", "Name": "Date/time"},
+    {"pbi_id": "10", "Name": "Fixed Decimal Number"},
+    {"pbi_id": "11", "Name": "Boolean"}
+  ],
+  "returning": ["pbi_id", "id"]
+}

@@ -46,7 +46,7 @@ def get_table_columns(columns):
             {
                 "pbi_id": str(column["ID"]),
                 "TableID": str(column["TableID"]),
-                "data_type": column["ExplicitDataType"],
+                "data_type": str(column["ExplicitDataType"]),
                 "name": column.get("ExplicitName"),
                 "isHidden": column.get("isHidden", False),
                 "Expression": column.get("Expression"),

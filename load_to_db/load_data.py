@@ -8,7 +8,7 @@ for f in os.listdir(pathlib.Path(__file__).parent / "queries"):
     insert_queries[f[:-4]] = open(pathlib.Path(__file__).parent / "queries" / f).read()
 
 
-def main(source, data):
+def main(source, data, static_tables):
     def get_ids(dependency):
         dependency["parent_id"] = gen_ids[dependency["parent_type"] + "s"][
             dependency["parent_pbi_id"]
@@ -60,6 +60,7 @@ def main(source, data):
 
         for column in data["columns"]:
             column["TableID"] = gen_ids["tables"][column["TableID"]]
+            column["data_type"] = static_tables["datatypes"][column["data_type"]]
             cursor.execute(insert_queries["table_columns"], column)
             ret = cursor.fetchone()
             gen_ids["columns"][ret[0]] = ret[1]

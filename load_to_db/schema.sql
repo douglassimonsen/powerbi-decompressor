@@ -50,6 +50,11 @@ create table pbi.tables (
   source_details jsonb,
   name text
 );
+create table pbi.datatypes (
+  id serial primary key not null,
+  pbi_id text,
+  Name text
+);
 create table pbi.measures (
   id serial primary key not null,
   pbi_id text,
@@ -62,7 +67,7 @@ create table pbi.table_columns (
   pbi_id text,
   TableID int references pbi.tables(id),
   name text,
-  data_type text,
+  data_type int references pbi.datatypes(id),
   isHidden boolean,
   expression text
 );
