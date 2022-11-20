@@ -14,6 +14,7 @@ logger = structlog.getLogger()
 config = jinja2.Template(
     open(pathlib.Path(__file__).parent / "xmla/msmdsrv.ini").read()
 )
+load_test = open(pathlib.Path(__file__).parent / "xmla/image_save.xml").read()
 
 
 def _delete_workspace(directory):
@@ -72,7 +73,21 @@ class AnalysisService:
         )  # If powerbi has never been opened here, it won't exist
         for f in os.listdir(self.temp_folder):
             active, port = _check_active(os.path.join(self.temp_folder, f, "Data"))
+            CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
+            try:
+                with Pyadomd(CONN_STR) as conn:
+                    conn.cursor().executeXML(load_test)
+            except Exception as e:
+                error_type = str(e.Message)
+                if (
+                    error_type
+                    == "ImageLoad/Save Parameters (PackagePath, PackagePartUri) are not valid in the current Server SKU"
+                ):
+                    active = False  # means this server can't load or save /DataModels
+                else:
+                    pass
             if active:
+                logger.info("ssas_port", port=port, state="previous_ssas")
                 self.active = active
                 self.port = port
                 self.guid = f.split("_")[-1]
@@ -106,7 +121,7 @@ class AnalysisService:
                         logger.info("waiting_for_ssas_port", time=2)
                         time.sleep(2)
                         continue
-                    logger.info("Port", port_number=conns[0].laddr.port)
+                    logger.info("ssas_port", port=conns[0].laddr.port, state="new_ssas")
                     return conns[0].laddr.port
 
         self.guid = uuid.uuid4()
