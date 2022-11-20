@@ -120,8 +120,11 @@ class AnalysisService:
                     try:
                         conns = p.connections()
                     except psutil.NoSuchProcess:  # happened when the previous process was still running
-                        continue
-                    if len(conns) == 0 or conns[0].laddr.port in self._bad_ports:
+                        break  # this is no longer a valid process
+
+                    if len(conns) >= 1 and conns[0].laddr.port in self._bad_ports:
+                        break  # this is a bad SSAS instance
+                    if len(conns) == 0:
                         logger.info("waiting_for_ssas_port", time=2)
                         time.sleep(2)
                         continue

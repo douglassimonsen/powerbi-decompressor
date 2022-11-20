@@ -58,13 +58,20 @@ def get_table_columns(columns):
 def get_datasources(datasources):
     ret = []
     for datasource in datasources:
+        source_details = m_parser.get_sources(datasource["QueryDefinition"])
+        source_type = None
+        if len(source_details) >= 1:
+            source_type = source_details[0].get("type")
         ret.append(
             {
                 "pbi_id": str(datasource["ID"]),
                 "name": datasource["Name"],
                 "QueryDefinition": datasource["QueryDefinition"],
                 "TableID": datasource["TableID"],
-                "source_details": m_parser.get_sources(datasource["QueryDefinition"]),
+                "source_type": source_type,
+                "source_details": json.dumps(source_details[0])
+                if source_details
+                else None,
             }
         )
     return ret
