@@ -1,6 +1,7 @@
 import json
 from pprint import pprint
 import structlog
+from extract_library import m_parser
 
 logger = structlog.getLogger()
 
@@ -63,6 +64,7 @@ def get_datasources(datasources):
                 "name": datasource["Name"],
                 "QueryDefinition": datasource["QueryDefinition"],
                 "TableID": datasource["TableID"],
+                "source_details": m_parser.get_sources(datasource["QueryDefinition"]),
             }
         )
     return ret

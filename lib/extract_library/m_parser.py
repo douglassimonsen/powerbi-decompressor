@@ -24,12 +24,6 @@ l = lark.Lark(
 )
 
 
-class ExcelSource:
-    def __init__(self, source_path=None, source_tab=None):
-        self.source_path = source_path
-        self.source_tab = source_tab
-
-
 class Sources(lark.Transformer):
     def __init__(self):
         self.sources = []
@@ -90,34 +84,22 @@ class Sources(lark.Transformer):
                     }
                 )
             if line.get("expr", {}).get("type") == "source_filter":
-                self.sources[-1]["sheet"] = (
-                    line.get("expr", {}).get("args", {}).get("Item")
-                )
+                if len(self.sources) != 0:
+                    self.sources[-1]["sheet"] = (
+                        line.get("expr", {}).get("args", {}).get("Item")
+                    )
         return self.sources
 
 
-def get_sources():
-    with open("test.json") as f:
-        data = json.load(f)
-    return [x["QueryDefinition"] for x in data["Partition"]]
+_s = Sources()
 
 
-def clean_sources(sources):
-    ret = []
-    for source in sources:
-        try:
-            tree = l.parse(source)
-            ret.extend(Sources().transform(tree))
-        except lark.exceptions.UnexpectedCharacters:
-            ret.append({"type": "Unknown", "source": source})
-    return ret
-
-
-def main():
-    sources = get_sources()
-    sources = clean_sources(sources)
-    return sources
+def get_sources(query_definition):
+    try:
+        return _s.transform(l.parse(query_definition))
+    except (lark.exceptions.UnexpectedCharacters, lark.exceptions.VisitError):
+        return []
 
 
 if __name__ == "__main__":
-    print(main())
+    print(get_sources('x = Excel.Workbook(Open.File("asd"))'))
