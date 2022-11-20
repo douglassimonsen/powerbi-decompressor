@@ -1,5 +1,6 @@
 from frozendict import frozendict
 import lark
+from typing import List, Dict
 
 l = lark.Lark(
     """
@@ -53,7 +54,7 @@ class Variable(lark.Transformer):
 _v = Variable()
 
 
-def get_variables(dax_statement):
+def get_variables(dax_statement: str) -> List[Dict[str, str]]:
     dax_statement = dax_statement.replace("\n", " ")
     return _v.transform(l.parse(dax_statement))
 
@@ -62,6 +63,12 @@ if __name__ == "__main__":
     import json
     from pathlib import Path
 
+    print(
+        get_variables(
+            "CALCULATE(SUM(Sales[Sales Amount]),PREVIOUSYEAR('Calendar'[Date]))"
+        )
+    )
+    exit()
     with open(Path(__file__).parent / "test.json") as f:
         data = json.load(f)
     for row in set(data):

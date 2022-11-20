@@ -66,16 +66,50 @@ Since the SSAS instance only saves a `/DataModel` and can only save files to the
 
 After loading the PBIX to SSAS, we simply run [schema_query](xmla/schema_query.xml), returning an XML. We then run a simple process to convert that XML to JSON.
 
-[WIP] We then use [lark](https://lark-parser.readthedocs.io/en/latest/) to implement a [grammar](dax_parser.py) for DAX(MDX?), allowing us to parse the source information to identify the type/details of source as well as any additional manipulations being done to it.
+In `extract_library.dax_parser`, we have the `get_variables` which will return all variables in a DAX statement
+
+[WIP] We then use [lark](https://lark-parser.readthedocs.io/en/latest/) to implement a [grammar](dax_parser.py) for Power Query, allowing us to parse the source information to identify the type/details of source as well as any additional manipulations being done to it.
 
 # Examples
+
+## Updating PowerBI
+
+```
+pbi = PowerBI('test.pbix')
+pbi.list_tables()
+```
+
+```
+# ['DateTableTemplate_ccb20219-f6e6-4499-a224-352c41e914ce', 'Sales', 'LocalDateTable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff']
+```
+
+```
+pbi.get_table('Sales').head()
+```
+
+```
+[
+    {'SalesOrderID': 'SO446221', 'Country': 'Germany', 'OrderDate': datetime.datetime(2011, 12, 1, 0, 0), 'SalesChannelCode': 'I', 'ProdID': 752, 'StyleName': 'Product0308010', 'CustomerAccountNumber': 'AW00013771', 'StoreKey': None, 'ProductLabel': 308010, 'ProductName': 'Contoso Power Inverter - DC to AC power inverter E900 Black', 'ProductDescription': 'Notebook essentials bundle - notebook accessories bundle', 'Manufacturer': 'Contoso, Ltd', 'BrandName': 'Contoso', 'Class': 'Economy', 'Color': 'Black', 'StockType': 'High', 'Units': 3, 'SalesAmount': 28.5, 'RePurch': 5, 'NSAT': 4, 'SubCategory': 'Computers Accessories', 'Category': 'Computers', 'Sale Size': 'Small'}, 
+    {'SalesOrderID': 'SO437511', 'Country': 'France', 'OrderDate': datetime.datetime(2012, 2, 21, 0, 0), 'SalesChannelCode': 'I', 'ProdID': 751, 'StyleName': 'Product0308009', 'CustomerAccountNumber': 'AW00011592', 'StoreKey': None, 'ProductLabel': 308009, 'ProductName': 'Contoso Desktop Alternative Bundle E200 Black', 'ProductDescription': 'Desktop alternative bundle', 'Manufacturer': 'Contoso, Ltd', 'BrandName': 'Contoso', 'Class': 'Economy', 'Color': 'Black', 'StockType': 'High', 'Units': 3, 'SalesAmount': 34.5, 'RePurch': 5, 'NSAT': 4, 'SubCategory': 'Computers Accessories', 'Category': 'Computers', 'Sale Size': 'Small'}
+]
+```
+
+
+```
+pbi.update_tables(['Sales'])
+# alternatives
+# pbi.update_tables('Sales')
+# pbi.update_tables()  # Updates all tables
+pbi.save_image('test2.pbix')  # currently not that valuable, since updates cause process to freeze
+
+```
+
 
 ## Getting Schema Information
 ```
 from powerbi import PowerBI
 pbi = PowerBI('test.pbix')
 pbi.load_image()
-pbi.save_image('test2.pbix')  # currently not that valuable, since there are no updates
 schema = pbi.read_schema()
 print(schema)
 ```
@@ -96,13 +130,41 @@ print(schema)
 }
 ```
 
-## Updating Tables
+## Power Query Parser
+```
+from extract_library.m_parser import get_sources
+
+get_sources(r"""let
+    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+    dbo_DimProduct = Source{[Schema="dbo",Item="DimProduct"]}[Data],
+    #"Filtered Rows" = Table.SelectRows(dbo_DimProduct, each ([FinishedGoodsFlag] = true)),
+    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"ProductKey", "ProductAlternateKey", "EnglishProductName", "StandardCost", "Color", "ListPrice", "ModelName", "DimProductSubcategory"}),
+    #"Expanded DimProductSubcategory" = Table.ExpandRecordColumn(#"Removed Other Columns", "DimProductSubcategory", {"EnglishProductSubcategoryName", "DimProductCategory"}, {"EnglishProductSubcategoryName", "DimProductCategory"}),
+    #"Expanded DimProductCategory" = Table.ExpandRecordColumn(#"Expanded DimProductSubcategory", "DimProductCategory", {"EnglishProductCategoryName"}, {"EnglishProductCategoryName"}),
+    #"Renamed Columns" = Table.RenameColumns(#"Expanded DimProductCategory",{{"EnglishProductName", "Product"}, {"StandardCost", "Standard Cost"}, {"ListPrice", "List Price"}, {"ModelName", "Model"}, {"EnglishProductSubcategoryName", "Subcategory"}, {"EnglishProductCategoryName", "Category"}, {"ProductAlternateKey", "SKU"}})
+in
+    #"Renamed Columns" 
+""")
+```
 
 ```
-from powerbi import PowerBI
-pbi = PowerBI('test.pbix')
-pbi.update_tables()
+[{'type': 'Sql.Database', 'Schema': 'dbo', 'Table': 'DimProduct'}]
+```
+
+## Dax Parser
+
+```
+from extract_library.dax_parser import get_variables
+
+get_variables("CALCULATE(SUM(Sales[Sales Amount]),PREVIOUSYEAR('Calendar'[Date]))")
+```
+
+```
+[('Sales', 'Sales Amount', None), ('Calendar', 'Date', None)]  # each tuple is in the form (table, column, hierarchy)
 ```
 
 ## Contributions
-The pyadomd sublibrary in this library is a fork of [here](https://pypi.org/project/pyadomd/), by [SCOUT](https://github.com/S-C-O-U-T)
+The pyadomd sublibrary in this library is a fork of [here](https://pypi.org/project/pyadomd/), by [SCOUT](https://github.com/S-C-O-U-T). We made some alterations to handle our specific use cases, specifically:
+
+1. Adding an executeXML function that runs XML and returns the result as a `bs4` tree.
+2. Packaging the `AdomdClient.dll` alongside the library so it doesn't need to search for the client.
