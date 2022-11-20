@@ -1,6 +1,6 @@
 with recursive parents as (
 	select dd.* from pbi.dax_dependencies dd
-	where id = 278
+	where id = %(id)s
 	union all
 	select dd2.* from pbi.dax_dependencies dd2 
 	inner join parents b 
@@ -8,7 +8,7 @@ with recursive parents as (
 	and dd2.parent_type = b.child_type
 ), children as (
 	select dd.* from pbi.dax_dependencies dd
-	where id = 278
+	where id = %(id)s
 	union all
 	select dd2.* from pbi.dax_dependencies dd2 
 	inner join children b 

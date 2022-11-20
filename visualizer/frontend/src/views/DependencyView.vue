@@ -33,7 +33,7 @@ export default {
       const nodeRadius = 20;
       const layout = d3Dag
         .sugiyama() // base layout
-        .decross(d3Dag.decrossOpt()) // minimize number of crossings
+        //.decross(d3Dag.decrossOpt()) // minimize number of crossings
         .nodeSize((node) => [(node ? 3.6 : 0.25) * nodeRadius, 3 * nodeRadius]); // set node size instead of constraining to fit
       const { width, height } = layout(dag);
 
@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     getData: function(){
-      axios.post(ENDPOINT + 'query/dependency_tree', {
+      axios.post(ENDPOINT + 'query/report_dependencies', {id: 2}, {
         headers: HEADERS,
       }).then(function(response){
         this.dependencies = response.data;

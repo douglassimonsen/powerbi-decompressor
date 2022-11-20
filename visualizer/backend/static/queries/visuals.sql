@@ -10,4 +10,4 @@ left join pbi.pages p
 on p.report_id = r.id
 left join pbi.visuals v 
 on v.page_id = p.id
-where r.id = {id}
+where r.id = %(id)s

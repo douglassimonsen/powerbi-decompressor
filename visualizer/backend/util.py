@@ -11,9 +11,9 @@ def get_conn():
     )
 
 
-def read_query(query):
+def read_query(query, kwargs):
     with get_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute(query)
+        cursor.execute(query, kwargs)
         columns = [x[0] for x in cursor.description]
         return [dict(zip(columns, row)) for row in cursor.fetchall()]
