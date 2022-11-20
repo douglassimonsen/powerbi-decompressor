@@ -102,4 +102,17 @@ def get_sources(query_definition):
 
 
 if __name__ == "__main__":
-    print(get_sources('x = Excel.Workbook(Open.File("asd"))'))
+    x = r"""let
+    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+    dbo_DimProduct = Source{[Schema="dbo",Item="DimProduct"]}[Data],
+    #"Filtered Rows" = Table.SelectRows(dbo_DimProduct, each ([FinishedGoodsFlag] = true)),
+    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"ProductKey", "ProductAlternateKey", "EnglishProductName", "StandardCost", "Color", "ListPrice", "ModelName", "DimProductSubcategory"}),
+    #"Expanded DimProductSubcategory" = Table.ExpandRecordColumn(#"Removed Other Columns", "DimProductSubcategory", {"EnglishProductSubcategoryName", "DimProductCategory"}, {"EnglishProductSubcategoryName", "DimProductCategory"}),
+    #"Expanded DimProductCategory" = Table.ExpandRecordColumn(#"Expanded DimProductSubcategory", "DimProductCategory", {"EnglishProductCategoryName"}, {"EnglishProductCategoryName"}),
+    #"Renamed Columns" = Table.RenameColumns(#"Expanded DimProductCategory",{{"EnglishProductName", "Product"}, {"StandardCost", "Standard Cost"}, {"ListPrice", "List Price"}, {"ModelName", "Model"}, {"EnglishProductSubcategoryName", "Subcategory"}, {"EnglishProductCategoryName", "Category"}, {"ProductAlternateKey", "SKU"}})
+in
+    #"Renamed Columns" 
+    """
+    x = [y.strip() for y in x.splitlines() if y.strip() not in ("let", "in")]
+    x = "\n".join(x[:2])
+    print(_s.transform(l.parse(x)))
