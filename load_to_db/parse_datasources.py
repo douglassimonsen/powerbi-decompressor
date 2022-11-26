@@ -15,6 +15,7 @@ def get_tables(tables, datasources):
                 "pbi_id": str(table["ID"]),
                 "name": table["Name"],
                 "datasourceID": datasource_dict[table["ID"]],
+                "raw": json.dumps(datasource_dict),
             }
         )
     return ret
@@ -34,6 +35,7 @@ def get_measures(measures):
                 "name": measure["Name"],
                 "TableID": str(measure["TableID"]),
                 "Expression": measure["Expression"],
+                "raw": json.dumps(measure),
             }
         )
     return ret
@@ -50,6 +52,7 @@ def get_table_columns(columns):
                 "name": column.get("ExplicitName"),
                 "isHidden": column.get("isHidden", False),
                 "Expression": column.get("Expression"),
+                "raw": json.dumps(column),
             }
         )
     return ret
@@ -72,6 +75,7 @@ def get_datasources(datasources):
                 "source_details": json.dumps(source_details[0])
                 if source_details
                 else None,
+                "raw": json.dumps(datasource),
             }
         )
     return ret

@@ -8,6 +8,21 @@ for f in os.listdir(pathlib.Path(__file__).parent / "queries"):
     insert_queries[f[:-4]] = open(pathlib.Path(__file__).parent / "queries" / f).read()
 
 
+def gen_query(table_name, data, returning=("pbi_id", "id")):
+    if len(data[table_name]) == 0:
+        return None
+    columns = data[table_name][0].keys()
+    cols = ", ".join(columns)
+    vals = ", ".join(f"%({x})s" for x in columns)
+    ret = f"""
+    insert into pbi.{table_name} ({cols})
+    values ({vals})
+    """
+    if returning is not None:
+        ret += "returning " + ", ".join(returning)
+    return ret
+
+
 def main(source, data, static_tables):
     def get_ids(dependency):
         dependency["parent_id"] = gen_ids[dependency["parent_type"] + "s"][
@@ -32,42 +47,57 @@ def main(source, data, static_tables):
         cursor = conn.cursor()
         cursor.execute(insert_queries["reports"], data["report"])
         gen_ids["report"] = cursor.fetchone()[0]
-
         for page in data["pages"]:
             page["report_id"] = gen_ids["report"]
-            cursor.execute(insert_queries["pages"], page)
+        for table in data["tables"]:
+            table["report_id"] = gen_ids["report"]
+        for datasource in data["datasources"]:
+            datasource["report_id"] = gen_ids["report"]
+
+            insert_query = gen_query("pages", data, returning=("ordinal", "id"))
+        for page in data["pages"]:
+            cursor.execute(insert_query, page)
             ret = cursor.fetchone()
             gen_ids["pages"][ret[0]] = ret[1]
-
         for visual in data["visuals"]:
             visual["page_id"] = gen_ids["pages"][visual["page_ordinal"]]
-            cursor.execute(insert_queries["visuals"], visual)
+            for c in ["page_ordinal", "filters", "selects"]:
+                del visual[c]
+
+        insert_query = gen_query("visuals", data)
+        for visual in data["visuals"]:
+            cursor.execute(insert_query, visual)
             ret = cursor.fetchone()
             gen_ids["visuals"][ret[0]] = ret[1]
 
+        insert_query = gen_query("datasources", data)
         for datasource in data["datasources"]:
-            datasource["report_id"] = gen_ids["report"]
-            cursor.execute(insert_queries["datasources"], datasource)
+            cursor.execute(insert_query, datasource)
             ret = cursor.fetchone()
             gen_ids["datasources"][ret[0]] = ret[1]
-
         for table in data["tables"]:
-            table["report_id"] = gen_ids["report"]
             table["datasourceID"] = gen_ids["datasources"][table["datasourceID"]]
-            cursor.execute(insert_queries["tables"], table)
+
+        insert_query = gen_query("tables", data)
+        for table in data["tables"]:
+            cursor.execute(insert_query, table)
             ret = cursor.fetchone()
             gen_ids["tables"][ret[0]] = ret[1]
-
         for column in data["columns"]:
             column["TableID"] = gen_ids["tables"][column["TableID"]]
+        for measure in data["measures"]:
+            measure["TableID"] = gen_ids["tables"][measure["TableID"]]
+
+        insert_query = gen_query("columns", data)
+        for column in data["columns"]:
             column["data_type"] = static_tables["datatypes"][column["data_type"]]
-            cursor.execute(insert_queries["table_columns"], column)
+            cursor.execute(insert_query, column)
             ret = cursor.fetchone()
             gen_ids["columns"][ret[0]] = ret[1]
 
+        insert_query = gen_query("measures", data)
         for measure in data["measures"]:
-            measure["TableID"] = gen_ids["tables"][measure["TableID"]]
-            cursor.execute(insert_queries["measures"], measure)
+            cursor.execute(insert_query, measure)
             ret = cursor.fetchone()
             gen_ids["measures"][ret[0]] = ret[1]
 

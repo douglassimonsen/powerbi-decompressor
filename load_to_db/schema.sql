@@ -8,7 +8,8 @@ create table pbi.reports (
 	  file_path, '/', 
 	  array_length(string_to_array(file_path, '/'), 1)
   )) stored,
-  created_dt timestamp
+  created_dt timestamp,
+  raw jsonb
 );
 create table pbi.pages (
   id serial primary key not null,
@@ -19,7 +20,8 @@ create table pbi.pages (
   config jsonb,
   displayOption int,
   width float,
-  height float
+  height float,
+  raw jsonb
 );
 create table pbi.visuals (
   id serial primary key not null,
@@ -30,16 +32,19 @@ create table pbi.visuals (
   width float,
   x float,
   y float,
-  z float
+  z float,
+  raw jsonb
 );
 create table pbi.datasources (
   id serial primary key not null,
   name text, 
   pbi_id text, 
   report_id int, 
+  tableId int,
   source_type text, 
   source_details jsonb,
-  QueryDefinition text
+  QueryDefinition text,
+  raw jsonb
 );
 create table pbi.tables (
   id serial primary key not null,
@@ -48,28 +53,32 @@ create table pbi.tables (
   report_id int references pbi.reports(id),
   source_type text,
   source_details jsonb,
-  name text
+  name text,
+  raw jsonb
 );
 create table pbi.datatypes (
   id serial primary key not null,
   pbi_id text,
-  Name text
+  Name text,
+  raw jsonb
 );
 create table pbi.measures (
   id serial primary key not null,
   pbi_id text,
   TableID int references pbi.tables(id),
   name text,
-  Expression text
+  Expression text,
+  raw jsonb
 );
-create table pbi.table_columns (
+create table pbi.columns (
   id serial primary key not null,
   pbi_id text,
   TableID int references pbi.tables(id),
   name text,
   data_type int references pbi.datatypes(id),
   isHidden boolean,
-  expression text
+  expression text,
+  raw jsonb
 );
 create table pbi.dax_dependencies (
   id serial primary key not null,
@@ -78,5 +87,6 @@ create table pbi.dax_dependencies (
   child_type text, 
   parent_id int, -- can't specify a foreign key because it could be two separate tables
   parent_pbi_id text, 
-  parent_type text
+  parent_type text,
+  raw jsonb
 );

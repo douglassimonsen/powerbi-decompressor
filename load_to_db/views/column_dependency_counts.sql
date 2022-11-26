@@ -15,7 +15,7 @@ create or replace view pbi.column_depedency_counts as (
 	       COALESCE(b.dependent_visuals, 0) as dependent_visuals, 
 	       COALESCE(b.dependent_measures, 0) as dependent_measures,  
 	       COALESCE(b.dependent_columns, 0) as dependent_columns
-	from pbi.table_columns tc
+	from pbi.columns tc
 	left join pbi."tables" t 
 	on tc.tableid = t.id
 	left join pbi.reports r 
