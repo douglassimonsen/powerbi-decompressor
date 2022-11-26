@@ -1,2 +1,4 @@
-#!/bin/sh
-black .
+#!/bin/python
+import pre_commit  # we're importing because it gives us the IDE
+
+pre_commit.main()
