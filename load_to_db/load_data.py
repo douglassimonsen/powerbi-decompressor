@@ -101,6 +101,7 @@ def main(data, static_tables):
             "measures",
             add=[
                 {"to": "TableID", "from_table": "tables"},
+                {"to": "data_type", "from_table": "datatypes"},
             ],
         )
 

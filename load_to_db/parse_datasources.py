@@ -35,6 +35,7 @@ def get_measures(measures):
                 "name": measure["Name"],
                 "TableID": str(measure["TableID"]),
                 "Expression": measure["Expression"],
+                "data_type": str(measure["DataType"]),
                 "raw": json.dumps(measure),
             }
         )

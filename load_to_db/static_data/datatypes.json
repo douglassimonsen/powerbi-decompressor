@@ -6,7 +6,9 @@
     {"pbi_id": "8", "Name": "Decimal Number"},
     {"pbi_id": "9", "Name": "Date/time"},
     {"pbi_id": "10", "Name": "Fixed Decimal Number"},
-    {"pbi_id": "11", "Name": "Boolean"}
+    {"pbi_id": "11", "Name": "Boolean"},
+    {"pbi_id": "19", "Name": "IDK Bro"},
+    {"pbi_id": "20", "Name": "Whole Number"}
   ],
   "returning": ["pbi_id", "id"]
 }

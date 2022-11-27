@@ -68,6 +68,7 @@ create table pbi.measures (
   TableID int references pbi.tables(id),
   name text,
   Expression text,
+  data_type int references pbi.datatypes(id),
   raw jsonb
 );
 create table pbi.columns (
