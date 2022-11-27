@@ -30,7 +30,7 @@ def main():
     for pbi_path in pbis:
         print(pbi_path)
         data = parse_pbi.main(pbi_path)
-        load_data.main(pbi_path, data, static_tables)
+        load_data.main(data, static_tables)
     structlog.contextvars.clear_contextvars()
     logger.info("results", successes=len(pbis) - failed, failed=failed)
 

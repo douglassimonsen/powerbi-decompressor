@@ -23,7 +23,31 @@ def gen_query(table_name, data, returning=("pbi_id", "id")):
     return ret
 
 
-def main(source, data, static_tables):
+def run_table(
+    table_name,
+    data,
+    gen_ids,
+    cursor,
+    returning=("pbi_id", "id"),
+    remove=tuple(),
+    add=tuple(),
+):
+    for row in data[table_name]:  # must add columns before generating query
+        for chg in add:
+            row[chg["to"]] = gen_ids[chg["from_table"]][
+                row[chg.get("from_col", chg["to"])]
+            ]
+        for col in remove:
+            del row[col]
+
+    insert_query = gen_query(table_name, data, returning=returning)
+    for row in data[table_name]:
+        cursor.execute(insert_query, row)
+        ret = cursor.fetchone()
+        gen_ids[table_name][ret[0]] = ret[1]
+
+
+def main(data, static_tables):
     def get_ids(dependency):
         dependency["parent_id"] = gen_ids[dependency["parent_type"] + "s"][
             dependency["parent_pbi_id"]
@@ -41,65 +65,56 @@ def main(source, data, static_tables):
         "visuals": {},
         "datasources": {},
         "datasource_columns": {},
+        **static_tables,
     }
     logger.info("loading_to_postgres")
     with util.get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute(insert_queries["reports"], data["report"])
-        gen_ids["report"] = cursor.fetchone()[0]
+        gen_ids["report_id"] = cursor.fetchone()[0]
         for page in data["pages"]:
-            page["report_id"] = gen_ids["report"]
+            page["report_id"] = gen_ids["report_id"]
         for table in data["tables"]:
-            table["report_id"] = gen_ids["report"]
+            table["report_id"] = gen_ids["report_id"]
         for datasource in data["datasources"]:
-            datasource["report_id"] = gen_ids["report"]
+            datasource["report_id"] = gen_ids["report_id"]
 
-            insert_query = gen_query("pages", data, returning=("ordinal", "id"))
-        for page in data["pages"]:
-            cursor.execute(insert_query, page)
-            ret = cursor.fetchone()
-            gen_ids["pages"][ret[0]] = ret[1]
-        for visual in data["visuals"]:
-            visual["page_id"] = gen_ids["pages"][visual["page_ordinal"]]
-            for c in ["page_ordinal", "filters", "selects"]:
-                del visual[c]
-
-        insert_query = gen_query("visuals", data)
-        for visual in data["visuals"]:
-            cursor.execute(insert_query, visual)
-            ret = cursor.fetchone()
-            gen_ids["visuals"][ret[0]] = ret[1]
-
-        insert_query = gen_query("datasources", data)
-        for datasource in data["datasources"]:
-            cursor.execute(insert_query, datasource)
-            ret = cursor.fetchone()
-            gen_ids["datasources"][ret[0]] = ret[1]
-        for table in data["tables"]:
-            table["datasourceID"] = gen_ids["datasources"][table["datasourceID"]]
-
-        insert_query = gen_query("tables", data)
-        for table in data["tables"]:
-            cursor.execute(insert_query, table)
-            ret = cursor.fetchone()
-            gen_ids["tables"][ret[0]] = ret[1]
-        for column in data["columns"]:
-            column["TableID"] = gen_ids["tables"][column["TableID"]]
-        for measure in data["measures"]:
-            measure["TableID"] = gen_ids["tables"][measure["TableID"]]
-
-        insert_query = gen_query("columns", data)
-        for column in data["columns"]:
-            column["data_type"] = static_tables["datatypes"][column["data_type"]]
-            cursor.execute(insert_query, column)
-            ret = cursor.fetchone()
-            gen_ids["columns"][ret[0]] = ret[1]
-
-        insert_query = gen_query("measures", data)
-        for measure in data["measures"]:
-            cursor.execute(insert_query, measure)
-            ret = cursor.fetchone()
-            gen_ids["measures"][ret[0]] = ret[1]
+        run_table("pages", data, gen_ids, cursor, returning=("ordinal", "id"))
+        run_table(
+            "visuals",
+            data,
+            gen_ids,
+            cursor,
+            remove=("page_ordinal", "filters", "selects"),
+            add=[{"to": "page_id", "from_table": "pages", "from_col": "page_ordinal"}],
+        )
+        run_table("datasources", data, gen_ids, cursor)
+        run_table(
+            "tables",
+            data,
+            gen_ids,
+            cursor,
+            add=[{"to": "datasourceID", "from_table": "datasources"}],
+        )
+        run_table(
+            "columns",
+            data,
+            gen_ids,
+            cursor,
+            add=[
+                {"to": "data_type", "from_table": "datatypes"},
+                {"to": "TableID", "from_table": "tables"},
+            ],
+        )
+        run_table(
+            "measures",
+            data,
+            gen_ids,
+            cursor,
+            add=[
+                {"to": "TableID", "from_table": "tables"},
+            ],
+        )
 
         for dependency in data["dax_dependencies"]:
             get_ids(dependency)
