@@ -164,10 +164,12 @@ def main(source):
     data = {
         **data,
         **parse_visuals.main(raw_data["layout"]),
-        "report": {
-            "file_path": source,
-            "created_dt": raw_data["data_model"]["Model"][0]["ModifiedTime"],
-        },
+        "reports": [
+            {
+                "file_path": source,
+                "created_dt": raw_data["data_model"]["Model"][0]["ModifiedTime"],
+            }
+        ],
     }
     data["dax_dependencies"] = discover_dependencies(data)
     return data
