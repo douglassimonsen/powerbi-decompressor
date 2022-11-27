@@ -15,7 +15,7 @@ def get_tables(tables, datasources):
                 "pbi_id": str(table["ID"]),
                 "name": table["Name"],
                 "datasourceID": datasource_dict[table["ID"]],
-                "raw": json.dumps(datasource_dict),
+                "raw": json.dumps(table),
             }
         )
     return ret
@@ -49,7 +49,7 @@ def get_table_columns(columns):
                 "pbi_id": str(column["ID"]),
                 "TableID": str(column["TableID"]),
                 "data_type": str(column["ExplicitDataType"]),
-                "name": column.get("ExplicitName"),
+                "name": column.get("ExplicitName", column.get("InferredName")),
                 "isHidden": column.get("isHidden", False),
                 "Expression": column.get("Expression"),
                 "raw": json.dumps(column),
