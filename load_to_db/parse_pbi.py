@@ -29,16 +29,20 @@ def main(source):
         json.dump(raw_data, f, indent=4)
 
     data = parse_datasources.main(raw_data["data_model"])
+    report_filters, visual_info = parse_visuals.main(raw_data["layout"])
     data = {
         **data,
-        **parse_visuals.main(raw_data["layout"]),
+        **visual_info,
         "reports": [
             {
                 "file_path": source,
                 "created_dt": raw_data["data_model"]["Model"][0]["ModifiedTime"],
-                "pbi_id": raw_data["layout"].get("reportId"),
+                "pbi_id": str(raw_data["layout"]["reportId"])
+                if "reportId" in raw_data["layout"]
+                else None,
                 "theme": raw_data["layout"].get("theme"),
                 "layoutOptimization": raw_data["layout"]["layoutOptimization"],
+                "filters": report_filters,
                 "layout": json.dumps(
                     {
                         **raw_data["layout"],

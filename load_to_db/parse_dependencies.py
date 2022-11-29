@@ -95,4 +95,15 @@ def main(data):
                             }
                         )
                     )
+    if data["reports"][0]["filters"]:
+        for visual in data["visuals"]:
+            dependencies.append(
+                {
+                    "child_pbi_id": visual["pbi_id"],
+                    "child_type": "visual",
+                    "dependency_type": "report_visual_filter",
+                    "parent_pbi_id": data["reports"][0]["pbi_id"],
+                    "parent_type": "report",
+                }
+            )
     return [dict(x) for x in set(map(lambda x: frozendict(x), dependencies))]

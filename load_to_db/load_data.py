@@ -69,7 +69,8 @@ def main(data, static_tables):
     with util.get_conn() as conn:
         conn.set_session(autocommit=False)
         cursor = conn.cursor()
-        run_table("reports", returning=("null", "id"))
+        run_table("reports", remove=("filters",), returning=("pbi_id", "id"))
+        gen_ids["reports"][None] = list(gen_ids["reports"].values())[0]
         run_table(
             "pages",
             remove=("filters", "pbi_id"),
