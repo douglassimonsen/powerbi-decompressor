@@ -106,4 +106,19 @@ def main(data):
                     "parent_type": "report",
                 }
             )
+    visual_page_dict = {}
+    for visual in data["visuals"]:
+        visual_page_dict.setdefault(visual["page_ordinal"], []).append(visual)
+    for page in data["pages"]:
+        if page["filters"]:
+            for visual in visual_page_dict[page["ordinal"]]:
+                dependencies.append(
+                    {
+                        "child_pbi_id": visual["pbi_id"],
+                        "child_type": "visual",
+                        "dependency_type": "page_visual_filter",
+                        "parent_pbi_id": page["pbi_id"],
+                        "parent_type": "page",
+                    }
+                )
     return [dict(x) for x in set(map(lambda x: frozendict(x), dependencies))]
