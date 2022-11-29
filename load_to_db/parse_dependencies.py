@@ -33,9 +33,10 @@ def main(data):
     parents = {
         (table_dict[m["TableID"]], m["name"], None): {
             "parent_pbi_id": m["pbi_id"],
-            "parent_type": "column",
+            "parent_type": c[:-1],
         }
-        for m in data["measures"] + data["columns"]
+        for c in ["measures", "columns"]
+        for m in data[c]
     }
 
     column_table = {}
@@ -46,8 +47,6 @@ def main(data):
     dependencies = []
     for field in ["columns", "measures"]:
         for row in data[field]:
-            if row["Expression"] is None:
-                continue
             dependencies.extend(
                 get_parents(
                     row["Expression"], row["pbi_id"], field[:-1], parents, column_table
@@ -63,34 +62,37 @@ def main(data):
         for c in ["measures", "columns"]
         for x in data[c]
     }
-    for visual in data["visuals"]:
-        for c in ["selects", "filters"]:
-            for ds in visual[c]:
-                if (
-                    ds is None
-                    or "Property" not in ds
-                    or "Entity" not in ds["Expression"]["SourceRef"]
-                ):
-                    logger.info(
-                        "visual select parse issue", expr=ds, name=visual["pbi_id"]
-                    )  # there are elements that aren't connected to any table
-                    continue
+    for field in ["visuals", "pages", "reports"]:
+        for visual in data[field]:
+            for c in ["selects", "filters"]:
+                for ds in visual.get(c, []):
+                    if (
+                        ds is None
+                        or "Property" not in ds
+                        or "Entity" not in ds["Expression"]["SourceRef"]
+                    ):
+                        logger.warn(
+                            "visual select parse issue", expr=ds, name=visual["pbi_id"]
+                        )  # there are elements that aren't connected to any table
+                        continue
 
-                ds_name = ds["Expression"]["SourceRef"]["Entity"]
-                ds_column_name = ds["Property"]
-                if (ds_name, ds_column_name) not in parents:
-                    logger.info(
-                        "missing_dependency", tbl_name=ds_name, col_name=ds_column_name
-                    )  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
-                    continue
-                dependencies.append(
-                    frozendict(
-                        {
-                            "child_pbi_id": visual["pbi_id"],
-                            "child_type": "visual",
-                            "depdency_type": f"visual_{c[:-1]}",
-                            **parents[(ds_name, ds_column_name)],
-                        }
+                    ds_name = ds["Expression"]["SourceRef"]["Entity"]
+                    ds_column_name = ds["Property"]
+                    if (ds_name, ds_column_name) not in parents:
+                        logger.info(
+                            "missing_dependency",
+                            tbl_name=ds_name,
+                            col_name=ds_column_name,
+                        )  # in the two cases I checked, this occurred when the field was removed from the source after it was added to the visual
+                        continue
+                    dependencies.append(
+                        frozendict(
+                            {
+                                "child_pbi_id": visual["pbi_id"],
+                                "child_type": field[:-1],
+                                "dependency_type": f"{field[:-1]}_{c[:-1]}",
+                                **parents[(ds_name, ds_column_name)],
+                            }
+                        )
                     )
-                )
     return [dict(x) for x in set(map(lambda x: frozendict(x), dependencies))]

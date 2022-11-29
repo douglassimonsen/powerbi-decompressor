@@ -25,7 +25,7 @@ def get_measures(measures):
     ret = []
     for measure in measures:
         if "Expression" not in measure:
-            logger.info(
+            logger.warn(
                 "measure_parse_issue", measure=measure
             )  # in the cases I found, these also freaked out PBI, so I think it's OK to ignore. In PBI, it was shown without a definition and deleted itself if you moved to a different measure
             continue

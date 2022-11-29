@@ -46,6 +46,8 @@ def main(data):
             "filters": [],
             "config": section["config"],
         }
+        page_info["pbi_id"] = page_info["ordinal"]
+
         for f in json.loads(section.get("filters", "[]")):
             source = find_source(f)
             source = source if source is not None else f
