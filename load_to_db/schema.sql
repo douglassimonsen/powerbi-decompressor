@@ -8,15 +8,13 @@ create table pbi.reports (
 	  file_path, '/', 
 	  array_length(string_to_array(file_path, '/'), 1)
   )) stored,
-  created_dt timestamp,
-  raw jsonb
+  created_dt timestamp
 );
 create table pbi.pages (
   id serial primary key not null,
   report_id int references pbi.reports(id),
   name text,
   ordinal int,
-  filter_id int,  -- TODO
   config jsonb,
   displayOption int,
   width float,

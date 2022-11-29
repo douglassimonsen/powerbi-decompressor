@@ -6,7 +6,7 @@ import structlog
 import logging
 
 structlog.configure(
-    wrapper_class=structlog.make_filtering_bound_logger(logging.WARN),
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
 )
 logger = structlog.getLogger()
 os.chdir(pathlib.Path(__file__).parent)

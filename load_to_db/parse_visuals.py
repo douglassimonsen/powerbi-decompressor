@@ -40,6 +40,9 @@ def main(data):
             ),  # initial overview pages can be blank? 2018SU04 Blog Demo - April.pbix
             "width": section["width"],
             "height": section["height"],
+            "displayOption": section["displayOption"],
+            "raw": json.dumps({**section, "visualContainers": None}),
+            "config": section["config"],
         }
         ret["pages"].append(page_info)
         for visual in section["visualContainers"]:
@@ -53,6 +56,7 @@ def main(data):
                 "z": visual["z"],
                 "page_ordinal": page_info["ordinal"],
                 "visual_type": get_visual_type(visual["config"]),
+                "raw": json.dumps(visual),
             }
             ret["visuals"].append(visual_info)
             visual_info["filters"] = []

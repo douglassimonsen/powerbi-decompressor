@@ -12,3 +12,4 @@ pbi
 debug.log
 !Microsoft.AnalysisServices.AdomdClient.dll
 *.pbiviz
+*.zip

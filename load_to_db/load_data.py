@@ -67,6 +67,7 @@ def main(data, static_tables):
     }
     logger.info("loading_to_postgres")
     with util.get_conn() as conn:
+        conn.set_session(autocommit=False)
         cursor = conn.cursor()
         run_table("reports", returning=("null", "id"))
         run_table(

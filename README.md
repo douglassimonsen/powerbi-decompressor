@@ -32,8 +32,8 @@ Has a black pre-commit hook
 git config core.hooksPath hooks
 ```
 
-# Graphviz
+# Demo
 
 Uses a docker image
-`docker build . -t graphviz`
-`docker run -p 22:22 graphviz`
+`docker build . -t demo`
+`docker run -p 22:22 -p 80:80 -p 5000:5000 -p 5433:5432 demo`
