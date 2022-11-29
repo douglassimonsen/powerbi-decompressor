@@ -28,10 +28,11 @@ def main(data):
                 "unparseable_visual", config=vis_config, visual=visual["config"]["name"]
             )
 
-    ret = {
-        "pages": [],
-        "visuals": [],
-    }
+    ret = {"pages": [], "visuals": [], "filters": []}
+    for f in json.loads(data.get("filters", "[]")):
+        source = find_source(f)
+        source = source if source is not None else f
+        ret["filters"].append(source)
     for section in data["sections"]:
         page_info = {
             "name": section["displayName"],
@@ -42,8 +43,13 @@ def main(data):
             "height": section["height"],
             "displayOption": section["displayOption"],
             "raw": json.dumps({**section, "visualContainers": None}),
+            "filters": [],
             "config": section["config"],
         }
+        for f in json.loads(section.get("filters", "[]")):
+            source = find_source(f)
+            source = source if source is not None else f
+            page_info["filters"].append(source)
         ret["pages"].append(page_info)
         for visual in section["visualContainers"]:
             visual["config"] = json.loads(visual["config"])

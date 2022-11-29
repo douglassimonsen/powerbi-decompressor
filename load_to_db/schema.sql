@@ -8,6 +8,10 @@ create table pbi.reports (
 	  file_path, '/', 
 	  array_length(string_to_array(file_path, '/'), 1)
   )) stored,
+  pbi_id text,
+  layoutOptimization int,
+  theme text,
+  layout jsonb,
   created_dt timestamp
 );
 create table pbi.pages (

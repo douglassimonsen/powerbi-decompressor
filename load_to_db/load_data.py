@@ -72,6 +72,7 @@ def main(data, static_tables):
         run_table("reports", returning=("null", "id"))
         run_table(
             "pages",
+            remove=("filters",),
             returning=("ordinal", "id"),
             add=[{"to": "report_id", "from_table": "reports"}],
         )
