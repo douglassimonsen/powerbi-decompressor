@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: An environment to test the upload library
+Resources: 
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsHostnames: true
+  IGW:
+    Type: AWS::EC2::InternetGateway
+  IGWAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref IGW
+      VpcId: !Ref VPC
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  ExternalRoute:
+    Type: AWS::EC2::Route
+    DependsOn: IGWAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+      RouteTableId: !Ref RouteTable
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.1.1.0/24
+      VpcId: !Ref VPC
+      AvailabilityZoneId: use1-az1
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.1.2.0/24
+      VpcId: !Ref VPC
+      AvailabilityZoneId: use1-az2
+  SubnetRouteTableA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref SubnetA
+  SubnetRouteTableB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref SubnetB
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: A security group for the Redshift Cluster
+      VpcId: !Ref VPC
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: -1
+          ToPort: -1
+          IpProtocol: -1
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: -1
+          ToPort: -1
+          IpProtocol: -1
+
+  DBSubnet:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: A group because RDS can't connect directly to a EC2 Subnet
+      SubnetIds: 
+        - !Ref SubnetA
+        - !Ref SubnetB
+  DB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: "db.t4g.micro"
+      Engine: postgres
+      EngineVersion: 14.5
+      MasterUsername: postgres
+      MasterUserPassword: postgres
+      BackupRetentionPeriod: 0
+      DBInstanceIdentifier: powerbi-schema
+      DBName: powerbi
+      DBSubnetGroupName: !Ref DBSubnet
+      PubliclyAccessible: true
+      StorageType: gp2
+      VPCSecurityGroups:
+        - !Ref SecurityGroup
+      

@@ -13,3 +13,4 @@ debug.log
 !Microsoft.AnalysisServices.AdomdClient.dll
 *.pbiviz
 *.zip
+creds.json
