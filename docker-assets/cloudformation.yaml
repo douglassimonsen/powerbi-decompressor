@@ -70,6 +70,21 @@ Resources:
       SubnetIds: 
         - !Ref SubnetA
         - !Ref SubnetB
+  Website:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0f69dd1d0d03ad669
+      CreditSpecification: 
+        CPUCredits: unlimited
+      InstanceType: t4g.micro
+      KeyName: ec2
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - !Ref SecurityGroup
+          SubnetId: 
+            !Ref SubnetA
   DB:
     Type: AWS::RDS::DBInstance
     Properties:
