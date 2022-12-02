@@ -15,6 +15,7 @@ export default {
   data: function(){
     return {
       selectedPage: 0,
+      pageAspectRatio: {},
     };
   },
   mounted: function(){
@@ -33,10 +34,11 @@ export default {
     },
     pageVisuals: function(){
       let pageVisuals = this.visuals.filter(x => x.ordinal === +this.selectedPage).sort((a, b) => a.z < b.z ? 1 : -1);
-      let aspectRatio = this.getAspectRatio({
+      this.pageAspectRatio = {
         height: pageVisuals[0]?.page_height,
         width: pageVisuals[0]?.page_width,
-      })
+      }
+      let aspectRatio = this.getAspectRatio()
       return pageVisuals.map(x => {
         return {
           id: x.id,
@@ -60,14 +62,14 @@ export default {
     visualClick: function(id){
       this.$emit('visualClick', {id: id});
     },
-    getAspectRatio: function(pbiAspectRatio){
+    getAspectRatio: function(){
       let finalSize = {
         height: window.innerHeight * .6,
         width: window.innerWidth * .8,
       }
       return {
-        height: finalSize.height / (pbiAspectRatio.height || finalSize.height),
-        width: finalSize.width / (pbiAspectRatio.width || finalSize.width),
+        height: finalSize.height / (this.pageAspectRatio.height || finalSize.height),
+        width: finalSize.width / (this.pageAspectRatio.width || finalSize.width),
       }
     }
   },
@@ -75,6 +77,7 @@ export default {
 </script>
 <template>
   <div>
+    <div>Original Size: {{pageAspectRatio.height}}x{{pageAspectRatio.width}}</div>
     <div class="pbi-container">
       <div 
         v-for="visual in pageVisuals" 
