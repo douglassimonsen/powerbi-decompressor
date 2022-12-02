@@ -123,9 +123,9 @@ export default {
     display: inline-block;
 }
 .pbi-tab:hover {
-  opacity: .8;
+  filter: brightness(80%);
 }
 .pbi-visual:hover {
-  opacity: .6;
+  filter: brightness(60%);
 }
 </style>

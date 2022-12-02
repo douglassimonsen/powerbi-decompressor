@@ -16,13 +16,14 @@ export default {
 
 <template>
   <div>
+    <div>To request a new feature, open an issue <a href="https://github.com/douglassimonsen/powerbi-decompressor/issues">here</a></div>
     <div>To directly access the database, use the following credentials</div>
     <table>
       <thead>
         <tr><th colspan=2>Creds</th></tr>
       </thead>
       <tbody>
-        <tr v-for="(value, key) in dbCreds">
+        <tr v-for="(value, key) in dbCreds" :key="key">
           <td>{{key}}</td>
           <td>{{value}}</td>
         </tr>
