@@ -1,4 +1,4 @@
-nohup python3 python3 /visualizer/backend/application.py > /visualizer/frontend.log &
+nohup python3 /visualizer/backend/application.py > /visualizer/frontend.log &
 echo "flask backend running"
 nohup npm run dev > /visualizer/frontend.log &
 echo "nodejs frontend running"

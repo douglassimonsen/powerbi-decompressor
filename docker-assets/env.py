@@ -3,6 +3,7 @@ import time
 import structlog
 from pathlib import Path
 import json
+import docker
 
 logger = structlog.get_logger()
 
@@ -91,11 +92,19 @@ def get_stack_resources(stack: str) -> tuple[str, str, list[dict]]:
     return ret
 
 
+def load_docker_image(resources):
+    client = docker.from_env()
+    client.images.build(
+        path=str(Path(__file__).parents[1]), tag="website", squash=True, quiet=False
+    )
+
+
 def create_stack(stack: str) -> None:
     # build_stack(stack)
     resources = get_stack_resources(stack)
-    with open(Path(__file__).parents[1] / "creds.json", "w") as f:
-        json.dump(resources, f, indent=2)
+    # with open(Path(__file__).parents[1] / "creds.json", "w") as f:
+    #     json.dump(resources, f, indent=2)
+    load_docker_image(resources)
 
 
 def delete_stack(stack: str) -> None:

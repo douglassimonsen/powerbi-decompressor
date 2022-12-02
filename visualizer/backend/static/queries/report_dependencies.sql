@@ -3,20 +3,20 @@ with base as (
 	from pbi.visuals v
 	inner join pbi.pages p 
 	on v.page_id = p.id
-	where p.report_id = %(id)s
+	where p.report_id = 1
 	union all
 	select m.id as child_id, 'measure' as child_type
 	from pbi.measures m  
 	inner join pbi."tables" t 
 	on m.tableid = t.id
-	where t.report_id = %(id)s
+	where t.report_id = 1
 	union all
 	select tc.id as child_id, 'visual' as child_type
-	from pbi.table_columns tc
+	from pbi.columns tc
 	inner join pbi."tables" t 
 	on tc.tableid = t.id
 	where tc."expression" is not null
-	and t.report_id = %(id)s
+	and t.report_id = 1
 )
 select dd.* from base
 inner join pbi.dax_dependencies dd 

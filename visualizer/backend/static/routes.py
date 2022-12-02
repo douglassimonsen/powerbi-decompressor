@@ -18,3 +18,13 @@ def reports(query):
     )  # dict not really necessary, but prints nicer
     print(flask.request.get_json())
     return flask.jsonify(util.read_query(queries[query], kwargs))
+
+
+@app.route("/monitor/alive", methods=["GET", "POST"])
+def alive():
+    return "alive"
+
+
+@app.route("/admin/creds", methods=["GET", "POST"])
+def creds():
+    return flask.jsonify(util.creds)

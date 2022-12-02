@@ -7,7 +7,7 @@ export default {
   components: { powerBi },
   computed: {
     ...mapStores(useReportStore),
-    ...mapState(useReportStore, ['reports', 'visuals']),
+    ...mapState(useReportStore, ['reports', 'visuals', 'getDependencies']),
     selectedReport: {
       get: function(){return this.reportStore.selectedReport},
       set: function(val){
@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     visualClick: function(evt){
-      debugger;
+      this.getDependencies(evt.id);
     },
   },
 }

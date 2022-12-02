@@ -1,0 +1,11 @@
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 111263457661.dkr.ecr.us-east-1.amazonaws.com
+
+docker build --platform linux/arm64 -t demo .
+
+docker tag demo:latest 111263457661.dkr.ecr.us-east-1.amazonaws.com/powerbi-parser2-dockerrepo-4gugvr04nlft:latest
+
+docker push 111263457661.dkr.ecr.us-east-1.amazonaws.com/powerbi-parser2-dockerrepo-4gugvr04nlft:latest
+
+# https://medium.com/appgambit/part-1-running-docker-on-aws-ec2-cbcf0ec7c3f8
+
+Run load_to_db/main
