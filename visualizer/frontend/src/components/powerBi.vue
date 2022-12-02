@@ -33,6 +33,10 @@ export default {
     },
     pageVisuals: function(){
       let pageVisuals = this.visuals.filter(x => x.ordinal === +this.selectedPage).sort((a, b) => a.z < b.z ? 1 : -1);
+      let aspectRatio = this.getAspectRatio({
+        height: pageVisuals[0]?.page_height,
+        width: pageVisuals[0]?.page_width,
+      })
       return pageVisuals.map(x => {
         return {
           id: x.id,
@@ -43,10 +47,10 @@ export default {
             placeItems: 'center',
             fontSize: '20px',
             backgroundColor: VISUAL_COLORS[x.visual_type] || 'grey',
-            height: `${x.height}px`,
-            width: `${x.width}px`,
-            top: `${x.y}px`,
-            left: `${x.x}px`,
+            height: `${x.height * aspectRatio.height / window.innerHeight * 100}vh`,
+            width: `${x.width * aspectRatio.width / window.innerWidth * 100}vw`,
+            top: `${x.y * aspectRatio.height / window.innerHeight * 100}vh`,
+            left: `${x.x * aspectRatio.width / window.innerWidth * 100}vw`,
           }
         };
       })
@@ -56,6 +60,16 @@ export default {
     visualClick: function(id){
       this.$emit('visualClick', {id: id});
     },
+    getAspectRatio: function(pbiAspectRatio){
+      let finalSize = {
+        height: window.innerHeight * .6,
+        width: window.innerWidth * .8,
+      }
+      return {
+        height: finalSize.height / (pbiAspectRatio.height || finalSize.height),
+        width: finalSize.width / (pbiAspectRatio.width || finalSize.width),
+      }
+    }
   },
 }
 </script>
@@ -78,13 +92,13 @@ export default {
 <style scoped>
 .pbi-container {
   background-color: #ddd;
-  height: 720px;
-  width: 1280px;
+  height: 60vh;
+  width: 80vw;
   position: relative;
 }
 .pbi-tabs {
   height: 80px;
-  width: 1280px;
+  width: 80vw;
   background-color: blue;
   box-sizing: border-box;
     overflow-y: hidden;
