@@ -73,25 +73,29 @@ def get_stack_resources(stack: str) -> tuple[str, str, list[dict]]:
     resources = cloudformation.list_stack_resources(StackName=stack)[
         "StackResourceSummaries"
     ]
+    ret = {}
     for resource in resources:
         if resource["ResourceType"] == "AWS::RDS::DBInstance":
             data = rds.describe_db_instances(
                 DBInstanceIdentifier=resource["PhysicalResourceId"]
             )["DBInstances"][0]
-            return {
+            ret["db"] = {
                 "host": data["Endpoint"]["Address"],
                 "port": data["Endpoint"]["Port"],
                 "dbname": data["DBName"],
                 "user": data["MasterUsername"],
                 "password": "postgres",
             }
+        elif resource["ResourceType"] == "AWS::ECR::Repository":
+            ret["ecr"] = {"id": resource["PhysicalResourceId"]}
+    return ret
 
 
 def create_stack(stack: str) -> None:
-    build_stack(stack)
-    db = get_stack_resources(stack)
+    # build_stack(stack)
+    resources = get_stack_resources(stack)
     with open(Path(__file__).parents[1] / "creds.json", "w") as f:
-        json.dump({"db": db}, f, indent=2)
+        json.dump(resources, f, indent=2)
 
 
 def delete_stack(stack: str) -> None:

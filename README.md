@@ -36,4 +36,4 @@ git config core.hooksPath hooks
 
 Uses a docker image
 `docker build . -t demo`
-`docker run -p 22:22 -p 80:80 -p 5000:5000 -p 5433:5432 demo`
+`docker run -p 22:22 -p 100:100 -p 5000:5000 -p 5433:5432 demo`
