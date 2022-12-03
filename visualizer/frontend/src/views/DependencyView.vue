@@ -27,6 +27,9 @@ export default {
       return pbiIds;
     }
   },
+  mounted: function(){
+    this.updateVisual();
+  },
   methods: {
     updateVisual: function(){
       if(this.dependency_tree.length === 0){
@@ -105,6 +108,5 @@ export default {
   <div>
     hello
     <svg id="deps"></svg>
-    <button @click="updateVisual">update</button>
   </div>
 </template>
