@@ -11,7 +11,7 @@ export const useReportStore = defineStore('report', {
       selectedReport: 2,
 
       visuals: [],
-      selectedVisual: null,
+      selectedVisual: 'visual-83',
 
       report_dependencies: [],
       dbCreds: {},

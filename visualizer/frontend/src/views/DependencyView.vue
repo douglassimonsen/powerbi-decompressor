@@ -6,8 +6,21 @@ import { useReportStore } from "../stores/report";
 export default {
   computed: {
     ...mapStores(useReportStore),
-    ...mapState(useReportStore, ['report_dependencies', 'selectedVisual']),
-    dependency_tree: function(){
+    ...mapState(useReportStore, ['report_dependencies', 'selectedVisual', 'updateDependencyFocus']),
+  },
+  mounted: function(){
+    this.updateVisual();
+  },
+  watch: {
+    report_dependencies: function(){
+      this.updateVisual();
+    },
+    selectedVisual: function(){
+      this.updateVisual();
+    },
+  },
+  methods: {
+    getDependencyTree: function(){
       if(this.selectedVisual === null){
         return [];
       }
@@ -24,18 +37,18 @@ export default {
         x.parentIds.includes(this.selectedVisual) || 
         selectedVisual.parentIds.includes(x.id)
       );
-      return pbiIds;
-    }
-  },
-  mounted: function(){
-    this.updateVisual();
-  },
-  methods: {
+      // for the visualizers sake, we're limiting parents to just what is in the group
+      let pbiSeenIds = pbiIds.map(x => x.id);
+      pbiIds.forEach(x => x.parentIds = x.parentIds.filter(y => pbiSeenIds.includes(y)));
+
+      return pbiIds;      
+    },
     updateVisual: function(){
-      if(this.dependency_tree.length === 0){
+      let dependencyTree = this.getDependencyTree()
+      if(dependencyTree.length === 0){
         return;
       }
-      const dag = d3Dag.dagStratify()(this.dependency_tree);
+      const dag = d3Dag.dagStratify()(dependencyTree);
       const nodeRadius = 20;
       const layout = d3Dag
         .sugiyama() // base layout
@@ -47,6 +60,8 @@ export default {
       // This code only handles rendering
       // --------------------------------
       const svgSelection = d3.select("#deps");
+      svgSelection.selectAll("*").remove();
+
       svgSelection.attr("viewBox", [0, 0, width, height].join(" "));
       const defs = svgSelection.append("defs"); // For gradients
       const colorMap = {
@@ -88,7 +103,11 @@ export default {
       nodes
         .append("circle")
         .attr("r", nodeRadius)
-        .attr("fill", (n) => colorMap[n.data.id.split('-')[0]]);
+        .attr("fill", (n) => colorMap[n.data.id.split('-')[0]])
+        .on("click", function(_, evt){
+          this.updateDependencyFocus(evt.data.id);
+          this.updateVisual();
+        }.bind(this));
 
       // Add text to nodes
       nodes
