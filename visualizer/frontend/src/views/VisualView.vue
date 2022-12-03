@@ -7,7 +7,7 @@ export default {
   components: { powerBi },
   computed: {
     ...mapStores(useReportStore),
-    ...mapState(useReportStore, ['reports', 'visuals', 'getDependencies']),
+    ...mapState(useReportStore, ['reports', 'visuals', 'updateDependencyFocus']),
     selectedReport: {
       get: function(){return this.reportStore.selectedReport},
       set: function(val){
@@ -21,7 +21,8 @@ export default {
   },
   methods: {
     visualClick: function(evt){
-      this.getDependencies(evt.id);
+      this.updateDependencyFocus(`visual-${evt.id}`);
+      this.$router.push('dependencies');
     },
   },
 }

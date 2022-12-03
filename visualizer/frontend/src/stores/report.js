@@ -18,7 +18,7 @@ export const useReportStore = defineStore('report', {
     }
   },
   getters: {
-    getDependencies: function(state){
+    updateDependencyFocus: function(state){
       return function(id){
         this.selectedVisual = id;
       }.bind(this);
