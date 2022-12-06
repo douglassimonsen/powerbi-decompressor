@@ -125,7 +125,10 @@ export default {
 .pbi-tab:hover {
   filter: brightness(80%);
 }
+.pbi-visual {
+}
 .pbi-visual:hover {
-  filter: brightness(60%);
+  filter: brightness(80%);
+  z-index: 9999;
 }
 </style>
