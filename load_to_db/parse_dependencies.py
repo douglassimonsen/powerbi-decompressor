@@ -23,6 +23,7 @@ def get_parents(expr, child_id, child_type, parents, column_table):
                     **parents[var],
                     "child_pbi_id": child_id,
                     "child_type": child_type,
+                    "dependency_type": "static",
                 }
             )
     return ret
@@ -92,6 +93,7 @@ def main(data):
                                 "child_type": field[:-1],
                                 "dependency_type": f"{field[:-1]}_{c[:-1]}",
                                 **parents[(ds_name, ds_column_name)],
+                                "dependency_type": "static",
                             }
                         )
                     )
@@ -104,6 +106,7 @@ def main(data):
                     "dependency_type": "report_visual_filter",
                     "parent_pbi_id": data["reports"][0]["pbi_id"],
                     "parent_type": "report",
+                    "dependency_type": "static",
                 }
             )
     visual_page_dict = {}
@@ -119,6 +122,7 @@ def main(data):
                         "dependency_type": "page_visual_filter",
                         "parent_pbi_id": page["pbi_id"],
                         "parent_type": "page",
+                        "dependency_type": "static",
                     }
                 )
     return [dict(x) for x in set(map(lambda x: frozendict(x), dependencies))]

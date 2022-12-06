@@ -66,6 +66,9 @@ def main(data):
                 "page_ordinal": page_info["ordinal"],
                 "visual_type": get_visual_type(visual["config"]),
                 "raw": json.dumps(visual),
+                "filter_on_drill": visual.get("config", {})
+                .get("singleVisual", {})
+                .get("drillFilterOtherVisuals"),
             }
             ret["visuals"].append(visual_info)
             visual_info["filters"] = []

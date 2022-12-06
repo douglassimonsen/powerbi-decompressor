@@ -35,6 +35,7 @@ create table pbi.visuals (
   x float,
   y float,
   z float,
+  filter_on_drill boolean,
   raw jsonb
 );
 create table pbi.datasources (
@@ -90,5 +91,6 @@ create table pbi.dax_dependencies (
   child_type text, 
   parent_id int, -- can't specify a foreign key because it could be two separate tables
   parent_pbi_id text, 
-  parent_type text
+  parent_type text,
+  dependency_type text
 );

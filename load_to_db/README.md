@@ -6,3 +6,8 @@ Tables (generally) depend on outside datasources
 
 
 # Example
+
+
+# Facts
+
+Slicers work by using the same drill on filter as other visuals
