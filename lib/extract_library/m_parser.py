@@ -1,5 +1,8 @@
 import lark
 from pprint import pprint
+import zlib
+import base64
+
 
 l = lark.Lark(
     """
@@ -21,6 +24,14 @@ l = lark.Lark(
     %ignore WS
 """
 )
+
+
+def decompress_static(raw):
+    y = base64.b64decode(raw)
+    decompress = zlib.decompressobj(-zlib.MAX_WBITS)
+    z = decompress.decompress(y)
+    z += decompress.flush()
+    return z.decode("utf-8")
 
 
 class Sources(lark.Transformer):
@@ -118,11 +129,23 @@ class Sources(lark.Transformer):
         ):
             pass
         elif func_type == "Table.FromRows":
-            self.sources.append(
-                {
-                    "Type": "Json.Document",
-                }
-            )
+            static_data = None
+            if lines[0]["expr"]["args"][0].get("func") == "Json.Document":
+                if (
+                    lines[0]["expr"]["args"][0]["args"][0].get("func")
+                    == "Binary.Decompress"
+                ):
+                    if (
+                        lines[0]["expr"]["args"][0]["args"][0]["args"][0].get("func")
+                        == "Binary.FromText"
+                    ):
+                        static_data = decompress_static(
+                            lines[0]["expr"]["args"][0]["args"][0]["args"][0]["args"][
+                                0
+                            ].split('"')[1]
+                        )
+
+            self.sources.append({"Type": "Json.Document", "static_data": static_data})
         return self.sources
 
 
@@ -136,6 +159,8 @@ def get_sources(query_definition):
         if y.strip() not in ("let", "in")
     ]
     query_definition = "\n".join(query_definition[:2])
+
+    ret = _s.transform(l.parse(query_definition))
     try:
         ret = _s.transform(l.parse(query_definition))
     except (lark.exceptions.UnexpectedCharacters, lark.exceptions.UnexpectedEOF):
@@ -145,15 +170,10 @@ def get_sources(query_definition):
 
 if __name__ == "__main__":
     x = r"""let
-    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
-    dbo_DimProduct = Source{[Schema="dbo",Item="DimProduct"]}[Data],
-    #"Filtered Rows" = Table.SelectRows(dbo_DimProduct, each ([FinishedGoodsFlag] = true)),
-    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"ProductKey", "ProductAlternateKey", "EnglishProductName", "StandardCost", "Color", "ListPrice", "ModelName", "DimProductSubcategory"}),
-    #"Expanded DimProductSubcategory" = Table.ExpandRecordColumn(#"Removed Other Columns", "DimProductSubcategory", {"EnglishProductSubcategoryName", "DimProductCategory"}, {"EnglishProductSubcategoryName", "DimProductCategory"}),
-    #"Expanded DimProductCategory" = Table.ExpandRecordColumn(#"Expanded DimProductSubcategory", "DimProductCategory", {"EnglishProductCategoryName"}, {"EnglishProductCategoryName"}),
-    #"Renamed Columns" = Table.RenameColumns(#"Expanded DimProductCategory",{{"EnglishProductName", "Product"}, {"StandardCost", "Standard Cost"}, {"ListPrice", "List Price"}, {"ModelName", "Model"}, {"EnglishProductSubcategoryName", "Subcategory"}, {"EnglishProductCategoryName", "Category"}, {"ProductAlternateKey", "SKU"}})
+    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("XVVdb9w2EPwrBz/HBD+Wy93HIkYbN7VdtGmMIvCDfKf4iDtLhqSL4/76LrmU4xbwg3UaUrOzO7Nfvpz9dOzuu8fu7N1Z8IYsYnLy/zmhSexcsPKA8uLs7l3FzocCRWdCsslhgbroDVgAx/Lk0aBip/zPONR7g0meU+QKds5AcN6Xr6A1oYEP3TB3c0GDYeRkoaDZy3cEHRQMFfy+O+av4zTkejka59DboJezQXIRy+HIK348jlO3GwuajY1MrpbobDRB+NRPQTSuoYeh3y55e1rKz85ETol8OZC8STGGKhBwRV/0x+65m3q9OziKlet5iiaKPlCgMbYqL/K8THm7bMavGyF1erzXEsgQJwhUDyZjvdSQykHXdP9ZCsi7gvXJJESfqpbkpFpMVL6YrEkV+0s/Tg+56W7BolNsMAjBplIrBhMr9oNwz7lc64xlaQtpP5MBphBSvbciL3fdvggIYLz0eu0lGEhEnvSNyn15POZhzKWXIP0FhpgqAzJM6MJ/KrscdrnTKWFDgvXYps9H8okUq5Vdjs8FCN5Y52KoFDgYL32spyC1Sz++zhIZeYXWVqhMtEegAo3QWvKxH5bT9vBSwMmgCA8VTGAwWYtJ+6cj/dt4yvNK1xmHHKHSZSlH+mBjERebDlddHnoVBjkwVBFQhoQc+1Rnq+Gml2M37Np4okDrpQnFjlKcU76+gee52+5Pc78ss4rhg3Xq2STDKg+2iaETepW3+/zQDeW3YILIoV2WCmNAy/Ft766yDP88Lp06AhkgQtOZrRXi6olGJs9z+Xt6yhofCRwqeRIjJkJGHTd4xY+nKWtnIKKl2FzuiQKSVqpiX43DolIDGvby6agzJzEQIcSg1etoXPf3U4smYee8mFR7TkbMZKt9gdp4XPfful0zXnAhunaxOK+4u6YBN/Wu++fNh+7xad7nanKREKIH9qveGKgWKS/o9cSv/TT3L2oAz8QaZkkUL/2sDf3B/Hlz1X/P21Gzj8CuhKyYAAgq+bhqWPB/j9NBq3cYkzpGLmeQCXTauQYep2W/ed9No1iyViw9DTLWeoRL3mtsR35z4KI7tBFIwpjY1WqZTRJ29QHWLL7Z57EZnUiT6JykNgSuVcQ1lm4OR0mQx0YiYgzgmyu5fCJpYmvvb6b+YRx0MKVA6zWvvTg/Wa5BKd1UBr/3wzC/HL91ug+ESWSbom9h6q1snvi2/X/sx12/uZyb56CEqCUOa0dlEMgqdTXon+PpfypKryOSDgFZET5am3RRwpsjP3QU+zK3LSI6Sta30IzNSp/6Yry571WfJLEKsSUhsg/1QXIZG/q75pvEdgSgGi2cyjQC1sUKrdi/lm6vqjjhGPy6ggk9BFBZ9M7P/fQollO2kvCUcN15Mok1NWXgdEw+Z1kxbf+WhcS6K84TlVBkNfK6UG87Mc/wsGhDZbVYy1aJyNoBMQc3IhrJt/28bN5+QTotI9gWg6gtFVf3vy6R2zxvx2HObWLE8RIQawqJRSypQRufl/FR+LT4iJHVDc4mE6xY29Y3Z3d3/wI=", BinaryEncoding.Base64), Compression.Deflate))),
+    #"Changed Type" = Table.TransformColumnTypes(Source,{{"State", type text}, {"Latitude", type number}, {"Longitude", type number}, {"Average Temperature ", type number}})
 in
-    #"Renamed Columns" 
+    #"Changed Type"
     """
 
     print(get_sources(x))
