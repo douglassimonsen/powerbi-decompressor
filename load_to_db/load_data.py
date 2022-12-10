@@ -100,7 +100,7 @@ def main(data, static_tables):
         run_table(
             "tables",
             add=[
-                {"to": "datasourceID", "from_table": "datasources"},
+                {"to": "datasource_id", "from_table": "datasources"},
                 {"to": "report_id", "from_table": "reports"},
             ],
         )
@@ -108,19 +108,19 @@ def main(data, static_tables):
             "columns",
             add=[
                 {"to": "data_type", "from_table": "datatypes"},
-                {"to": "TableID", "from_table": "tables"},
+                {"to": "table_id", "from_table": "tables"},
             ],
         )
         run_table(
             "relationships",
             add=[
                 {"to": "report_id", "from_table": "reports"},
-                {"to": "from_column", "from_table": "columns"},
-                {"to": "to_column", "from_table": "columns"},
+                {"to": "from_column_id", "from_table": "columns"},
+                {"to": "to_column_id", "from_table": "columns"},
                 {"to": "from_cardinality", "from_table": "relationship_cardinalities"},
                 {"to": "to_cardinality", "from_table": "relationship_cardinalities"},
                 {
-                    "to": "crossfilteringbehavior",
+                    "to": "cross_filtering_behavior",
                     "from_table": "relationship_crossfilter_types",
                 },
             ],
@@ -128,7 +128,7 @@ def main(data, static_tables):
         run_table(
             "measures",
             add=[
-                {"to": "TableID", "from_table": "tables"},
+                {"to": "table_id", "from_table": "tables"},
                 {"to": "data_type", "from_table": "datatypes"},
             ],
         )

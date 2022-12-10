@@ -32,7 +32,7 @@ def get_parents(expr, child_id, child_type, parents, column_table):
 def main(data):
     table_dict = {t["pbi_id"]: t["name"] for t in data["tables"]}
     parents = {
-        (table_dict[m["TableID"]], m["name"], None): {
+        (table_dict[m["table_id"]], m["name"], None): {
             "parent_pbi_id": m["pbi_id"],
             "parent_type": c[:-1],
         }
@@ -50,13 +50,13 @@ def main(data):
         for row in data[field]:
             dependencies.extend(
                 get_parents(
-                    row["Expression"], row["pbi_id"], field[:-1], parents, column_table
+                    row["expression"], row["pbi_id"], field[:-1], parents, column_table
                 )
             )
 
     table_dict = {x["pbi_id"]: x["name"] for x in data["tables"]}
     parents = {
-        (table_dict[x["TableID"]], x["name"]): {
+        (table_dict[x["table_id"]], x["name"]): {
             "parent_pbi_id": x["pbi_id"],
             "parent_type": c[:-1],
         }

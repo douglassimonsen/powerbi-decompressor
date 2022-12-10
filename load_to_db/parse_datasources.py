@@ -8,14 +8,14 @@ logger = structlog.getLogger()
 
 
 def get_tables(tables, datasources):
-    datasource_dict = {x["TableID"]: x["pbi_id"] for x in datasources}
+    datasource_dict = {x["table_id"]: x["pbi_id"] for x in datasources}
     ret = []
     for table in tables:
         ret.append(
             {
                 "pbi_id": str(table["ID"]),
                 "name": table["Name"],
-                "datasourceID": datasource_dict[table["ID"]],
+                "datasource_id": datasource_dict[table["ID"]],
                 "raw": json.dumps(table),
             }
         )
@@ -34,8 +34,8 @@ def get_measures(measures):
             {
                 "pbi_id": str(measure["ID"]),
                 "name": measure["Name"],
-                "TableID": str(measure["TableID"]),
-                "Expression": measure["Expression"],
+                "table_id": str(measure["TableID"]),
+                "expression": measure["Expression"],
                 "data_type": str(measure["DataType"]),
                 "raw": json.dumps(measure),
             }
@@ -49,11 +49,11 @@ def get_table_columns(columns):
         ret.append(
             {
                 "pbi_id": str(column["ID"]),
-                "TableID": str(column["TableID"]),
+                "table_id": str(column["TableID"]),
                 "data_type": str(column["ExplicitDataType"]),
                 "name": column.get("ExplicitName", column.get("InferredName")),
-                "isHidden": column.get("isHidden", False),
-                "Expression": column.get("Expression"),
+                "is_hidden": column.get("isHidden", False),
+                "expression": column.get("Expression"),
                 "raw": json.dumps(column),
             }
         )
@@ -71,8 +71,8 @@ def get_datasources(datasources):
             {
                 "pbi_id": str(datasource["ID"]),
                 "name": datasource["Name"],
-                "QueryDefinition": datasource["QueryDefinition"],
-                "TableID": datasource["TableID"],
+                "query_definition": datasource["QueryDefinition"],
+                "table_id": datasource["TableID"],
                 "source_type": source_type,
                 "source_details": json.dumps(source_details[0])
                 if source_details
@@ -87,13 +87,13 @@ def get_dataconnections(connections):
     return [
         {
             "pbi_id": conn["ID"],
-            "Name": conn["Name"],
-            "Type": conn["Type"],
-            "MaxConnections": conn["MaxConnections"],
-            "ModifiedTime": conn["ModifiedTime"],
-            "ConnectionString": conn["ConnectionString"],
-            "ImpersonationMode": conn["ImpersonationMode"],
-            "Timeout": conn["Timeout"],
+            "name": conn["Name"],
+            "type": conn["Type"],
+            "max_connections": conn["MaxConnections"],
+            "modified_time": conn["ModifiedTime"],
+            "connection_string": conn["ConnectionString"],
+            "impersonation_mode": conn["ImpersonationMode"],
+            "timeout": conn["Timeout"],
             "raw": json.dumps(conn),
         }
         for conn in connections
@@ -104,10 +104,10 @@ def get_expressions(expressions):
     return [
         {
             "pbi_id": expr["ID"],
-            "Name": expr["Name"],
-            "Kind": expr["Kind"],
-            "ModifiedTime": expr["ModifiedTime"],
-            "Expression": expr["Expression"],
+            "name": expr["Name"],
+            "kind": expr["Kind"],
+            "modified_time": expr["ModifiedTime"],
+            "expression": expr["Expression"],
             "raw": json.dumps(expr),
         }
         for expr in expressions
@@ -120,42 +120,42 @@ def get_linguistic_metadata(lms):
         schema = data.find("LinguisticSchema").attrs
         entities = [
             {
-                "ConceptualEntity": row.attrs.get("ConceptualEntity"),
-                "Name": row.get("Name"),
-                "Source": row.get("Source"),
-                "Words": [x.text for x in row.find_all("Word")],
+                "conceptual_entity": row.attrs.get("ConceptualEntity"),
+                "name": row.get("Name"),
+                "source": row.get("Source"),
+                "words": [x.text for x in row.find_all("Word")],
             }
             for row in data.find_all("Entity")
         ]
         return {
-            "Version": "1.0.0",  # 2.0.0 is JSON
+            "version": "1.0.0",  # 2.0.0 is JSON
             "pbi_id": lm["ID"],
-            "CultureID": lm["CultureID"],
-            "Language": schema.get("Language"),
-            "DynamicImprovement": schema.get("DynamicImprovement"),
-            "Entities": json.dumps(entities),
-            "Relationships": None,
-            "Examples": None,
-            "ModifiedTime": lm["ModifiedTime"],
+            "culture_id": lm["CultureID"],
+            "language": schema.get("Language"),
+            "dynamic_improvement": schema.get("DynamicImprovement"),
+            "entities": json.dumps(entities),
+            "relationships": None,
+            "examples": None,
+            "modified_time": lm["ModifiedTime"],
         }
 
     def parse_json(content):
         return {
-            "Version": content["Version"],
+            "version": content["Version"],
             "pbi_id": None,
-            "CultureID": None,
-            "Language": content["Language"],
-            "DynamicImprovement": content["DynamicImprovement"],
-            "Entities": json.dumps(content["Entities"])
+            "culture_id": None,
+            "language": content["Language"],
+            "dynamic_improvement": content["DynamicImprovement"],
+            "entities": json.dumps(content["Entities"])
             if "Entities" in content
             else None,
-            "Relationships": json.dumps(content["Relationships"])
+            "relationships": json.dumps(content["Relationships"])
             if "Relationships" in content
             else None,
-            "Examples": json.dumps(content["Examples"])
+            "examples": json.dumps(content["Examples"])
             if "Examples" in content
             else None,
-            "ModifiedTime": None,
+            "modified_time": None,
         }
 
     ret = []
@@ -180,11 +180,11 @@ def get_annotations(annotations):
     return [
         {
             "pbi_id": annotation["ID"],
-            "ObjectType": annotation["ObjectType"],
-            "Name": annotation["Name"],
-            "Value": annotation["Value"],
-            "ModifiedTime": annotation["ModifiedTime"],
-            "ObjectID": annotation["ObjectID"],
+            "object_type": annotation["ObjectType"],
+            "name": annotation["Name"],
+            "value": annotation["Value"],
+            "modified_time": annotation["ModifiedTime"],
+            "object_id": annotation["ObjectID"],
         }
         for annotation in annotations
     ]
@@ -193,16 +193,16 @@ def get_annotations(annotations):
 def get_relationships(relationships):
     return [
         {
-            "from_column": str(relationship["FromColumnID"]),
+            "from_column_id": str(relationship["FromColumnID"]),
             "from_cardinality": str(relationship["FromCardinality"]),
-            "to_column": str(relationship["ToColumnID"]),
+            "to_column_id": str(relationship["ToColumnID"]),
             "to_cardinality": str(relationship["ToCardinality"]),
-            "crossfilteringbehavior": str(relationship["CrossFilteringBehavior"]),
-            "isActive": relationship["IsActive"],
+            "cross_filtering_behavior": str(relationship["CrossFilteringBehavior"]),
+            "is_active": relationship["IsActive"],
             "pbi_id": relationship["ID"],
             "name": relationship["Name"],
-            "ModifiedTime": relationship["ModifiedTime"],
-            "RefreshedTime": relationship["RefreshedTime"],
+            "modified_time": relationship["ModifiedTime"],
+            "refreshed_time": relationship["RefreshedTime"],
             "raw": json.dumps(relationship),
         }
         for relationship in relationships

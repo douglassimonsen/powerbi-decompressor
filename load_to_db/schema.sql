@@ -9,11 +9,11 @@ create table pbi.reports (
 	  array_length(string_to_array(file_path, '/'), 1)
   )) stored,
   pbi_id text,
-  layoutOptimization int,
+  layout_optimization int,
   theme text,
   culture text,
   layout jsonb,
-  created_dt timestamp,
+  modified_time timestamp,
   raw jsonb
 );
 create table pbi.pages (
@@ -22,7 +22,7 @@ create table pbi.pages (
   name text,
   ordinal int,
   config jsonb,
-  displayOption int,
+  display_option int,
   width float,
   height float,
   raw jsonb
@@ -37,7 +37,7 @@ create table pbi.visuals (
   x float,
   y float,
   z float,
-  filter_on_drill boolean,
+  drill_filter_other_visuals boolean,
   raw jsonb
 );
 create table pbi.datasources (
@@ -45,62 +45,62 @@ create table pbi.datasources (
   name text, 
   pbi_id text, 
   report_id int references pbi.reports(id), 
-  tableId int,
+  table_id int,
   source_type text, 
   source_details jsonb,
-  QueryDefinition text,
+  query_definition text,
   raw jsonb
 );
 create table pbi.data_connections (
   id serial primary key not null,
-  Name text,
+  name text,
   pbi_id text,
   report_id int references pbi.reports(id), 
-  Type int,
-  MaxConnections int,
-  ModifiedTime timestamp,
-  ConnectionString text,
-  ImpersonationMode int,
-  Timeout int,
+  type int,
+  max_connections int,
+  modified_time timestamp,
+  connection_string text,
+  impersonation_mode int,
+  timeout int,
   raw jsonb
 );
 create table pbi.expressions (
   id serial primary key not null,
-  Name text,
+  name text,
   pbi_id text,
   report_id int references pbi.reports(id),
-  Kind int,
-  Expression text,
-  ModifiedTime timestamp,
+  kind int,
+  expression text,
+  modified_time timestamp,
   raw jsonb
 );
 create table pbi.linguistic_metadata (
   id serial primary key not null,
   pbi_id text,
-  cultureID int,
-  Language text,
-  DynamicImprovement text,
-  Entities jsonb,
-  Relationships jsonb,
-  Examples jsonb,
+  culture_id int,
+  language text,
+  dynamic_improvement text,
+  entities jsonb,
+  relationships jsonb,
+  examples jsonb,
   report_id int references pbi.reports(id),
-  Version text,
-  ModifiedTime timestamp
+  version text,
+  modified_time timestamp
 );
 create table pbi.annotations (
   id serial primary key not null,
   pbi_id text,
   report_id int references pbi.reports(id),
-  ObjectType int,
-  ObjectId text,
-  Name text,
-  Value text,
-  ModifiedTime timestamp
+  object_type int,
+  object_id text,
+  name text,
+  value text,
+  modified_time timestamp
 );
 create table pbi.tables (
   id serial primary key not null,
   pbi_id text,
-  datasourceID int references pbi.datasources(id),
+  datasource_id int references pbi.datasources(id),
   report_id int references pbi.reports(id),
   source_type text,
   source_details jsonb,
@@ -110,25 +110,25 @@ create table pbi.tables (
 create table pbi.datatypes (
   id serial primary key not null,
   pbi_id text,
-  Name text,
+  name text,
   raw jsonb
 );
 create table pbi.measures (
   id serial primary key not null,
   pbi_id text,
-  TableID int references pbi.tables(id),
+  table_id int references pbi.tables(id),
   name text,
-  Expression text,
+  expression text,
   data_type int references pbi.datatypes(id),
   raw jsonb
 );
 create table pbi.columns (
   id serial primary key not null,
   pbi_id text,
-  TableID int references pbi.tables(id),
+  table_id int references pbi.tables(id),
   name text,
   data_type int references pbi.datatypes(id),
-  isHidden boolean,
+  is_hidden boolean,
   expression text,
   raw jsonb
 );
@@ -145,16 +145,16 @@ create table pbi.relationship_cardinalities (
 create table pbi.relationships (
   id serial primary key not null,
   report_id int references pbi.reports(id),
-  from_column int references pbi.columns(id),
+  from_column_id int references pbi.columns(id),
   from_cardinality int references pbi.relationship_cardinalities(id),
-  to_column int references pbi.columns(id),
+  to_column_id int references pbi.columns(id),
   to_cardinality int references pbi.relationship_cardinalities(id),
-  crossfilteringbehavior int references pbi.relationship_crossfilter_types(id),
-  isActive boolean,
+  cross_filtering_behavior int references pbi.relationship_crossfilter_types(id),
+  is_active boolean,
   pbi_id text,
   name text,
-  ModifiedTime timestamp,
-  RefreshedTime timestamp,
+  modified_time timestamp,
+  refreshed_time timestamp,
   raw jsonb
 );
 create table pbi.dax_dependencies (

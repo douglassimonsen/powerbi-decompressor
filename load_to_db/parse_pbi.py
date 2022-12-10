@@ -36,14 +36,14 @@ def main(source):
         "reports": [
             {
                 "file_path": source,
-                "created_dt": raw_data["data_model"]["Model"][0]["ModifiedTime"],
+                "modified_time": raw_data["data_model"]["Model"][0]["ModifiedTime"],
                 "pbi_id": str(raw_data["layout"]["reportId"])
                 if "reportId" in raw_data["layout"]
                 else None,
                 "theme": raw_data["layout"].get("theme"),
-                "layoutOptimization": raw_data["layout"]["layoutOptimization"],
+                "layout_optimization": raw_data["layout"]["layoutOptimization"],
                 "filters": report_filters,
-                "Culture": (raw_data["data_model"]["Culture"] or [{}])[0].get("Name"),
+                "culture": (raw_data["data_model"]["Culture"] or [{}])[0].get("Name"),
                 "layout": json.dumps(
                     {
                         **raw_data["layout"],

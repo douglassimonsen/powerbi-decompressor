@@ -42,7 +42,7 @@ def main(data):
             ),  # initial overview pages can be blank? 2018SU04 Blog Demo - April.pbix
             "width": section["width"],
             "height": section["height"],
-            "displayOption": section["displayOption"],
+            "display_option": section["displayOption"],
             "raw": json.dumps({**section, "visualContainers": None}),
             "filters": [],
             "config": section["config"],
@@ -66,7 +66,7 @@ def main(data):
                 "page_ordinal": page_info["ordinal"],
                 "visual_type": get_visual_type(visual["config"]),
                 "raw": json.dumps(visual),
-                "filter_on_drill": visual.get("config", {})
+                "drill_filter_other_visuals": visual.get("config", {})
                 .get("singleVisual", {})
                 .get("drillFilterOtherVisuals"),
             }
