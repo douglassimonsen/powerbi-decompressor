@@ -146,9 +146,15 @@ def get_linguistic_metadata(lms):
             "CultureID": None,
             "Language": content["Language"],
             "DynamicImprovement": content["DynamicImprovement"],
-            "Entities": json.dumps(content.get("Entities")),
-            "Relationships": json.dumps(content.get("Relationships")),
-            "Examples": json.dumps(content.get("Examples")),
+            "Entities": json.dumps(content["Entities"])
+            if "Entities" in content
+            else None,
+            "Relationships": json.dumps(content["Relationships"])
+            if "Relationships" in content
+            else None,
+            "Examples": json.dumps(content["Examples"])
+            if "Examples" in content
+            else None,
             "ModifiedTime": None,
         }
 
@@ -170,7 +176,8 @@ def main(data):
     measures = get_measures(data["Measure"])
     columns = get_table_columns(data["Column"])
     expressions = get_expressions(data["Expression"])
-    linguistic_metadata = get_linguistic_metadata(data["LinguisticMetadata"])
+    linguistic_metadata = []  # get_linguistic_metadata(data["LinguisticMetadata"])
+    print(data[""], "")
     return {
         "tables": tables,
         "datasources": datasources,
