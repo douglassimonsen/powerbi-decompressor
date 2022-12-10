@@ -7,7 +7,6 @@ import extract_library
 import extract_library.dax_parser
 from pprint import pprint
 import structlog
-from frozendict import frozendict
 
 logger = structlog.getLogger()
 

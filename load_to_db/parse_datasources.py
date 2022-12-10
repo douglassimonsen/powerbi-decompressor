@@ -7,15 +7,13 @@ from bs4 import BeautifulSoup
 logger = structlog.getLogger()
 
 
-def get_tables(tables, datasources):
-    datasource_dict = {x["table_id"]: x["pbi_id"] for x in datasources}
+def get_tables(tables):
     ret = []
     for table in tables:
         ret.append(
             {
                 "pbi_id": str(table["ID"]),
                 "name": table["Name"],
-                "datasource_id": datasource_dict[table["ID"]],
                 "raw": json.dumps(table),
             }
         )
@@ -60,24 +58,27 @@ def get_table_columns(columns):
     return ret
 
 
-def get_datasources(datasources):
+def get_partitions(partitions):
     ret = []
-    for datasource in datasources:
-        source_details = m_parser.get_sources(datasource["QueryDefinition"])
+    for partition in partitions:
+        source_details = m_parser.get_sources(partition["QueryDefinition"])
         source_type = None
         if len(source_details) >= 1:
             source_type = source_details[0].get("type")
         ret.append(
             {
-                "pbi_id": str(datasource["ID"]),
-                "name": datasource["Name"],
-                "query_definition": datasource["QueryDefinition"],
-                "table_id": datasource["TableID"],
+                "pbi_id": str(partition["ID"]),
+                "name": partition["Name"],
+                "query_definition": partition["QueryDefinition"],
+                "table_id": str(partition["TableID"]),
+                "data_source_id": str(partition["DataSourceID"])
+                if "DataSourceID" in partition
+                else None,
                 "source_type": source_type,
                 "source_details": json.dumps(source_details[0])
                 if source_details
                 else None,
-                "raw": json.dumps(datasource),
+                "raw": json.dumps(partition),
             }
         )
     return ret
@@ -211,9 +212,9 @@ def get_relationships(relationships):
 
 def main(data):
     annotations = get_annotations(data["Annotation"])
-    datasources = get_datasources(data["Partition"])
-    data_connections = get_dataconnections(data["DataSource"])
-    tables = get_tables(data["Table"], datasources)
+    data_sources = get_dataconnections(data["DataSource"])
+    partitions = get_partitions(data["Partition"])
+    tables = get_tables(data["Table"])
     measures = get_measures(data["Measure"])
     columns = get_table_columns(data["Column"])
     expressions = get_expressions(data["Expression"])
@@ -222,8 +223,8 @@ def main(data):
     return {
         "tables": tables,
         "annotations": annotations,
-        "datasources": datasources,
-        "data_connections": data_connections,
+        "partitions": partitions,
+        "data_sources": data_sources,
         "expressions": expressions,
         "measures": measures,
         "columns": columns,

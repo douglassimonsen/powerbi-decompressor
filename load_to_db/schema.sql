@@ -40,18 +40,7 @@ create table pbi.visuals (
   drill_filter_other_visuals boolean,
   raw jsonb
 );
-create table pbi.datasources (
-  id serial primary key not null,
-  name text, 
-  pbi_id text, 
-  report_id int references pbi.reports(id), 
-  table_id int,
-  source_type text, 
-  source_details jsonb,
-  query_definition text,
-  raw jsonb
-);
-create table pbi.data_connections (
+create table pbi.data_sources (
   id serial primary key not null,
   name text,
   pbi_id text,
@@ -105,11 +94,21 @@ create table pbi.annotations (
 create table pbi.tables (
   id serial primary key not null,
   pbi_id text,
-  datasource_id int references pbi.datasources(id),
   report_id int references pbi.reports(id),
   source_type text,
   source_details jsonb,
   name text,
+  raw jsonb
+);
+create table pbi.partitions (
+  id serial primary key not null,
+  name text, 
+  pbi_id text, 
+  table_id int references pbi.tables(id),
+  data_source_id int references pbi.data_sources(id),
+  source_type text, 
+  source_details jsonb,
+  query_definition text,
   raw jsonb
 );
 create table pbi.datatypes (

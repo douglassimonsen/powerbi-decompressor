@@ -40,15 +40,16 @@ def main(data, static_tables):
     ):
         for row in data[table_name]:  # must add columns before generating query
             for chg in add:
+                old_val = row.get(
+                    chg.get("from_col", chg["to"])
+                )  # we use get to default to None for the reports
+                if chg.get("skip_nulls") and old_val is None:
+                    continue
                 try:
-                    row[chg["to"]] = gen_ids[chg["from_table"]][
-                        row.get(
-                            chg.get("from_col", chg["to"])
-                        )  # we use get to default to None for the reports
-                    ]
+                    row[chg["to"]] = gen_ids[chg["from_table"]][old_val]
                 except:
                     raise ValueError(
-                        f'ID {row.get(chg.get("from_col", chg["to"]))} was not found in table {chg["from_table"]}'
+                        f'ID {old_val} was not found in table {chg["from_table"]}'
                     )
             for col in remove:
                 del row[col]
@@ -82,10 +83,6 @@ def main(data, static_tables):
             add=[{"to": "report_id", "from_table": "reports"}],
         )
         run_table(
-            "datasources",
-            add=[{"to": "report_id", "from_table": "reports"}],
-        )
-        run_table(
             "annotations",
             add=[
                 {"to": "report_id", "from_table": "reports"},
@@ -93,7 +90,7 @@ def main(data, static_tables):
             ],
         )
         run_table(
-            "data_connections",
+            "data_sources",
             add=[{"to": "report_id", "from_table": "reports"}],
         )
         run_table(
@@ -103,8 +100,18 @@ def main(data, static_tables):
         run_table(
             "tables",
             add=[
-                {"to": "datasource_id", "from_table": "datasources"},
                 {"to": "report_id", "from_table": "reports"},
+            ],
+        )
+        run_table(
+            "partitions",
+            add=[
+                {"to": "table_id", "from_table": "tables"},
+                {
+                    "to": "data_source_id",
+                    "from_table": "data_sources",
+                    "skip_nulls": True,
+                },
             ],
         )
         run_table(
