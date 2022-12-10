@@ -22,10 +22,11 @@ def extract_data(source):
     return ret
 
 
-def main(source):
+def main(source, dump=False):
     raw_data = extract_data(source)
-    with open("test.json", "w") as f:
-        json.dump(raw_data, f, indent=4)
+    if dump:
+        with open("test.json", "w") as f:
+            json.dump(raw_data, f, indent=4)
 
     data = parse_datasources.main(raw_data["data_model"])
     report_filters, visual_info = parse_visuals.main(raw_data["layout"])

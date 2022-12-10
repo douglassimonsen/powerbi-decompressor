@@ -37,3 +37,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    # from auto_profiler import Profiler
+    # with Profiler(depth=5):
+    #     main()

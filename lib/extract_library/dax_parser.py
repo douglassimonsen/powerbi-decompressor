@@ -1,11 +1,14 @@
 import re
 from typing import List, Dict
+import functools
 
 template = re.compile(
     r"(?P<table>(\w+)|('[^']+'))?(?P<column>\[[^\[\]]+\])(?P<hierarchy>\.\[[^\[\]]+\])?"
 )
 
 
+# this function is one of the slowest in the codebase and one that is likely to have repeated inputs
+@functools.cache
 def get_variables(dax_statement: str) -> List[Dict[str, str]]:
     """
     The template contains named capture groups for legibility, but not currently being used

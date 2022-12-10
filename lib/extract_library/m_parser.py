@@ -2,6 +2,7 @@ import lark
 from pprint import pprint
 import zlib
 import base64
+import functools
 
 
 l = lark.Lark(
@@ -152,6 +153,8 @@ class Sources(lark.Transformer):
 _s = Sources()
 
 
+# this function is one of the slowest in the codebase and one that is likely to have repeated inputs
+@functools.cache
 def get_sources(query_definition):
     query_definition = [
         y.strip()
