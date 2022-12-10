@@ -81,6 +81,10 @@ def main(data, static_tables):
             add=[{"to": "report_id", "from_table": "reports"}],
         )
         run_table(
+            "expressions",
+            add=[{"to": "report_id", "from_table": "reports"}],
+        )
+        run_table(
             "tables",
             add=[
                 {"to": "datasourceID", "from_table": "datasources"},

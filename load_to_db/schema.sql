@@ -63,6 +63,16 @@ create table pbi.data_connections (
   Timeout int,
   raw jsonb
 );
+create table pbi.expressions (
+  id serial primary key not null,
+  Name text,
+  pbi_id text,
+  report_id int references pbi.reports(id),
+  Kind int,
+  Expression text,
+  ModifiedTime timestamp,
+  raw jsonb
+);
 create table pbi.tables (
   id serial primary key not null,
   pbi_id text,

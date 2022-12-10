@@ -99,16 +99,32 @@ def get_dataconnections(connections):
     ]
 
 
+def get_expressions(expressions):
+    return [
+        {
+            "pbi_id": expr["ID"],
+            "Name": expr["Name"],
+            "Kind": expr["Kind"],
+            "ModifiedTime": expr["ModifiedTime"],
+            "Expression": expr["Expression"],
+            "raw": json.dumps(expr),
+        }
+        for expr in expressions
+    ]
+
+
 def main(data):
     datasources = get_datasources(data["Partition"])
     data_connections = get_dataconnections(data["DataSource"])
     tables = get_tables(data["Table"], datasources)
     measures = get_measures(data["Measure"])
     columns = get_table_columns(data["Column"])
+    expressions = get_expressions(data["Expression"])
     return {
         "tables": tables,
         "datasources": datasources,
         "data_connections": data_connections,
+        "expressions": expressions,
         "measures": measures,
         "columns": columns,
     }
