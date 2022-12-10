@@ -59,7 +59,7 @@ def main(data, static_tables):
             ret = cursor.fetchone()
             gen_ids.setdefault(table_name, {})[ret[0]] = ret[1]
 
-    gen_ids = static_tables
+    gen_ids = {**static_tables}  # needed to avoid passing
     logger.info("loading_to_postgres")
     with util.get_conn() as conn:
         conn.set_session(autocommit=False)
