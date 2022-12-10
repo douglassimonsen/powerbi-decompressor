@@ -169,7 +169,22 @@ def get_linguistic_metadata(lms):
     return ret
 
 
+def get_annotations(annotations):
+    return [
+        {
+            "pbi_id": annotation["ID"],
+            "ObjectType": annotation["ObjectType"],
+            "Name": annotation["Name"],
+            "Value": annotation["Value"],
+            "ModifiedTime": annotation["ModifiedTime"],
+            "ObjectID": annotation["ObjectID"],
+        }
+        for annotation in annotations
+    ]
+
+
 def main(data):
+    annotations = get_annotations(data["Annotation"])
     datasources = get_datasources(data["Partition"])
     data_connections = get_dataconnections(data["DataSource"])
     tables = get_tables(data["Table"], datasources)
@@ -177,9 +192,9 @@ def main(data):
     columns = get_table_columns(data["Column"])
     expressions = get_expressions(data["Expression"])
     linguistic_metadata = []  # get_linguistic_metadata(data["LinguisticMetadata"])
-    print(data[""], "")
     return {
         "tables": tables,
+        "annotations": annotations,
         "datasources": datasources,
         "data_connections": data_connections,
         "expressions": expressions,

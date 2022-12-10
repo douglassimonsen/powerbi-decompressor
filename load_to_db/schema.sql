@@ -11,6 +11,7 @@ create table pbi.reports (
   pbi_id text,
   layoutOptimization int,
   theme text,
+  culture text,
   layout jsonb,
   created_dt timestamp,
   raw jsonb
@@ -84,6 +85,16 @@ create table pbi.linguistic_metadata (
   Examples jsonb,
   report_id int references pbi.reports(id),
   Version text,
+  ModifiedTime timestamp
+);
+create table pbi.annotations (
+  id serial primary key not null,
+  pbi_id text,
+  report_id int references pbi.reports(id),
+  ObjectType int,
+  ObjectId text,
+  Name text,
+  Value text,
   ModifiedTime timestamp
 );
 create table pbi.tables (

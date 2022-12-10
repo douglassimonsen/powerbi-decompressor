@@ -43,6 +43,7 @@ def main(source):
                 "theme": raw_data["layout"].get("theme"),
                 "layoutOptimization": raw_data["layout"]["layoutOptimization"],
                 "filters": report_filters,
+                "Culture": (raw_data["data_model"]["Culture"] or [{}])[0].get("Name"),
                 "layout": json.dumps(
                     {
                         **raw_data["layout"],
