@@ -37,3 +37,11 @@ git config core.hooksPath hooks
 Uses a docker image
 `docker build . -t demo`
 `docker run -p 22:22 -p 100:100 -p 5000:5000 -p 5433:5432 demo`
+
+
+# Help
+Expressions are DAX-generated tables
+
+Don't understand `ExtendedProperty`, see `Income share held by lowest 20%` in `c:/Users/mwham/Documents/repos/powerbi-decompressor/pbis/Life expectancy v202009.pbix`
+
+Don't understand variations, see `c:/Users/mwham/Documents/repos/powerbi-decompressor/pbis/Sales & Returns Sample v201912.pbix`

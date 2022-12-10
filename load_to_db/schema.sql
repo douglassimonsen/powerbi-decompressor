@@ -73,6 +73,19 @@ create table pbi.expressions (
   ModifiedTime timestamp,
   raw jsonb
 );
+create table pbi.linguistic_metadata (
+  id serial primary key not null,
+  pbi_id text,
+  cultureID int,
+  Language text,
+  DynamicImprovement text,
+  Entities jsonb,
+  Relationships jsonb,
+  Examples jsonb,
+  report_id int references pbi.reports(id),
+  Version text,
+  ModifiedTime timestamp
+);
 create table pbi.tables (
   id serial primary key not null,
   pbi_id text,

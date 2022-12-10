@@ -2,6 +2,7 @@ import json
 from pprint import pprint
 import structlog
 from extract_library import m_parser
+from bs4 import BeautifulSoup
 
 logger = structlog.getLogger()
 
@@ -113,6 +114,55 @@ def get_expressions(expressions):
     ]
 
 
+def get_linguistic_metadata(lms):
+    def parse_xml(content):
+        data = BeautifulSoup(lm["Content"], "xml")
+        schema = data.find("LinguisticSchema").attrs
+        entities = [
+            {
+                "ConceptualEntity": row.attrs.get("ConceptualEntity"),
+                "Name": row.get("Name"),
+                "Source": row.get("Source"),
+                "Words": [x.text for x in row.find_all("Word")],
+            }
+            for row in data.find_all("Entity")
+        ]
+        return {
+            "Version": "1.0.0",  # 2.0.0 is JSON
+            "pbi_id": lm["ID"],
+            "CultureID": lm["CultureID"],
+            "Language": schema.get("Language"),
+            "DynamicImprovement": schema.get("DynamicImprovement"),
+            "Entities": json.dumps(entities),
+            "Relationships": None,
+            "Examples": None,
+            "ModifiedTime": lm["ModifiedTime"],
+        }
+
+    def parse_json(content):
+        return {
+            "Version": content["Version"],
+            "pbi_id": None,
+            "CultureID": None,
+            "Language": content["Language"],
+            "DynamicImprovement": content["DynamicImprovement"],
+            "Entities": json.dumps(content.get("Entities")),
+            "Relationships": json.dumps(content.get("Relationships")),
+            "Examples": json.dumps(content.get("Examples")),
+            "ModifiedTime": None,
+        }
+
+    ret = []
+    for lm in lms:
+        if isinstance(lm["Content"], str):
+            ret.append(parse_xml(lm["Content"]))
+        elif isinstance(lm["Content"], dict):
+            ret.append(parse_json(lm["Content"]))
+        else:
+            TypeError(lm["Content"])
+    return ret
+
+
 def main(data):
     datasources = get_datasources(data["Partition"])
     data_connections = get_dataconnections(data["DataSource"])
@@ -120,6 +170,7 @@ def main(data):
     measures = get_measures(data["Measure"])
     columns = get_table_columns(data["Column"])
     expressions = get_expressions(data["Expression"])
+    linguistic_metadata = get_linguistic_metadata(data["LinguisticMetadata"])
     return {
         "tables": tables,
         "datasources": datasources,
@@ -127,6 +178,7 @@ def main(data):
         "expressions": expressions,
         "measures": measures,
         "columns": columns,
+        "linguistic_metadata": linguistic_metadata,
     }
 
 

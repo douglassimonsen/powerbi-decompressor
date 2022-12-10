@@ -1,5 +1,9 @@
 import os
-from .pyadomd.pyadomd import Pyadomd
+
+try:
+    from .pyadomd.pyadomd import Pyadomd
+except ImportError:
+    from pyadomd.pyadomd import Pyadomd
 import uuid
 import subprocess
 import psutil
@@ -54,7 +58,7 @@ class AnalysisService:
         self.port = None
         self.guid = None
         self.active = False
-        self.temp_folder = fr"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces"
+        self.temp_folder = rf"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces"
         self._bad_ports = []
 
     def instance_name(self):
@@ -187,6 +191,6 @@ def find_current_servers():
 
 if __name__ == "__main__":
     kill_current_servers()
-    x = AnalysisService()
-    x.init()
-    print(x)
+    # x = AnalysisService()
+    # x.init()
+    # print(x)

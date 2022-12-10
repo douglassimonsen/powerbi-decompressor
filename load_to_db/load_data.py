@@ -73,6 +73,10 @@ def main(data, static_tables):
             add=[{"to": "page_id", "from_table": "pages", "from_col": "page_ordinal"}],
         )
         run_table(
+            "linguistic_metadata",
+            add=[{"to": "report_id", "from_table": "reports"}],
+        )
+        run_table(
             "datasources",
             add=[{"to": "report_id", "from_table": "reports"}],
         )
