@@ -144,6 +144,7 @@ create table pbi.relationship_cardinalities (
 );
 create table pbi.relationships (
   id serial primary key not null,
+  report_id int references pbi.reports(id),
   from_column int references pbi.columns(id),
   from_cardinality int references pbi.relationship_cardinalities(id),
   to_column int references pbi.columns(id),
