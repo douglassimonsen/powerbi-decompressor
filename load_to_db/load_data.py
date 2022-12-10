@@ -87,7 +87,10 @@ def main(data, static_tables):
         )
         run_table(
             "annotations",
-            add=[{"to": "report_id", "from_table": "reports"}],
+            add=[
+                {"to": "report_id", "from_table": "reports"},
+                {"to": "object_type", "from_table": "annotation_object_types"},
+            ],
         )
         run_table(
             "data_connections",

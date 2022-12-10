@@ -87,11 +87,16 @@ create table pbi.linguistic_metadata (
   version text,
   modified_time timestamp
 );
+create table pbi.annotation_object_types (
+  id serial primary key not null,
+  pbi_id text,
+  name text
+);
 create table pbi.annotations (
   id serial primary key not null,
   pbi_id text,
   report_id int references pbi.reports(id),
-  object_type int,
+  object_type int references pbi.annotation_object_types(id),
   object_id text,
   name text,
   value text,

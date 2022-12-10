@@ -180,7 +180,7 @@ def get_annotations(annotations):
     return [
         {
             "pbi_id": annotation["ID"],
-            "object_type": annotation["ObjectType"],
+            "object_type": str(annotation["ObjectType"]),
             "name": annotation["Name"],
             "value": annotation["Value"],
             "modified_time": annotation["ModifiedTime"],

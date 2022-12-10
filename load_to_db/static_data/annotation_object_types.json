@@ -1,0 +1,12 @@
+{
+  "data": [
+    {"pbi_id": "1", "Name": "report"},
+    {"pbi_id": "3", "Name": "table"},
+    {"pbi_id": "4", "Name": "column"},
+    {"pbi_id": "8", "Name": "measure"},
+    {"pbi_id": "9", "Name": "hierarchy"},
+    {"pbi_id": "41", "Name": "expression"},
+    {"pbi_id": "51", "Name": "query_group"}
+  ],
+  "returning": ["pbi_id", "id"]
+}
