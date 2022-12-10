@@ -40,11 +40,16 @@ def main(data, static_tables):
     ):
         for row in data[table_name]:  # must add columns before generating query
             for chg in add:
-                row[chg["to"]] = gen_ids[chg["from_table"]][
-                    row.get(
-                        chg.get("from_col", chg["to"])
-                    )  # we use get to default to None for the reports
-                ]
+                try:
+                    row[chg["to"]] = gen_ids[chg["from_table"]][
+                        row.get(
+                            chg.get("from_col", chg["to"])
+                        )  # we use get to default to None for the reports
+                    ]
+                except:
+                    raise ValueError(
+                        f'ID {row.get(chg.get("from_col", chg["to"]))} was not found in table {chg["from_table"]}'
+                    )
             for col in remove:
                 del row[col]
 
@@ -104,6 +109,19 @@ def main(data, static_tables):
             add=[
                 {"to": "data_type", "from_table": "datatypes"},
                 {"to": "TableID", "from_table": "tables"},
+            ],
+        )
+        run_table(
+            "relationships",
+            add=[
+                {"to": "from_column", "from_table": "columns"},
+                {"to": "to_column", "from_table": "columns"},
+                {"to": "from_cardinality", "from_table": "relationship_cardinalities"},
+                {"to": "to_cardinality", "from_table": "relationship_cardinalities"},
+                {
+                    "to": "crossfilteringbehavior",
+                    "from_table": "relationship_crossfilter_types",
+                },
             ],
         )
         run_table(

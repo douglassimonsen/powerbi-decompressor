@@ -170,6 +170,13 @@ def get_linguistic_metadata(lms):
 
 
 def get_annotations(annotations):
+    for annotation in annotations:
+        if (
+            "Value" not in annotation
+        ):  # yeah there are some records that just don't have a value ({'ID': 12869, 'ObjectID': 12, 'ObjectType': 3, 'Name': 'PBI_DescriptionAtRefresh', 'ModifiedTime': '2020-11-10T21:52:23.696667'})
+            annotation["Value"] = None
+        elif isinstance(annotation["Value"], (list, dict)):
+            annotation["Value"] = json.dumps(annotation["Value"], indent=2)
     return [
         {
             "pbi_id": annotation["ID"],
@@ -183,6 +190,25 @@ def get_annotations(annotations):
     ]
 
 
+def get_relationships(relationships):
+    return [
+        {
+            "from_column": str(relationship["FromColumnID"]),
+            "from_cardinality": str(relationship["FromCardinality"]),
+            "to_column": str(relationship["ToColumnID"]),
+            "to_cardinality": str(relationship["ToCardinality"]),
+            "crossfilteringbehavior": str(relationship["CrossFilteringBehavior"]),
+            "isActive": relationship["IsActive"],
+            "pbi_id": relationship["ID"],
+            "name": relationship["Name"],
+            "ModifiedTime": relationship["ModifiedTime"],
+            "RefreshedTime": relationship["RefreshedTime"],
+            "raw": json.dumps(relationship),
+        }
+        for relationship in relationships
+    ]
+
+
 def main(data):
     annotations = get_annotations(data["Annotation"])
     datasources = get_datasources(data["Partition"])
@@ -191,6 +217,7 @@ def main(data):
     measures = get_measures(data["Measure"])
     columns = get_table_columns(data["Column"])
     expressions = get_expressions(data["Expression"])
+    relationships = get_relationships(data["Relationship"])
     linguistic_metadata = []  # get_linguistic_metadata(data["LinguisticMetadata"])
     return {
         "tables": tables,
@@ -201,6 +228,7 @@ def main(data):
         "measures": measures,
         "columns": columns,
         "linguistic_metadata": linguistic_metadata,
+        "relationships": relationships,
     }
 
 

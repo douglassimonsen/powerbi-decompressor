@@ -132,6 +132,30 @@ create table pbi.columns (
   expression text,
   raw jsonb
 );
+create table pbi.relationship_crossfilter_types (
+  id serial primary key not null,
+  pbi_id text,
+  name text
+);
+create table pbi.relationship_cardinalities (
+  id serial primary key not null,
+  pbi_id text,
+  name text
+);
+create table pbi.relationships (
+  id serial primary key not null,
+  from_column int references pbi.columns(id),
+  from_cardinality int references pbi.relationship_cardinalities(id),
+  to_column int references pbi.columns(id),
+  to_cardinality int references pbi.relationship_cardinalities(id),
+  crossfilteringbehavior int references pbi.relationship_crossfilter_types(id),
+  isActive boolean,
+  pbi_id text,
+  name text,
+  ModifiedTime timestamp,
+  RefreshedTime timestamp,
+  raw jsonb
+);
 create table pbi.dax_dependencies (
   id serial primary key not null,
   child_id int, -- can't specify a foreign key because it could be two separate tables
