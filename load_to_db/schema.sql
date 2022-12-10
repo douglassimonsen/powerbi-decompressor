@@ -12,7 +12,8 @@ create table pbi.reports (
   layoutOptimization int,
   theme text,
   layout jsonb,
-  created_dt timestamp
+  created_dt timestamp,
+  raw jsonb
 );
 create table pbi.pages (
   id serial primary key not null,
@@ -42,11 +43,24 @@ create table pbi.datasources (
   id serial primary key not null,
   name text, 
   pbi_id text, 
-  report_id int, 
+  report_id int references pbi.reports(id), 
   tableId int,
   source_type text, 
   source_details jsonb,
   QueryDefinition text,
+  raw jsonb
+);
+create table pbi.data_connections (
+  id serial primary key not null,
+  Name text,
+  pbi_id text,
+  report_id int references pbi.reports(id), 
+  Type int,
+  MaxConnections int,
+  ModifiedTime timestamp,
+  ConnectionString text,
+  ImpersonationMode int,
+  Timeout int,
   raw jsonb
 );
 create table pbi.tables (

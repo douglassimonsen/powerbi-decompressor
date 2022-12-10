@@ -82,14 +82,33 @@ def get_datasources(datasources):
     return ret
 
 
+def get_dataconnections(connections):
+    return [
+        {
+            "pbi_id": conn["ID"],
+            "Name": conn["Name"],
+            "Type": conn["Type"],
+            "MaxConnections": conn["MaxConnections"],
+            "ModifiedTime": conn["ModifiedTime"],
+            "ConnectionString": conn["ConnectionString"],
+            "ImpersonationMode": conn["ImpersonationMode"],
+            "Timeout": conn["Timeout"],
+            "raw": json.dumps(conn),
+        }
+        for conn in connections
+    ]
+
+
 def main(data):
     datasources = get_datasources(data["Partition"])
+    data_connections = get_dataconnections(data["DataSource"])
     tables = get_tables(data["Table"], datasources)
     measures = get_measures(data["Measure"])
     columns = get_table_columns(data["Column"])
     return {
         "tables": tables,
         "datasources": datasources,
+        "data_connections": data_connections,
         "measures": measures,
         "columns": columns,
     }

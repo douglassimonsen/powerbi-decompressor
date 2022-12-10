@@ -52,6 +52,7 @@ def main(source):
                         "config": None,
                     }
                 ),
+                "raw": json.dumps(raw_data["data_model"]["Model"]),
             }
         ],
     }

@@ -52,19 +52,9 @@ def main(data, static_tables):
         for row in data[table_name]:
             cursor.execute(insert_query, row)
             ret = cursor.fetchone()
-            gen_ids[table_name][ret[0]] = ret[1]
+            gen_ids.setdefault(table_name, {})[ret[0]] = ret[1]
 
-    gen_ids = {
-        "reports": {},
-        "pages": {},
-        "tables": {},
-        "columns": {},
-        "measures": {},
-        "visuals": {},
-        "datasources": {},
-        "datasource_columns": {},
-        **static_tables,
-    }
+    gen_ids = static_tables
     logger.info("loading_to_postgres")
     with util.get_conn() as conn:
         conn.set_session(autocommit=False)
@@ -84,6 +74,10 @@ def main(data, static_tables):
         )
         run_table(
             "datasources",
+            add=[{"to": "report_id", "from_table": "reports"}],
+        )
+        run_table(
+            "data_connections",
             add=[{"to": "report_id", "from_table": "reports"}],
         )
         run_table(
