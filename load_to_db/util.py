@@ -5,6 +5,7 @@ import json
 
 try:
     creds = json.load(open(Path(__file__).parents[1] / "creds.json"))["db"]
+    raise BaseException
 except:
     creds = {
         "host": "localhost",
