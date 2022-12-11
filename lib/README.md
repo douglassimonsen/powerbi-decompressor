@@ -34,7 +34,7 @@ For reference,
 
 ![Trace File](documents/trace_file.png)
 
-Note: all DLLs can be found in `C:\Program Files\Microsoft Power BI Desktop\bin`
+__Note__: all DLLs can be found in `C:\Program Files\Microsoft Power BI Desktop\bin`
 
 # How it works
 ## Initialization
@@ -168,3 +168,7 @@ The pyadomd sublibrary in this library is a fork of [here](https://pypi.org/proj
 
 1. Adding an executeXML function that runs XML and returns the result as a `bs4` tree.
 2. Packaging the `AdomdClient.dll` alongside the library so it doesn't need to search for the client.
+
+To generate a new version of the wheel, run the function `deploy.py`. If there is a new version of the library, it will tag the current commit with `'extract-lib-v' + __version__`. It will then generate a wheel for the new version, create a new release off of the new tag, and add the wheel to the release.
+
+__Note__: the release uses the last commit as part of the release notes.
