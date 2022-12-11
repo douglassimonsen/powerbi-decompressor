@@ -11,3 +11,6 @@ Tables (generally) depend on outside datasources
 # Facts
 
 Slicers work by using the same drill on filter as other visuals
+
+# Developers
+AttributeHierarchy has not been deciphered

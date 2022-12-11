@@ -104,6 +104,10 @@ def main(data, static_tables):
             ],
         )
         run_table(
+            "hierarchies",
+            add=[{"to": "table_id", "from_table": "tables"}],
+        )
+        run_table(
             "partitions",
             add=[
                 {"to": "table_id", "from_table": "tables"},
@@ -119,6 +123,13 @@ def main(data, static_tables):
             add=[
                 {"to": "data_type", "from_table": "datatypes"},
                 {"to": "table_id", "from_table": "tables"},
+            ],
+        )
+        run_table(
+            "levels",
+            add=[
+                {"to": "hierarchy_id", "from_table": "hierarchies"},
+                {"to": "column_id", "from_table": "columns"},
             ],
         )
         run_table(

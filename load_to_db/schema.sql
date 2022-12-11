@@ -126,6 +126,18 @@ create table pbi.measures (
   data_type int references pbi.datatypes(id),
   raw jsonb
 );
+create table pbi.hierarchies (
+  id serial primary key not null,
+  pbi_id text,
+  name text,
+  is_hidden boolean,
+  modified_time timestamp,
+  structure_modified_time timestamp,
+  refreshed_time timestamp,
+  hide_members int,
+  state int,
+  table_id int references pbi.tables(id)
+);
 create table pbi.columns (
   id serial primary key not null,
   pbi_id text,
@@ -135,6 +147,15 @@ create table pbi.columns (
   is_hidden boolean,
   expression text,
   raw jsonb
+);
+create table pbi.levels (
+  id serial primary key not null,
+  pbi_id text,
+  hierarchy_id int references pbi.hierarchies(id),
+  ordinal int,
+  name text,
+  column_id int references pbi.columns(id),
+  modified_time timestamp 
 );
 create table pbi.relationship_crossfilter_types (
   id serial primary key not null,

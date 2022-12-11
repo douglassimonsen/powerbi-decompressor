@@ -210,7 +210,43 @@ def get_relationships(relationships):
     ]
 
 
+def get_hierarchies(hierarchies):
+    return [
+        {
+            "pbi_id": hierarchy["ID"],
+            "table_id": str(hierarchy["TableID"]),
+            "name": hierarchy["Name"],
+            "is_hidden": hierarchy["IsHidden"],
+            "state": hierarchy["State"],
+            "modified_time": hierarchy["ModifiedTime"],
+            "structure_modified_time": hierarchy["StructureModifiedTime"],
+            "refreshed_time": hierarchy["RefreshedTime"],
+            "hide_members": hierarchy["HideMembers"],
+        }
+        for hierarchy in hierarchies
+    ]
+
+
+def get_levels(levels):
+    return [
+        {
+            "pbi_id": level["ID"],
+            "hierarchy_id": str(level["HierarchyID"]),
+            "ordinal": level["Ordinal"],
+            "name": level["Name"],
+            "column_id": str(level["ColumnID"]),
+            "modified_time": level["ModifiedTime"],
+        }
+        for level in levels
+    ]
+
+
 def main(data):
+    "'CalculationGroup', 'CalculationItem', 'AlternateOf', 'RefreshPolicy', 'FormatStringDefinition'"
+    # Hierarchy is just the grouping, maybe is the column name?
+    # Level is the hierarchy variable?
+    hierarchies = get_hierarchies(data["Hierarchy"])
+    levels = get_levels(data["Level"])
     annotations = get_annotations(data["Annotation"])
     data_sources = get_dataconnections(data["DataSource"])
     partitions = get_partitions(data["Partition"])
@@ -230,6 +266,8 @@ def main(data):
         "columns": columns,
         "linguistic_metadata": linguistic_metadata,
         "relationships": relationships,
+        "hierarchies": hierarchies,
+        "levels": levels,
     }
 
 

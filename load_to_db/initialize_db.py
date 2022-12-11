@@ -8,6 +8,7 @@ logger = structlog.getLogger()
 dependencies = {
     "column_dependency_counts.sql": {"root_parents.sql"},
     "measure_dependency_counts.sql": {"root_parents.sql"},
+    "drill_dependencies.sql": {"root_parents.sql"},
 }
 
 
