@@ -3,28 +3,33 @@ import json
 from pprint import pprint
 from pathlib import Path
 import git
+import sys
+from inspect import cleandoc
+
+sys.path.insert(0, str(Path(__file__).parents[1]))
 from extract_library import __version__
 
-access_token = "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"
-repo_owner = "douglassimonsen"
-repo_name = "powerbi-decompressor"
-request_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases"
-repo = git.Repo(search_parent_directories=True)
+access_token = open(Path(__file__).parent / "token").read()
+request_url = (
+    "https://api.github.com/repos/douglassimonsen/powerbi-decompressor/releases"
+)
 
 
 def create_release():
-    release_notes = f"""
-Automatic generated release for version {__version__}.
-Some of the new updates:
-
-{repo.head.commit.message}
-    """.strip()  # can't do dedenting because the message is multiline
-    requests.post(
+    repo = git.Repo(search_parent_directories=True)
+    release_notes = cleandoc(
+        f"""
+        Automatic generated release for version {__version__}.
+        Some of the new updates:
+    """
+    )
+    release_notes += "\n\n" + repo.head.commit.message
+    resp = requests.post(
         request_url,
         json={
-            "tag_name": f"v{__version__}",
+            "tag_name": f"extract-lib-v{__version__}",
             "target_commitish": "main",
-            "name": f"v{__version__}",
+            "name": f"extract-lib-v{__version__}",
             "body": release_notes,
             "draft": False,
             "prerelease": False,
@@ -41,7 +46,7 @@ Some of the new updates:
 def add_wheel():
     x = requests.get(request_url + "/latest", headers={"Authorization": access_token})
     data = json.loads(x.text)
-    if data["tag_name"] != f"v{__version__}":
+    if data["tag_name"] != f"extract-lib-v{__version__}":
         raise ValueError("The tag/release failed to generate")
     upload_url = data["upload_url"].split("{")[0] + "?name=extract_library.tar.gz"
     try:

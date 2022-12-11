@@ -172,3 +172,4 @@ The pyadomd sublibrary in this library is a fork of [here](https://pypi.org/proj
 To generate a new version of the wheel, run the function `deploy.py`. If there is a new version of the library, it will tag the current commit with `'extract-lib-v' + __version__`. It will then generate a wheel for the new version, create a new release off of the new tag, and add the wheel to the release.
 
 __Note__: the release uses the last commit as part of the release notes.
+__Note__: You must add a token to deployment/token.txt that has read/write on `Content` from Github
