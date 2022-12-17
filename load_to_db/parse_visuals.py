@@ -14,6 +14,11 @@ def find_source(data):
     for v in data.values():
         ret = find_source(v)
         if ret is not None:
+            # these two capture important information about hierarchy "columns"
+            if "Level" in data.keys():
+                ret["Level"] = data["Level"]
+            if "Hierarchy" in data.keys() and isinstance(data["Hierarchy"], str):
+                ret["Hierarchy"] = data["Hierarchy"]
             return ret
 
 

@@ -155,6 +155,7 @@ create table pbi.levels (
   ordinal int,
   name text,
   column_id int references pbi.columns(id),
+  hierarchy_column_id int references pbi.columns(id),
   modified_time timestamp 
 );
 create table pbi.relationship_crossfilter_types (

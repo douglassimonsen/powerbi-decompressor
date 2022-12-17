@@ -227,14 +227,18 @@ def get_hierarchies(hierarchies):
     ]
 
 
-def get_levels(levels):
+def get_levels(levels, variations):
+    hierarchy_column = {v["DefaultHierarchyID"]: v["ColumnID"] for v in variations}
     return [
         {
-            "pbi_id": level["ID"],
+            "pbi_id": str(level["ID"]),
             "hierarchy_id": str(level["HierarchyID"]),
             "ordinal": level["Ordinal"],
             "name": level["Name"],
             "column_id": str(level["ColumnID"]),
+            "hierarchy_column_id": str(hierarchy_column[level["HierarchyID"]])
+            if level["HierarchyID"] in hierarchy_column
+            else None,
             "modified_time": level["ModifiedTime"],
         }
         for level in levels
@@ -242,11 +246,8 @@ def get_levels(levels):
 
 
 def main(data):
-    "'CalculationGroup', 'CalculationItem', 'AlternateOf', 'RefreshPolicy', 'FormatStringDefinition'"
-    # Hierarchy is just the grouping, maybe is the column name?
-    # Level is the hierarchy variable?
     hierarchies = get_hierarchies(data["Hierarchy"])
-    levels = get_levels(data["Level"])
+    levels = get_levels(data["Level"], data["Variation"])
     annotations = get_annotations(data["Annotation"])
     data_sources = get_dataconnections(data["DataSource"])
     partitions = get_partitions(data["Partition"])

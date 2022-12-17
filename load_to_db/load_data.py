@@ -130,6 +130,11 @@ def main(data, static_tables):
             add=[
                 {"to": "hierarchy_id", "from_table": "hierarchies"},
                 {"to": "column_id", "from_table": "columns"},
+                {
+                    "to": "hierarchy_column_id",
+                    "from_table": "columns",
+                    "skip_nulls": True,
+                },
             ],
         )
         run_table(

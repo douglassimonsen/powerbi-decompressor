@@ -39,7 +39,17 @@ def main(data):
         for c in ["measures", "columns"]
         for m in data[c]
     }
-
+    table_dict = {c["pbi_id"]: table_dict[c["table_id"]] for c in data["columns"]}
+    column_dict = {c["pbi_id"]: c["name"] for c in data["columns"]}
+    parents |= {
+        (
+            table_dict[l["hierarchy_column_id"]],
+            column_dict[l["hierarchy_column_id"]],
+            l["name"],
+        ): {"parent_pbi_id": l["pbi_id"], "parent_type": "level"}
+        for l in data["levels"]
+        if l["hierarchy_column_id"] is not None
+    }
     column_table = {}
     for (tab, col, _) in parents.keys():
         column_table.setdefault(col, []).append(tab)
@@ -54,15 +64,6 @@ def main(data):
                 )
             )
 
-    table_dict = {x["pbi_id"]: x["name"] for x in data["tables"]}
-    parents = {
-        (table_dict[x["table_id"]], x["name"]): {
-            "parent_pbi_id": x["pbi_id"],
-            "parent_type": c[:-1],
-        }
-        for c in ["measures", "columns"]
-        for x in data[c]
-    }
     for field in ["visuals", "pages", "reports"]:
         for visual in data[field]:
             for c in ["selects", "filters"]:
@@ -76,10 +77,10 @@ def main(data):
                             "visual select parse issue", expr=ds, name=visual["pbi_id"]
                         )  # there are elements that aren't connected to any table
                         continue
-
                     ds_name = ds["Expression"]["SourceRef"]["Entity"]
                     ds_column_name = ds["Property"]
-                    if (ds_name, ds_column_name) not in parents:
+                    ds_level_name = ds.get("Level")
+                    if (ds_name, ds_column_name, ds_level_name) not in parents:
                         logger.info(
                             "missing_dependency",
                             tbl_name=ds_name,
@@ -92,7 +93,7 @@ def main(data):
                                 "child_pbi_id": visual["pbi_id"],
                                 "child_type": field[:-1],
                                 "dependency_type": f"{field[:-1]}_{c[:-1]}",
-                                **parents[(ds_name, ds_column_name)],
+                                **parents[(ds_name, ds_column_name, ds_level_name)],
                                 "dependency_type": "static",
                             }
                         )
