@@ -27,13 +27,12 @@ def get_measures(measures):
             logger.warn(
                 "measure_parse_issue", measure=measure
             )  # in the cases I found, these also freaked out PBI, so I think it's OK to ignore. In PBI, it was shown without a definition and deleted itself if you moved to a different measure
-            continue
         ret.append(
             {
                 "pbi_id": str(measure["ID"]),
                 "name": measure["Name"],
                 "table_id": str(measure["TableID"]),
-                "expression": measure["Expression"],
+                "expression": measure.get("Expression"),
                 "data_type": str(measure["DataType"]),
                 "raw": json.dumps(measure),
             }
@@ -185,7 +184,7 @@ def get_annotations(annotations):
             "name": annotation["Name"],
             "value": annotation["Value"],
             "modified_time": annotation["ModifiedTime"],
-            "object_id": annotation["ObjectID"],
+            "object_id": str(annotation["ObjectID"]),
         }
         for annotation in annotations
     ]
@@ -256,7 +255,7 @@ def main(data):
     columns = get_table_columns(data["Column"])
     expressions = get_expressions(data["Expression"])
     relationships = get_relationships(data["Relationship"])
-    linguistic_metadata = []  # get_linguistic_metadata(data["LinguisticMetadata"])
+    linguistic_metadata = get_linguistic_metadata(data["LinguisticMetadata"])
     return {
         "tables": tables,
         "annotations": annotations,

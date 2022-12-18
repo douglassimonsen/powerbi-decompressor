@@ -1,6 +1,7 @@
 import os, pathlib
 import util
 import structlog
+import json
 
 logger = structlog.getLogger()
 insert_queries = {}
@@ -24,6 +25,24 @@ def gen_query(table_name, data, returning=("pbi_id", "id")):
 
 
 def main(data, static_tables):
+    def fix_annotation():
+        cursor.execute("select pbi_id, name from pbi.annotation_object_types")
+        object_types = dict(cursor.fetchall())
+        for row in data["annotations"]:
+            object_name = object_types[row["object_type"]]
+            if object_name == "hierarchy":
+                object_name = "hierarchies"
+            else:
+                object_name += "s"
+
+            if object_name == "query_groups":
+                logger.warn("Missing Table", table="query_groups")
+                row["object_id"] = None
+            elif object_name != "reports":
+                row["object_id"] = gen_ids[object_name][row["object_id"]]
+            else:
+                row["object_id"] = gen_ids[object_name][None]
+
     def get_ids(dependency):
         dependency["parent_id"] = gen_ids[dependency["parent_type"] + "s"][
             dependency["parent_pbi_id"]
@@ -81,13 +100,6 @@ def main(data, static_tables):
         run_table(
             "linguistic_metadata",
             add=[{"to": "report_id", "from_table": "reports"}],
-        )
-        run_table(
-            "annotations",
-            add=[
-                {"to": "report_id", "from_table": "reports"},
-                {"to": "object_type", "from_table": "annotation_object_types"},
-            ],
         )
         run_table(
             "data_sources",
@@ -156,6 +168,14 @@ def main(data, static_tables):
             add=[
                 {"to": "table_id", "from_table": "tables"},
                 {"to": "data_type", "from_table": "datatypes"},
+            ],
+        )
+        fix_annotation()
+        run_table(
+            "annotations",
+            add=[
+                {"to": "report_id", "from_table": "reports"},
+                {"to": "object_type", "from_table": "annotation_object_types"},
             ],
         )
 
