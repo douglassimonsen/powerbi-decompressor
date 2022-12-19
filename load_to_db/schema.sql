@@ -95,8 +95,6 @@ create table pbi.tables (
   id serial primary key not null,
   pbi_id text,
   report_id int references pbi.reports(id),
-  source_type text,
-  source_details jsonb,
   name text,
   raw jsonb
 );
@@ -170,7 +168,6 @@ create table pbi.relationship_cardinalities (
 );
 create table pbi.relationships (
   id serial primary key not null,
-  report_id int references pbi.reports(id),
   from_column_id int references pbi.columns(id),
   from_cardinality int references pbi.relationship_cardinalities(id),
   to_column_id int references pbi.columns(id),

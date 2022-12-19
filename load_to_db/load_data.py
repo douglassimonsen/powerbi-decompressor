@@ -152,7 +152,6 @@ def main(data, static_tables):
         run_table(
             "relationships",
             add=[
-                {"to": "report_id", "from_table": "reports"},
                 {"to": "from_column_id", "from_table": "columns"},
                 {"to": "to_column_id", "from_table": "columns"},
                 {"to": "from_cardinality", "from_table": "relationship_cardinalities"},
