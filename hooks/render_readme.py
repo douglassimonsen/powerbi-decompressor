@@ -34,11 +34,14 @@ def main():
 
         sub_tocs.append(empty_toc(folder, toc))
 
-    final_toc = toc.new_tag("ul")
+    final_toc = toc.new_tag("div")
+    final_toc["style"] = "border:1px solid; max-width: 400px"
+    final_toc.append(toc.new_tag("div", string="Table of Contents"))
+    final_toc_list = toc.new_tag("ul")
+    final_toc.append(final_toc_list)
     for sub_toc in sub_tocs:
         li = toc.new_tag("li")
-        final_toc.append(sub_toc)
-        # final_toc.append(li)
+        final_toc_list.append(sub_toc)
 
     with open(ROOT_FOLDER / "README_template.md") as f:
         template = jinja2.Template(f.read())

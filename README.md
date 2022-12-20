@@ -1,364 +1,367 @@
-<ul>
+<div style="border:1px solid; max-width: 400px">
+ <div string="Table of Contents"/>
  <ul>
-  <li>
-   <a href="lib/README.md">
-    lib
-   </a>
-   <ul>
-    <li>
-     <a href="lib/README.md#goal">
-      Goal
-     </a>
-    </li>
-    <li>
-     <a href="lib/README.md#journey">
-      Journey
-     </a>
-    </li>
-    <li>
-     <a href="lib/README.md#how-it-works">
-      How it works
-     </a>
-     <ul>
-      <li>
-       <a href="lib/README.md#initialization">
-        Initialization
-       </a>
-      </li>
-      <li>
-       <a href="lib/README.md#loading-pbix-to-ssas">
-        Loading PBIX to SSAS
-       </a>
-      </li>
-      <li>
-       <a href="lib/README.md#saving-pbix-from-ssas">
-        Saving PBIX from SSAS
-       </a>
-      </li>
-      <li>
-       <a href="lib/README.md#extracting-schema">
-        Extracting Schema
-       </a>
-      </li>
-     </ul>
-    </li>
-    <li>
-     <a href="lib/README.md#examples">
-      Examples
-     </a>
-     <ul>
-      <li>
-       <a href="lib/README.md#updating-powerbi">
-        Updating PowerBI
-       </a>
-      </li>
-     </ul>
-    </li>
-    <li>
-     <a href="lib/README.md#datetabletemplate_ccb20219-f6e6-4499-a224-352c41e914ce-sales-localdatetable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff">
-      ['DateTableTemplate_ccb20219-f6e6-4499-a224-352c41e914ce', 'Sales', 'LocalDateTable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff']
-     </a>
-    </li>
-    <li>
-     <a href="lib/README.md#alternatives">
-      alternatives
-     </a>
-    </li>
-    <li>
-     <a href="lib/README.md#pbiupdate_tablessales">
-      pbi.update_tables('Sales')
-     </a>
-    </li>
-    <li>
-     <a href="lib/README.md#pbiupdate_tables-updates-all-tables">
-      pbi.update_tables()  # Updates all tables
-     </a>
-     <ul>
-      <li>
-       <a href="lib/README.md#getting-schema-information">
-        Getting Schema Information
-       </a>
-      </li>
-      <li>
-       <a href="lib/README.md#power-query-parser">
-        Power Query Parser
-       </a>
-      </li>
-      <li>
-       <a href="lib/README.md#dax-parser">
-        Dax Parser
-       </a>
-      </li>
-      <li>
-       <a href="lib/README.md#contributions">
-        Contributions
-       </a>
-      </li>
-     </ul>
-    </li>
-   </ul>
-  </li>
+  <ul>
+   <li>
+    <a href="lib/README.md">
+     lib
+    </a>
+    <ul>
+     <li>
+      <a href="lib/README.md#goal">
+       Goal
+      </a>
+     </li>
+     <li>
+      <a href="lib/README.md#journey">
+       Journey
+      </a>
+     </li>
+     <li>
+      <a href="lib/README.md#how-it-works">
+       How it works
+      </a>
+      <ul>
+       <li>
+        <a href="lib/README.md#initialization">
+         Initialization
+        </a>
+       </li>
+       <li>
+        <a href="lib/README.md#loading-pbix-to-ssas">
+         Loading PBIX to SSAS
+        </a>
+       </li>
+       <li>
+        <a href="lib/README.md#saving-pbix-from-ssas">
+         Saving PBIX from SSAS
+        </a>
+       </li>
+       <li>
+        <a href="lib/README.md#extracting-schema">
+         Extracting Schema
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li>
+      <a href="lib/README.md#examples">
+       Examples
+      </a>
+      <ul>
+       <li>
+        <a href="lib/README.md#updating-powerbi">
+         Updating PowerBI
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li>
+      <a href="lib/README.md#datetabletemplate_ccb20219-f6e6-4499-a224-352c41e914ce-sales-localdatetable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff">
+       ['DateTableTemplate_ccb20219-f6e6-4499-a224-352c41e914ce', 'Sales', 'LocalDateTable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff']
+      </a>
+     </li>
+     <li>
+      <a href="lib/README.md#alternatives">
+       alternatives
+      </a>
+     </li>
+     <li>
+      <a href="lib/README.md#pbiupdate_tablessales">
+       pbi.update_tables('Sales')
+      </a>
+     </li>
+     <li>
+      <a href="lib/README.md#pbiupdate_tables-updates-all-tables">
+       pbi.update_tables()  # Updates all tables
+      </a>
+      <ul>
+       <li>
+        <a href="lib/README.md#getting-schema-information">
+         Getting Schema Information
+        </a>
+       </li>
+       <li>
+        <a href="lib/README.md#power-query-parser">
+         Power Query Parser
+        </a>
+       </li>
+       <li>
+        <a href="lib/README.md#dax-parser">
+         Dax Parser
+        </a>
+       </li>
+       <li>
+        <a href="lib/README.md#contributions">
+         Contributions
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <ul>
+   <li>
+    <a href="load_to_db/README.md">
+     load_to_db
+    </a>
+    <ul>
+     <li>
+      <a href="load_to_db/README.md#schema">
+       Schema
+      </a>
+      <ul>
+       <li>
+        <a href="load_to_db/README.md#parsed-fields">
+         Parsed Fields
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#annotations">
+         Annotations
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#examples">
+           Examples
+          </a>
+         </li>
+         <li>
+          <a href="load_to_db/README.md#sample-queries">
+           Sample Queries
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#columns">
+         Columns
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#data-sources">
+         Data Sources
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#examples_1">
+           Examples
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#expressions">
+         Expressions
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#examples_2">
+           Examples
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#hierarchies">
+         Hierarchies
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#levels">
+         Levels
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#example">
+           Example
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#linguistic-metadata">
+         Linguistic Metadata
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#example_1">
+           Example
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#measures">
+         Measures
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#example_2">
+           Example
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#pages">
+         Pages
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#partitions">
+         Partitions
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#relationships">
+         Relationships
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#example_3">
+           Example
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#reports">
+         Reports
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#tables">
+         Tables
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#visuals">
+         Visuals
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#examples_3">
+           Examples
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#static-fields">
+         Static Fields
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#annotation-object-types">
+         Annotation Object Types
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#sample">
+           Sample
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#datatypes">
+         Datatypes
+        </a>
+        <ul>
+         <li>
+          <a href="load_to_db/README.md#sample_1">
+           Sample
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#relationship-cardinalities">
+         Relationship Cardinalities
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#relationship-crossfilter-types">
+         Relationship Crossfilter Types
+        </a>
+       </li>
+       <li>
+        <a href="load_to_db/README.md#views">
+         Views
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li>
+      <a href="load_to_db/README.md#example_4">
+       Example
+      </a>
+     </li>
+     <li>
+      <a href="load_to_db/README.md#facts">
+       Facts
+      </a>
+     </li>
+     <li>
+      <a href="load_to_db/README.md#developers">
+       Developers
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <ul>
+   <li>
+    <a href="visualizer/README.md">
+     visualizer
+    </a>
+    <ul>
+     <li>
+      <a href="visualizer/README.md#goal">
+       Goal
+      </a>
+     </li>
+     <li>
+      <a href="visualizer/README.md#frontend">
+       frontend
+      </a>
+      <ul>
+       <li>
+        <a href="visualizer/README.md#recommended-ide-setup">
+         Recommended IDE Setup
+        </a>
+       </li>
+       <li>
+        <a href="visualizer/README.md#customize-configuration">
+         Customize configuration
+        </a>
+       </li>
+       <li>
+        <a href="visualizer/README.md#project-setup">
+         Project Setup
+        </a>
+        <ul>
+         <li>
+          <a href="visualizer/README.md#compile-and-hot-reload-for-development">
+           Compile and Hot-Reload for Development
+          </a>
+         </li>
+         <li>
+          <a href="visualizer/README.md#compile-and-minify-for-production">
+           Compile and Minify for Production
+          </a>
+         </li>
+        </ul>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
  </ul>
- <ul>
-  <li>
-   <a href="load_to_db/README.md">
-    load_to_db
-   </a>
-   <ul>
-    <li>
-     <a href="load_to_db/README.md#schema">
-      Schema
-     </a>
-     <ul>
-      <li>
-       <a href="load_to_db/README.md#parsed-fields">
-        Parsed Fields
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#annotations">
-        Annotations
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#examples">
-          Examples
-         </a>
-        </li>
-        <li>
-         <a href="load_to_db/README.md#sample-queries">
-          Sample Queries
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#columns">
-        Columns
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#data-sources">
-        Data Sources
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#examples_1">
-          Examples
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#expressions">
-        Expressions
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#examples_2">
-          Examples
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#hierarchies">
-        Hierarchies
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#levels">
-        Levels
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#example">
-          Example
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#linguistic-metadata">
-        Linguistic Metadata
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#example_1">
-          Example
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#measures">
-        Measures
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#example_2">
-          Example
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#pages">
-        Pages
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#partitions">
-        Partitions
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#relationships">
-        Relationships
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#example_3">
-          Example
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#reports">
-        Reports
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#tables">
-        Tables
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#visuals">
-        Visuals
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#examples_3">
-          Examples
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#static-fields">
-        Static Fields
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#annotation-object-types">
-        Annotation Object Types
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#sample">
-          Sample
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#datatypes">
-        Datatypes
-       </a>
-       <ul>
-        <li>
-         <a href="load_to_db/README.md#sample_1">
-          Sample
-         </a>
-        </li>
-       </ul>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#relationship-cardinalities">
-        Relationship Cardinalities
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#relationship-crossfilter-types">
-        Relationship Crossfilter Types
-       </a>
-      </li>
-      <li>
-       <a href="load_to_db/README.md#views">
-        Views
-       </a>
-      </li>
-     </ul>
-    </li>
-    <li>
-     <a href="load_to_db/README.md#example_4">
-      Example
-     </a>
-    </li>
-    <li>
-     <a href="load_to_db/README.md#facts">
-      Facts
-     </a>
-    </li>
-    <li>
-     <a href="load_to_db/README.md#developers">
-      Developers
-     </a>
-    </li>
-   </ul>
-  </li>
- </ul>
- <ul>
-  <li>
-   <a href="visualizer/README.md">
-    visualizer
-   </a>
-   <ul>
-    <li>
-     <a href="visualizer/README.md#goal">
-      Goal
-     </a>
-    </li>
-    <li>
-     <a href="visualizer/README.md#frontend">
-      frontend
-     </a>
-     <ul>
-      <li>
-       <a href="visualizer/README.md#recommended-ide-setup">
-        Recommended IDE Setup
-       </a>
-      </li>
-      <li>
-       <a href="visualizer/README.md#customize-configuration">
-        Customize configuration
-       </a>
-      </li>
-      <li>
-       <a href="visualizer/README.md#project-setup">
-        Project Setup
-       </a>
-       <ul>
-        <li>
-         <a href="visualizer/README.md#compile-and-hot-reload-for-development">
-          Compile and Hot-Reload for Development
-         </a>
-        </li>
-        <li>
-         <a href="visualizer/README.md#compile-and-minify-for-production">
-          Compile and Minify for Production
-         </a>
-        </li>
-       </ul>
-      </li>
-     </ul>
-    </li>
-   </ul>
-  </li>
- </ul>
-</ul>
+</div>
 
 # Goals
 
