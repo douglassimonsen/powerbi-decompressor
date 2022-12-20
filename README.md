@@ -1,5 +1,7 @@
 <div style="border:1px solid; max-width: 400px">
- <div string="Table of Contents"/>
+ <u>
+  Table of Contents
+ </u>
  <ul>
   <ul>
    <li>

@@ -36,7 +36,9 @@ def main():
 
     final_toc = toc.new_tag("div")
     final_toc["style"] = "border:1px solid; max-width: 400px"
-    final_toc.append(toc.new_tag("div", string="Table of Contents"))
+    toc_title = toc.new_tag("u")
+    toc_title.string = "Table of Contents"
+    final_toc.append(toc_title)
     final_toc_list = toc.new_tag("ul")
     final_toc.append(final_toc_list)
     for sub_toc in sub_tocs:
