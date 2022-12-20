@@ -2,6 +2,7 @@ import black
 import black.report
 import git
 from pathlib import Path
+import render_readme
 
 
 def main():
@@ -10,6 +11,7 @@ def main():
         Path(x.a_path) for x in repo.index.diff("HEAD") if x.a_path.endswith(".py")
     ]
     cancel = False
+    cancel |= render_readme.main()
     for change in staged_changes:
         ret = black.report.Report(quiet=True)
         black.reformat_one(
@@ -22,6 +24,7 @@ def main():
         cancel |= bool(ret.change_count)
     if cancel:
         repo.index.add(staged_changes)
+        repo.index.add(Path(__file__).parents[1] / "README.md")
     exit(cancel)
 
 
