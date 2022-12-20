@@ -6,7 +6,7 @@
   <ul>
    <li>
     <a href="lib/README.md">
-     lib
+     Lib
     </a>
     <ul>
      <li>
@@ -56,28 +56,6 @@
          Updating PowerBI
         </a>
        </li>
-      </ul>
-     </li>
-     <li>
-      <a href="lib/README.md#datetabletemplate_ccb20219-f6e6-4499-a224-352c41e914ce-sales-localdatetable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff">
-       ['DateTableTemplate_ccb20219-f6e6-4499-a224-352c41e914ce', 'Sales', 'LocalDateTable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff']
-      </a>
-     </li>
-     <li>
-      <a href="lib/README.md#alternatives">
-       alternatives
-      </a>
-     </li>
-     <li>
-      <a href="lib/README.md#pbiupdate_tablessales">
-       pbi.update_tables('Sales')
-      </a>
-     </li>
-     <li>
-      <a href="lib/README.md#pbiupdate_tables-updates-all-tables">
-       pbi.update_tables()  # Updates all tables
-      </a>
-      <ul>
        <li>
         <a href="lib/README.md#getting-schema-information">
          Getting Schema Information
@@ -106,7 +84,7 @@
   <ul>
    <li>
     <a href="load_to_db/README.md">
-     load_to_db
+     Load To Db
     </a>
     <ul>
      <li>
@@ -317,7 +295,7 @@
   <ul>
    <li>
     <a href="visualizer/README.md">
-     visualizer
+     Visualizer
     </a>
     <ul>
      <li>

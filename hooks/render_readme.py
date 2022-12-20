@@ -7,6 +7,9 @@ ROOT_FOLDER = Path(__file__).parents[1]
 
 
 def empty_toc(folder, toc):
+    def capitalize(words):
+        return " ".join(x.capitalize() for x in words.split("_"))
+
     page = toc.find("ul")
     for reference in page.find_all("a"):
         reference["href"] = folder + "/README.md" + reference["href"]
@@ -15,7 +18,7 @@ def empty_toc(folder, toc):
     full_toc_li = toc.new_tag("li")
     full_toc_link = toc.new_tag("a")
     full_toc_link["href"] = folder + "/README.md"
-    full_toc_link.string = folder
+    full_toc_link.string = capitalize(folder)
 
     full_toc_li.append(full_toc_link)
     full_toc_li.append(toc.find("ul"))

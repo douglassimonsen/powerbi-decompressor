@@ -77,31 +77,24 @@ In `extract_library.dax_parser`, we have the `get_variables` which will return a
 ```
 pbi = PowerBI('test.pbix')
 pbi.list_tables()
-```
 
-```
-# ['DateTableTemplate_ccb20219-f6e6-4499-a224-352c41e914ce', 'Sales', 'LocalDateTable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff']
-```
 
-```
+>>> ['DateTableTemplate_ccb20219-f6e6-4499-a224-352c41e914ce', 'Sales', 'LocalDateTable_0b51e05f-c1c0-46c9-802c-55b15cfa43ff']
+
 pbi.get_table('Sales').head()
-```
 
-```
-[
+>>> [
     {'SalesOrderID': 'SO446221', 'Country': 'Germany', 'OrderDate': datetime.datetime(2011, 12, 1, 0, 0), 'SalesChannelCode': 'I', 'ProdID': 752, 'StyleName': 'Product0308010', 'CustomerAccountNumber': 'AW00013771', 'StoreKey': None, 'ProductLabel': 308010, 'ProductName': 'Contoso Power Inverter - DC to AC power inverter E900 Black', 'ProductDescription': 'Notebook essentials bundle - notebook accessories bundle', 'Manufacturer': 'Contoso, Ltd', 'BrandName': 'Contoso', 'Class': 'Economy', 'Color': 'Black', 'StockType': 'High', 'Units': 3, 'SalesAmount': 28.5, 'RePurch': 5, 'NSAT': 4, 'SubCategory': 'Computers Accessories', 'Category': 'Computers', 'Sale Size': 'Small'}, 
     {'SalesOrderID': 'SO437511', 'Country': 'France', 'OrderDate': datetime.datetime(2012, 2, 21, 0, 0), 'SalesChannelCode': 'I', 'ProdID': 751, 'StyleName': 'Product0308009', 'CustomerAccountNumber': 'AW00011592', 'StoreKey': None, 'ProductLabel': 308009, 'ProductName': 'Contoso Desktop Alternative Bundle E200 Black', 'ProductDescription': 'Desktop alternative bundle', 'Manufacturer': 'Contoso, Ltd', 'BrandName': 'Contoso', 'Class': 'Economy', 'Color': 'Black', 'StockType': 'High', 'Units': 3, 'SalesAmount': 34.5, 'RePurch': 5, 'NSAT': 4, 'SubCategory': 'Computers Accessories', 'Category': 'Computers', 'Sale Size': 'Small'}
 ]
-```
 
 
-```
 pbi.update_tables(['Sales'])
-# alternatives
-# pbi.update_tables('Sales')
-# pbi.update_tables()  # Updates all tables
-pbi.save_image('test2.pbix')  # currently not that valuable, since updates cause process to freeze
 
+ # alternatives
+ # pbi.update_tables('Sales')
+ # pbi.update_tables()  # Updates all tables
+pbi.save_image('test2.pbix')  # currently not that valuable, since updates cause process to freeze
 ```
 
 
