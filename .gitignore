@@ -15,3 +15,7 @@ debug.log
 *.zip
 creds.json
 lib/deployment/token.txt
+
+.terraform
+.terraform.lock.hcl
+terraform.tfstate*
