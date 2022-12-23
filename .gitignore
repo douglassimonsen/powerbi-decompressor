@@ -18,4 +18,4 @@ lib/deployment/token.txt
 
 .terraform*
 terraform.tfstate*
-docker-assets/infrastructure.json
+*infrastructure.json
