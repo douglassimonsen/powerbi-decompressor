@@ -16,6 +16,6 @@ debug.log
 creds.json
 lib/deployment/token.txt
 
-.terraform
-.terraform.lock.hcl
+.terraform*
 terraform.tfstate*
+docker-assets/infrastructure.json

@@ -9,3 +9,8 @@ docker push 111263457661.dkr.ecr.us-east-1.amazonaws.com/powerbi-parser2-dockerr
 # https://medium.com/appgambit/part-1-running-docker-on-aws-ec2-cbcf0ec7c3f8
 
 Run load_to_db/main
+
+
+
+terraform apply -auto-approve; terraform output -json > ./infrastructure.json
+& C:/Users/mwham/AppData/Local/Programs/Python/Python310/python.exe c:/Users/mwham/Documents/repos/powerbi-decompressor/docker-assets/finalize.py

@@ -94,3 +94,19 @@ resource "aws_db_instance" "main" {
   storage_type            = "gp2"
   vpc_security_group_ids  = [aws_security_group.main.id]
 }
+output "db" {
+  sensitive = true
+  value = {
+    host = aws_db_instance.main.address
+    port = aws_db_instance.main.port
+    dbname = aws_db_instance.main.identifier
+    user = aws_db_instance.main.username
+    password = aws_db_instance.main.password
+  }
+}
+output "ecr" {
+  value = {
+    "url": aws_ecr_repository.main.repository_url
+    "registry_id": aws_ecr_repository.main.registry_id
+  }
+}
