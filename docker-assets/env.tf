@@ -77,7 +77,7 @@ resource "aws_db_subnet_group" "main" {
   subnet_ids = [aws_subnet.a.id, aws_subnet.b.id]
 }
 resource "aws_ecr_repository" "main" {
-  name = "test"
+  name = "demo"
 }
 
 resource "aws_db_instance" "main" {
@@ -93,20 +93,109 @@ resource "aws_db_instance" "main" {
   publicly_accessible     = true
   storage_type            = "gp2"
   vpc_security_group_ids  = [aws_security_group.main.id]
+  skip_final_snapshot = true
 }
-output "db" {
-  sensitive = true
-  value = {
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-arm64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_ssm_parameter" "db" {
+  name = "db"
+  type = "String"
+  value = jsonencode({
     host = aws_db_instance.main.address
     port = aws_db_instance.main.port
     dbname = aws_db_instance.main.identifier
     user = aws_db_instance.main.username
     password = aws_db_instance.main.password
-  }
+  })
 }
-output "ecr" {
-  value = {
+
+resource "aws_ssm_parameter" "ecr" {
+  name = "ecr"
+  type = "String"
+  value = jsonencode({
     "url": aws_ecr_repository.main.repository_url
     "registry_id": aws_ecr_repository.main.registry_id
+  })
+}
+resource "aws_iam_policy" "main" {
+  name = "demo-policy"
+  path = "/"
+  policy  = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "ssm:GetParameter",
+            "Resource": ["arn:aws:ssm:us-east-1:111263457661:parameter/ecr", "arn:aws:ssm:us-east-1:111263457661:parameter/db"]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:DescribeParameters",
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "asd",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+            ],
+            "Resource": "arn:aws:ecr:us-east-1:111263457661:repository/demo"
+        }
+    ]
+  })
+}
+resource "aws_iam_role" "main" {
+  name = "demo-role"
+  path = "/"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+  managed_policy_arns = [aws_iam_policy.main.arn]
+}
+resource "aws_iam_instance_profile" "main" {
+  role = aws_iam_role.main.name
+}
+resource "aws_instance" "main" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t4g.medium"  
+
+  credit_specification {
+    cpu_credits = "unlimited"
   }
+
+  associate_public_ip_address = true
+  key_name = "ec2"
+  vpc_security_group_ids = [aws_security_group.main.id]
+  subnet_id = aws_subnet.a.id
+  iam_instance_profile = aws_iam_instance_profile.main.name
 }
