@@ -3,10 +3,14 @@ from pathlib import Path
 import json
 import boto3
 import base64
+import structlog
+
+logger = structlog.get_logger()
 
 
 def build_docker_image():
     client = docker.from_env()
+    logger.info("beginning to build", path=str(Path(__file__).parents[1]), tag="demo")
     client.images.build(
         path=str(Path(__file__).parents[1]),
         tag="demo",
@@ -14,24 +18,28 @@ def build_docker_image():
         quiet=False,
         platform="linux/arm64",
     )
+    logger.info("finished build")
 
 
-def get_config():
+def save_config():
     ssm = boto3.client("ssm")
     db = ssm.get_parameter(Name="db")
     ecr = ssm.get_parameter(Name="ecr")
-    return {
+    ret = {
         "db": json.loads(db["Parameter"]["Value"]),
         "ecr": json.loads(ecr["Parameter"]["Value"]),
     }
+    with open(Path(__file__).parents[1] / "creds.json", "w") as f:
+        json.dump(ret, f)
+    return ret
 
 
-def load_docker_image():
-    data = get_config()
-    image_url = f"{data['ecr']['url']}:latest"
+def load_docker_image(config):
+    image_url = f"{config['ecr']['url']}:latest"
 
     ecr = boto3.client("ecr", region_name="us-east-1")
-    token = ecr.get_authorization_token(registryIds=[data["ecr"]["registry_id"]])
+    logger.info("getting ecr auth token")
+    token = ecr.get_authorization_token(registryIds=[config["ecr"]["registry_id"]])
     username, password = (
         base64.b64decode(token["authorizationData"][0]["authorizationToken"])
         .decode()
@@ -40,15 +48,18 @@ def load_docker_image():
     registry = token["authorizationData"][0]["proxyEndpoint"]
 
     client = docker.from_env()
+    logger.info("logging into ecr")
     client.login(username, password, registry=registry)
     image = client.images.get("demo:latest")
     image.tag(image_url)
+    logger.info("pushing to ecr", url=image_url)
     print(client.images.push(image_url))
 
 
 def main():
+    config = save_config()
     build_docker_image()
-    load_docker_image()
+    load_docker_image(config)
 
 
 if __name__ == "__main__":
