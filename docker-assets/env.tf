@@ -88,12 +88,12 @@ resource "aws_db_instance" "main" {
   username                = "postgres"
   password                = "postgres"
   backup_retention_period = 0
-  identifier              = "powerbi"
+  db_name                 = "powerbi"
   db_subnet_group_name    = aws_db_subnet_group.main.name
   publicly_accessible     = true
   storage_type            = "gp2"
   vpc_security_group_ids  = [aws_security_group.main.id]
-  skip_final_snapshot = true
+  skip_final_snapshot     = true
 }
 
 data "aws_ami" "ubuntu" {
@@ -115,10 +115,10 @@ resource "aws_ssm_parameter" "db" {
   name = "db"
   type = "String"
   value = jsonencode({
-    host = aws_db_instance.main.address
-    port = aws_db_instance.main.port
-    dbname = aws_db_instance.main.identifier
-    user = aws_db_instance.main.username
+    host     = aws_db_instance.main.address
+    port     = aws_db_instance.main.port
+    dbname   = aws_db_instance.main.db_name
+    user     = aws_db_instance.main.username
     password = aws_db_instance.main.password
   })
 }
@@ -127,40 +127,40 @@ resource "aws_ssm_parameter" "ecr" {
   name = "ecr"
   type = "String"
   value = jsonencode({
-    "url": aws_ecr_repository.main.repository_url
-    "registry_id": aws_ecr_repository.main.registry_id
+    "url" : aws_ecr_repository.main.repository_url
+    "registry_id" : aws_ecr_repository.main.registry_id
   })
 }
 resource "aws_iam_policy" "main" {
   name = "demo-policy"
   path = "/"
-  policy  = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": "ssm:GetParameter",
-            "Resource": ["arn:aws:ssm:us-east-1:111263457661:parameter/ecr", "arn:aws:ssm:us-east-1:111263457661:parameter/db"]
-        },
-        {
-            "Sid": "VisualEditor1",
-            "Effect": "Allow",
-            "Action": [
-                "ssm:DescribeParameters",
-                "ecr:GetAuthorizationToken"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Sid": "asd",
-            "Effect": "Allow",
-            "Action": [
-                "ecr:BatchGetImage",
-                "ecr:GetDownloadUrlForLayer"
-            ],
-            "Resource": "arn:aws:ecr:us-east-1:111263457661:repository/demo"
-        }
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "VisualEditor0",
+        "Effect" : "Allow",
+        "Action" : "ssm:GetParameter",
+        "Resource" : ["arn:aws:ssm:us-east-1:111263457661:parameter/ecr", "arn:aws:ssm:us-east-1:111263457661:parameter/db"]
+      },
+      {
+        "Sid" : "VisualEditor1",
+        "Effect" : "Allow",
+        "Action" : [
+          "ssm:DescribeParameters",
+          "ecr:GetAuthorizationToken"
+        ],
+        "Resource" : "*"
+      },
+      {
+        "Sid" : "asd",
+        "Effect" : "Allow",
+        "Action" : [
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ],
+        "Resource" : "arn:aws:ecr:us-east-1:111263457661:repository/demo"
+      }
     ]
   })
 }
@@ -187,15 +187,15 @@ resource "aws_iam_instance_profile" "main" {
 }
 resource "aws_instance" "main" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t4g.medium"  
+  instance_type = "t4g.medium"
 
   credit_specification {
     cpu_credits = "unlimited"
   }
 
   associate_public_ip_address = true
-  key_name = "ec2"
-  vpc_security_group_ids = [aws_security_group.main.id]
-  subnet_id = aws_subnet.a.id
-  iam_instance_profile = aws_iam_instance_profile.main.name
+  key_name                    = "ec2"
+  vpc_security_group_ids      = [aws_security_group.main.id]
+  subnet_id                   = aws_subnet.a.id
+  iam_instance_profile        = aws_iam_instance_profile.main.name
 }

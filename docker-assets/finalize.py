@@ -30,7 +30,7 @@ def save_config():
         "ecr": json.loads(ecr["Parameter"]["Value"]),
     }
     with open(Path(__file__).parents[1] / "creds.json", "w") as f:
-        json.dump(ret, f)
+        json.dump(ret, f, indent=4)
     return ret
 
 
