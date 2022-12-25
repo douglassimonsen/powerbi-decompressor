@@ -34,9 +34,10 @@ def get_visuals():
 
 
 def main():
-    results = {"in-page alignment": []}
+    results = {"in-page alignment": [], "fractional symmetry": []}
     report = get_visuals()
     for page in report.pages:
+        results["fractional symmetry"].extend(alignment.page_alignment(page))
         results["in-page alignment"].extend(alignment.border_checker(page.visuals))
     results["all-report alignment"] = alignment.border_checker(
         [viz for page in report.pages for viz in page.visuals]

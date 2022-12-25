@@ -1,3 +1,6 @@
+from pprint import pprint
+
+
 def border_checker(data, threshold=5):
     SIDES = ["top", "right", "bottom", "left"]
     edge_dict = {k: {} for k in SIDES}
@@ -31,4 +34,64 @@ def border_checker(data, threshold=5):
                 "correct_val": round(sum(ret["vals"]) / len(ret["vals"]), 3),
             }
         )
+    return results
+
+
+def page_alignment(page):
+    def nearby(edge, ave, side):
+        THRESHOLD = 25
+        if side in ("bottom", "right"):
+            return 0 < edge - ave < THRESHOLD
+        else:
+            return -THRESHOLD < edge - ave < 0
+
+    fractions = [1 / 4, 1 / 3, 1 / 2, 2 / 3, 3 / 4]
+    height_vals = [frac * page.height for frac in fractions]
+    width_vals = [frac * page.width for frac in fractions]
+    symmetry_vals = {
+        "top": height_vals,
+        "bottom": height_vals,
+        "left": width_vals,
+        "right": width_vals,
+    }
+    symmetry_dir = {
+        "top": "y",
+        "bottom": "y",
+        "left": "x",
+        "right": "x",
+    }
+
+    edge_dict = {"x": {}, "y": {}}
+    matching_edges = {}
+    for viz in page.visuals:
+        for edge in ["top", "bottom", "left", "right"]:
+            val = getattr(viz, edge)
+            for v in symmetry_vals[edge]:
+                if nearby(val, v, edge):
+                    matching_edges.setdefault((v, symmetry_dir[edge]), []).append(
+                        [val, edge, viz]
+                    )
+    results = []
+    for (ax_point, _), nearby_points in matching_edges.items():
+        distances = [abs(ax_point - x[0]) for x in nearby_points]
+        ave_dist = round(sum(distances) / len(distances), 2)
+        for (val, edge, viz) in nearby_points:
+            correct_val = round(
+                (ax_point + ave_dist)
+                if edge in ("bottom", "right")
+                else (ax_point - ave_dist),
+                2,
+            )
+            if getattr(viz, edge) == correct_val:
+                continue
+            results.append(
+                {
+                    "side": edge,
+                    "visual": viz.id,
+                    "correct_val": correct_val,
+                    "old_val": getattr(viz, edge),
+                    "ax_point": ax_point,
+                    "ave_dist": ave_dist,
+                }
+            )
     return results

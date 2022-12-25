@@ -11,6 +11,8 @@ class Visual:
 class Page:
     def __init__(self, raw) -> None:
         self.visuals = [Visual(viz_data) for viz_data in raw]
+        self.width = raw[0]["page_width"]
+        self.height = raw[0]["page_height"]
 
 
 class Report:
