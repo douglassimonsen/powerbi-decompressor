@@ -20,4 +20,15 @@ def border_checker(data, threshold=5):
                 previously_matched = True
             else:
                 previously_matched = False
-    return nearly_matched
+    results = []
+    for ret in nearly_matched:
+        results.append(
+            {
+                "side": ret["side"],
+                "visuals": [
+                    viz.id for val in ret["vals"] for viz in edge_dict[ret["side"]][val]
+                ],
+                "correct_val": round(sum(ret["vals"]) / len(ret["vals"]), 3),
+            }
+        )
+    return results

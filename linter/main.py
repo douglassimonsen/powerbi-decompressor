@@ -5,7 +5,9 @@ import visual
 from pprint import pprint
 import os
 from rules import alignment
+import structlog
 
+logger = structlog.get_logger()
 
 QUERIES = {
     f[:-4]: open(Path(__file__).parent / "queries" / f).read()
@@ -32,10 +34,16 @@ def get_visuals():
 
 
 def main():
-    results = {}
+    results = {"in-page alignment": []}
     report = get_visuals()
     for page in report.pages:
-        pprint(alignment.border_checker(page.visuals))
+        results["in-page alignment"].extend(alignment.border_checker(page.visuals))
+    results["all-report alignment"] = alignment.border_checker(
+        [viz for page in report.pages for viz in page.visuals]
+    )
+    for rule, hits in results.items():
+        for hit in hits:
+            logger.info(rule, **hit)
 
 
 if __name__ == "__main__":
