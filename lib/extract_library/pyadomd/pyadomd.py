@@ -54,38 +54,40 @@ class Cursor:
             return
         self._reader.Close()
 
-    def executeXML(self, query: str) -> BeautifulSoup:
+    def executeXML(self, query: str, query_name: str = "") -> BeautifulSoup:
         """
         Executes a query against the data source
         :params [query]: The query to be executed
         """
-        logger.debug("executeXML query", query=query[:20])
+        logger.debug("executeXML query", query_name=query_name)
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteXmlReader()
-        logger.debug("reading query", query=query[:20])
+        logger.debug("reading query", query_name=query_name)
         lines = [self._reader.ReadOuterXml()]
         while lines[-1] != "":
             lines.append(self._reader.ReadOuterXml())
         return BeautifulSoup("".join(lines), "xml")
 
-    def executeXMLNonQuery(self, query: str, transaction: bool = True) -> None:
-        logger.debug("executeXMLNonQuery")
+    def executeXMLNonQuery(
+        self, query: str, transaction: bool = True, query_name: str = ""
+    ) -> None:
+        logger.debug("executeXMLNonQuery", query_name=query_name)
         transaction = self._conn.BeginTransaction()
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteXmlReader()
         transaction.Commit()
 
-    def execute(self, query: str) -> Cursor:
+    def execute(self, query: str, query_name: str = "") -> Cursor:
         """
         Executes a query against the data source
         :params [query]: The query to be executed
         """
-        logger.debug("execute query")
+        logger.debug("execute query", query_name=query_name)
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteReader()
         self._field_count = self._reader.FieldCount
 
-        logger.debug("reading query")
+        logger.debug("reading query", query_name=query_name)
         for i in range(self._field_count):
             self._description.append(
                 Description(
@@ -95,7 +97,7 @@ class Cursor:
             )
         return self
 
-    def executeNonQuery(self, command: str) -> Cursor:
+    def executeNonQuery(self, command: str, query_name: str = "") -> Cursor:
         """
         Executes a Analysis Services Command against the database
 

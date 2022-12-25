@@ -52,7 +52,10 @@ class PowerBi:
             "SELECT [catalog_name] as [Database Name] FROM $SYSTEM.DBSCHEMA_CATALOGS"
         )
         with Pyadomd(self.conn_str) as conn:
-            return [x[0] for x in conn.cursor().execute(query).fetchall()]
+            return [
+                x[0]
+                for x in conn.cursor().execute(query, query_name="list_dbs").fetchall()
+            ]
 
     @staticmethod
     def sanitize_xml(txt):
@@ -66,8 +69,10 @@ class PowerBi:
         with Pyadomd(self.conn_str) as conn:
             conn.cursor().executeXML(
                 xmls["image_load"].render(
-                    guid=self.guid, source_path=self.sanitize_xml(self.source_path)
-                )
+                    guid=self.guid,
+                    source_path=self.sanitize_xml(self.source_path),
+                ),
+                query_name="image_load",
             )
 
     def save_image(self, target_path):
@@ -77,14 +82,16 @@ class PowerBi:
         )  # needs a PBIX to save the datamodel into
         with Pyadomd(self.conn_str) as conn:
             x = conn.cursor().executeXML(
-                xmls["image_save"].render(guid=self.guid, target_path=target_path)
+                xmls["image_save"].render(guid=self.guid, target_path=target_path),
+                query_name="image_save",
             )
 
     def read_schema(self):
         logger.info("read_schema")
         with Pyadomd(self.conn_str) as conn:
             schema = conn.cursor().executeXML(
-                xmls["schema_query"].render(guid=self.guid)
+                xmls["schema_query"].render(guid=self.guid),
+                query_name="discover_schema",
             )
         self.schema = parse_schema.parse_schema(schema)
         self.table_dict = {t["Name"]: t["ID"] for t in self.schema["Table"]}
@@ -94,7 +101,9 @@ class PowerBi:
         logger.info("reading_table", table=table_name)
         with Pyadomd(self.conn_str) as conn:
             cur = conn.cursor()
-            data = cur.execute(f"Evaluate '{table_name}'").fetchall()
+            data = cur.execute(
+                f"Evaluate '{table_name}'", query_name="evaluate_table"
+            ).fetchall()
             columns = [x.name.split("[")[1].split("]")[0] for x in cur.description]
             data = [dict(zip(columns, row)) for row in data]
         return data
@@ -112,10 +121,10 @@ class PowerBi:
             table_ids = list(self.table_dict.values())
         else:
             raise TypeError("I don't understand the object: ", table_names)
-        raise NotImplementedError
         with Pyadomd(self.conn_str + ";ReturnAffectedObjects=-1") as conn:
             return conn.cursor().executeXMLNonQuery(
-                xmls["update_table"].render(guid=self.guid, table_ids=table_ids)
+                xmls["update_table"].render(guid=self.guid, table_ids=table_ids),
+                query_name="update_table",
             )
 
     def __str__(self):
