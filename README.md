@@ -83,6 +83,20 @@
   </ul>
   <ul>
    <li>
+    <a href="linter/README.md">
+     Linter
+    </a>
+    <ul>
+     <li>
+      <a href="linter/README.md#goal">
+       Goal
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <ul>
+   <li>
     <a href="load_to_db/README.md">
      Load To Db
     </a>
@@ -360,6 +374,8 @@ PowerBI is one of the top visualization tools out there. However, it lacks a num
 [Schema Parser](load_to_db/README.md)
 
 [Schema Visualizer](visualizer/README.md)
+
+[Linter](linter/README.md)
 
 # Set Up
 

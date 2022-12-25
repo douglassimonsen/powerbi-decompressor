@@ -18,6 +18,8 @@ PowerBI is one of the top visualization tools out there. However, it lacks a num
 
 [Schema Visualizer](visualizer/README.md)
 
+[Linter](linter/README.md)
+
 # Set Up
 
 ```

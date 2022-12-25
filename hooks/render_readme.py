@@ -28,7 +28,7 @@ def empty_toc(folder, toc):
 
 def main():
     sub_tocs = []
-    for folder in ["lib", "load_to_db", "visualizer"]:
+    for folder in ["lib", "linter", "load_to_db", "visualizer"]:
         with open(ROOT_FOLDER / folder / "README.md") as f:
             readme = f.read()
         md = markdown.Markdown(extensions=["toc"])
