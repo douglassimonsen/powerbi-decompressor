@@ -58,7 +58,7 @@ class AnalysisService:
         self.port = None
         self.guid = None
         self.active = False
-        self.temp_folder = rf"C:\Users\{os.getlogin()}\AppData\Local\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces"
+        self.temp_folder = pathlib.Path(__file__).parent / "AnalysisServicesWorkspaces"
         self._bad_ports = []
 
     def instance_name(self):

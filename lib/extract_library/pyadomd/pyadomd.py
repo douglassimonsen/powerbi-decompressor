@@ -59,10 +59,10 @@ class Cursor:
         Executes a query against the data source
         :params [query]: The query to be executed
         """
-        logger.debug("executeXML query")
+        logger.debug("executeXML query", query=query[:20])
         self._cmd = AdomdCommand(query, self._conn)
         self._reader = self._cmd.ExecuteXmlReader()
-        logger.debug("reading query")
+        logger.debug("reading query", query=query[:20])
         lines = [self._reader.ReadOuterXml()]
         while lines[-1] != "":
             lines.append(self._reader.ReadOuterXml())

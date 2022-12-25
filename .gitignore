@@ -19,3 +19,4 @@ lib/deployment/token.txt
 .terraform*
 terraform.tfstate*
 *infrastructure.json
+lib/extract_library/AnalysisServicesWorkspaces
