@@ -59,7 +59,7 @@ class AnalysisService:
         self.guid = None
         self.active = False
         self.temp_folder = pathlib.Path(__file__).parent / "AnalysisServicesWorkspaces"
-        self._bad_ports = []
+        self._bad_ports = set()
 
     def instance_name(self):
         return f"AnalysisServicesWorkspace_{self.guid}"
@@ -71,6 +71,23 @@ class AnalysisService:
         self.check_existing_process()
         if not self.active:
             self.create_environment()
+        logger.info("SSAS init complete")
+
+    @staticmethod
+    def valid_sku(port):
+        logger.debug("Checking SKU", port=port)
+        CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
+        try:
+            with Pyadomd(CONN_STR) as conn:
+                conn.cursor().executeXML(load_test)
+            # nothing here because we know the load test will fail
+        except Exception as e:
+            error_type = str(e.Message)
+            logger.warn("bad SSAS instance", port=port, error_type=error_type)
+            return (
+                error_type
+                == "ImageLoad/ImageSave commands supports loading/saving data for Excel, Power BI Desktop or Zip files. File extension can be only .XLS?, .PBIX or .ZIP."
+            )
 
     def check_existing_process(self):
         os.makedirs(
@@ -78,23 +95,10 @@ class AnalysisService:
         )  # If powerbi has never been opened here, it won't exist
         for f in os.listdir(self.temp_folder):
             active, port = _check_active(os.path.join(self.temp_folder, f, "Data"))
-            CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
-            try:
-                with Pyadomd(CONN_STR) as conn:
-                    conn.cursor().executeXML(load_test)
-            except Exception as e:
-                error_type = str(e.Message)
-                if (
-                    error_type
-                    == "ImageLoad/Save Parameters (PackagePath, PackagePartUri) are not valid in the current Server SKU"
-                ):
-                    active = False  # means this server can't load or save /DataModels
-                    self._bad_ports.append(
-                        port
-                    )  # we need the _bad_ports otherwise when looking for ports we could accidentally join to the wrong one in get_port (happens if this bad port is lower than the new good port)
-                else:
-                    pass
             if active:
+                if not self.valid_sku(port):
+                    self._bad_ports.add(port)
+                    continue
                 logger.info("ssas_port", port=port, state="previous_ssas")
                 self.active = active
                 self.port = port
@@ -117,23 +121,20 @@ class AnalysisService:
         # C:\Program Files\Microsoft Power BI Desktop\bin\Microsoft.PowerBI.Client.Windows.dll
         # AnalysisServiceProcess line 169
         def get_port():
-            for p in psutil.process_iter():
-                if p.name() != "msmdsrv.exe":
-                    continue
-                for _ in range(5):
-                    try:
-                        conns = p.connections()
-                    except psutil.NoSuchProcess:  # happened when the previous process was still running
-                        break  # this is no longer a valid process
-
-                    if len(conns) >= 1 and conns[0].laddr.port in self._bad_ports:
-                        break  # this is a bad SSAS instance
-                    if len(conns) == 0:
-                        logger.info("waiting_for_ssas_port", time=2)
-                        time.sleep(2)
-                        continue
-                    logger.info("ssas_port", port=conns[0].laddr.port, state="new_ssas")
-                    return conns[0].laddr.port
+            for _ in range(30):
+                logger.debug("Trying to read port file")
+                try:
+                    return int(
+                        open(
+                            pathlib.Path(__file__).parent
+                            / f"AnalysisServicesWorkspaces/AnalysisServicesWorkspace_{self.guid}/Data/msmdsrv.port.txt",
+                            encoding="utf-16-le",
+                        ).read()
+                    )
+                except FileNotFoundError:
+                    time.sleep(1)
+            else:
+                raise FileNotFoundError
 
         self.guid = uuid.uuid4()
         self.init_data_directory()
@@ -145,20 +146,21 @@ class AnalysisService:
             "-s",
             f"{self.data_directory()}",
         ]
-        logger.info("initializing_ssas")
+        logger.info("creating new ssas")
         subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )  # running multiple times doesn't cause multiple processes, thank god
         port = get_port()
         self.active = True
         self.port = port
-        logger.debug(
-            "saving_port", port_file=f"{self.data_directory()}\msmdsrv.port.txt"
-        )
-        with open(
-            f"{self.data_directory()}\msmdsrv.port.txt", "w", encoding="utf-16-le"
-        ) as f:
-            f.write(str(port))
+        for _ in range(30):
+            if self.valid_sku(port):
+                break
+            time.sleep(1)
+        else:
+            raise ValueError(
+                "Configuration loaded improperly, SSAS lacks proper image load/save functions"
+            )
 
     def __str__(self):
         return f"""
@@ -191,6 +193,6 @@ def find_current_servers():
 
 if __name__ == "__main__":
     kill_current_servers()
-    # x = AnalysisService()
-    # x.init()
+    x = AnalysisService()
+    x.init()
     # print(x)
