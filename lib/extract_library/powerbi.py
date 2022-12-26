@@ -121,11 +121,16 @@ class PowerBi:
             table_ids = list(self.table_dict.values())
         else:
             raise TypeError("I don't understand the object: ", table_names)
-        with Pyadomd(self.conn_str + ";ReturnAffectedObjects=-1") as conn:
-            return conn.cursor().executeXMLNonQuery(
+        with Pyadomd(
+            self.conn_str + "ReturnAffectedObjects=-1;"
+        ) as conn:  # that ReturnAffectedObjects is important, can't set proeprties otherwise
+            x = conn.cursor().executeXMLNonQuery(
                 xmls["update_table"].render(guid=self.guid, table_ids=table_ids),
                 query_name="update_table",
+                db=self.guid,
             )
+        with open("test.xml", "w") as f:
+            f.write(x.prettify())
 
     def __str__(self):
         return f"""

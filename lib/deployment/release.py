@@ -9,7 +9,7 @@ from inspect import cleandoc
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from extract_library import __version__
 
-access_token = open(Path(__file__).parent / "token").read()
+access_token = open(Path(__file__).parent / "token.txt").read()
 request_url = (
     "https://api.github.com/repos/douglassimonsen/powerbi-decompressor/releases"
 )
