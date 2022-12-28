@@ -15,7 +15,12 @@ logger = structlog.getLogger()
 
 
 class PowerBi:
-    def __init__(self, source_path):
+    def __init__(
+        self,
+        source_path: str,
+        temp_folder_path: str = None,
+        persist_backend: bool = True,
+    ):
         self.source_path = source_path
         self.guid = str(
             uuid.uuid4()
@@ -23,6 +28,8 @@ class PowerBi:
         self.schema = None
         self.AnalysisService = None
         self.conn_str = None
+        self.temp_folder_path = temp_folder_path
+        self.persist_backend = persist_backend
         self.init_backend()
         self.load_image()
         self.bind_pbix_to_logger()
@@ -40,7 +47,9 @@ class PowerBi:
 
     def init_backend(self):
         logger.info("initializing_ssas")
-        env = initialization.AnalysisService()
+        env = initialization.AnalysisService(
+            temp_folder_path=self.temp_folder_path, persist=self.persist_backend
+        )
         env.init()
         self.AnalysisService = env
         self.conn_str = (

@@ -12,6 +12,7 @@ import pathlib
 import jinja2
 import shutil
 import structlog
+import atexit
 
 logger = structlog.getLogger()
 
@@ -53,19 +54,53 @@ def _check_active(directory):
         return False, None
 
 
+class _Cleanup:
+    def __init__(self, temp_folder_path: str = None, port: int = None) -> None:
+        self.temp_folder_path = temp_folder_path
+        self.port = port
+        atexit.register(self.delete_folder)
+
+    def kill_ssas_instance(self):
+        for p in psutil.process_iter():
+            for c in p.connections():
+                if c.status == "LISTEN" and c.laddr.port == self.port:
+                    p.terminate()
+                    for _ in range(10):
+                        try:
+                            status = p.status()
+                        except psutil.NoSuchProcess:
+                            return
+                        if status == "terminated":
+                            return
+                        logger.debug("ssas proc", status=status)
+                        time.sleep(1)
+
+    def delete_folder(self):
+        import shutil
+
+        logger.info("deleting temp data", folder=self.temp_folder_path)
+        self.kill_ssas_instance()
+
+        shutil.rmtree(self.temp_folder_path, ignore_errors=True)
+
+
 class AnalysisService:
-    def __init__(self):
+    def __init__(self, temp_folder_path: str = None, persist: bool = True):
         self.port = None
         self.guid = None
         self.active = False
-        self.temp_folder = pathlib.Path(__file__).parent / "AnalysisServicesWorkspaces"
+        self.persist = persist
+        self.temp_folder_path = (
+            temp_folder_path
+            or pathlib.Path(__file__).parent / "AnalysisServicesWorkspaces"
+        )
         self._bad_ports = set()
 
     def instance_name(self):
         return f"AnalysisServicesWorkspace_{self.guid}"
 
     def data_directory(self):
-        return os.path.join(self.temp_folder, self.instance_name(), "Data")
+        return os.path.join(self.temp_folder_path, self.instance_name(), "Data")
 
     def init(self):
         self.check_existing_process()
@@ -91,10 +126,10 @@ class AnalysisService:
 
     def check_existing_process(self):
         os.makedirs(
-            self.temp_folder, exist_ok=True
+            self.temp_folder_path, exist_ok=True
         )  # If powerbi has never been opened here, it won't exist
-        for f in os.listdir(self.temp_folder):
-            active, port = _check_active(os.path.join(self.temp_folder, f, "Data"))
+        for f in os.listdir(self.temp_folder_path):
+            active, port = _check_active(os.path.join(self.temp_folder_path, f, "Data"))
             if active:
                 if not self.valid_sku(port):
                     self._bad_ports.add(port)
@@ -146,9 +181,13 @@ class AnalysisService:
             "-s",
             f"{self.data_directory()}",
         ]
-        logger.info("creating new ssas")
+        logger.info("creating new ssas", persisting=self.persist)
         subprocess.Popen(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            creationflags=self.persist
+            and subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
         )  # running multiple times doesn't cause multiple processes, thank god
         port = get_port()
         self.active = True
@@ -160,6 +199,14 @@ class AnalysisService:
         else:
             raise ValueError(
                 "Configuration loaded improperly, SSAS lacks proper image load/save functions"
+            )
+
+        if not self.persist:
+            _Cleanup(
+                temp_folder_path=os.path.join(
+                    self.temp_folder_path, self.instance_name()
+                ),
+                port=self.port,
             )
 
     def __str__(self):

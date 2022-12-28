@@ -72,25 +72,33 @@ class Cursor:
         self, query: str, transaction: bool = True, query_name: str = "", db: str = ""
     ) -> None:
         logger.debug("executeXMLNonQuery", query_name=query_name)
-        # transaction = self._conn.BeginTransaction()
+        transaction = self._conn.BeginTransaction()
         # self._cmd = self._conn.CreateCommand()
         self._cmd = AdomdCommand(query, self._conn)
         self._cmd.CommandText = query
-        # self._cmd.Transaction = transaction
+        self._cmd.Transaction = None  # transaction
         self._cmd.Properties.Add("LocaleIdentifier", 1033)
         self._cmd.Properties.Add("SspropInitAppName", "test")
         self._cmd.Properties.Add("SQLQueryMode", "DataKeys")
         self._cmd.Properties.Add("ReturnAffectedObjects", -1)
+        self._cmd.Properties.Add("Timeout", 5)
         self._cmd.Properties.Add("Catalog", db)
-        # self._conn.Properties.Add("ReturnAffectedObjects", -1)
-        print("hi")
-        print(self._cmd.Execute())
-        print("jo")
-        exit()
-        # for p in self._cmd.Properties:
-        #     print(p.get_Name(), p.get_Value())
-        self._reader = self._cmd.ExecuteXmlReader()
-        exit()
+        # print(query)
+        # exit()
+        # print("hi")
+        self._cmd.Execute()
+        transaction.Commit()
+        # try:
+        #     transaction.Commit()
+        #     print(self._cmd.Execute())
+        # except Exception as e:
+        #     print(dir(e))
+        #     exit()
+        # print("jo")
+        # exit()
+        # print(dir(self._cmd))
+        self._reader = self._cmd.Execute()
+        # exit()
         transaction.Commit()
         logger.debug("reading query", query_name=query_name)
         lines = [self._reader.ReadOuterXml()]
@@ -195,6 +203,7 @@ class Pyadomd:
         Closes the connection
         """
         self.conn.Close()
+        self.conn.Dispose()
 
     def open(self) -> None:
         """
