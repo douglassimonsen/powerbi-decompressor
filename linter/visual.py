@@ -1,6 +1,6 @@
 class Visual:
     def __init__(self, raw) -> None:
-        self.raw = raw
+        self.raw = raw["raw"]
         self.id = raw["id"]
         self.top = raw["y"]
         self.bottom = raw["y"] + raw["height"]
