@@ -76,9 +76,6 @@ resource "aws_security_group" "main" {
 resource "aws_db_subnet_group" "main" {
   subnet_ids = [aws_subnet.a.id, aws_subnet.b.id]
 }
-resource "aws_ecr_repository" "main" {
-  name = "demo"
-}
 
 resource "aws_db_instance" "main" {
   allocated_storage       = 20
@@ -96,21 +93,6 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot     = true
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-arm64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-  owners = ["099720109477"] # Canonical
-}
-
 resource "aws_ssm_parameter" "db" {
   name = "db"
   type = "String"
@@ -120,15 +102,6 @@ resource "aws_ssm_parameter" "db" {
     dbname   = aws_db_instance.main.db_name
     user     = aws_db_instance.main.username
     password = aws_db_instance.main.password
-  })
-}
-
-resource "aws_ssm_parameter" "ecr" {
-  name = "ecr"
-  type = "String"
-  value = jsonencode({
-    "url" : aws_ecr_repository.main.repository_url
-    "registry_id" : aws_ecr_repository.main.registry_id
   })
 }
 resource "aws_iam_policy" "main" {
@@ -147,19 +120,9 @@ resource "aws_iam_policy" "main" {
         "Sid" : "VisualEditor1",
         "Effect" : "Allow",
         "Action" : [
-          "ssm:DescribeParameters",
-          "ecr:GetAuthorizationToken"
+          "ssm:DescribeParameters"
         ],
         "Resource" : "*"
-      },
-      {
-        "Sid" : "asd",
-        "Effect" : "Allow",
-        "Action" : [
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer"
-        ],
-        "Resource" : "arn:aws:ecr:us-east-1:111263457661:repository/demo"
       }
     ]
   })
@@ -185,17 +148,29 @@ resource "aws_iam_role" "main" {
 resource "aws_iam_instance_profile" "main" {
   role = aws_iam_role.main.name
 }
-resource "aws_instance" "main" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t4g.medium"
-
-  credit_specification {
-    cpu_credits = "unlimited"
+resource "aws_s3_bucket" "main" {
+  bucket = "${var.bucket_name}"
+}
+resource "aws_s3_bucket_cors_configuration" "main" {
+  bucket = aws_s3_bucket.main.id
+  cors_rule {
+    allowed_headers = ["Authorization", "Content-Length"]
+    allowed_methods = ["GET", "POST"]
+    allowed_origins = ["*"]
+    max_age_seconds = 3000
   }
-
-  associate_public_ip_address = true
-  key_name                    = "ec2"
-  vpc_security_group_ids      = [aws_security_group.main.id]
-  subnet_id                   = aws_subnet.a.id
-  iam_instance_profile        = aws_iam_instance_profile.main.name
+}
+resource "aws_s3_bucket_website_configuration" "main" {
+  bucket = aws_s3_bucket.main.id
+  index_document {
+    suffix = "index.html"
+  }
+}
+resource "aws_s3_bucket_acl" "main" {
+  bucket = aws_s3_bucket.main.id
+  acl = "public-read"
+}
+resource "aws_s3_bucket_policy" "name" {
+  bucket = aws_s3_bucket.main.id
+  policy = templatefile("templates/s3-policy.json", { bucket = "${var.bucket_name}" })
 }
