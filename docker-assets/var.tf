@@ -1,4 +1,4 @@
 variable "bucket_name" {
   type = string
-  default = "visualizer4"
+  default = "visualizer3"
 }

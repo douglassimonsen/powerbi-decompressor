@@ -92,18 +92,6 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids  = [aws_security_group.main.id]
   skip_final_snapshot     = true
 }
-
-resource "aws_ssm_parameter" "db" {
-  name = "db"
-  type = "String"
-  value = jsonencode({
-    host     = aws_db_instance.main.address
-    port     = aws_db_instance.main.port
-    dbname   = aws_db_instance.main.db_name
-    user     = aws_db_instance.main.username
-    password = aws_db_instance.main.password
-  })
-}
 resource "aws_iam_policy" "main" {
   name = "demo-policy"
   path = "/"
@@ -173,4 +161,22 @@ resource "aws_s3_bucket_acl" "main" {
 resource "aws_s3_bucket_policy" "name" {
   bucket = aws_s3_bucket.main.id
   policy = templatefile("templates/s3-policy.json", { bucket = "${var.bucket_name}" })
+}
+resource "aws_ssm_parameter" "db" {
+  name = "db"
+  type = "String"
+  value = jsonencode({
+    host     = aws_db_instance.main.address
+    port     = aws_db_instance.main.port
+    dbname   = aws_db_instance.main.db_name
+    user     = aws_db_instance.main.username
+    password = aws_db_instance.main.password
+  })
+}
+resource "aws_ssm_parameter" "website" {
+  name = "website"
+  type = "String"
+  value = jsonencode({
+    bucket     = var.bucket_name
+  })
 }
