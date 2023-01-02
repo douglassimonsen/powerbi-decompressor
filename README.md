@@ -318,6 +318,11 @@
       </a>
      </li>
      <li>
+      <a href="visualizer/README.md#notes">
+       Notes
+      </a>
+     </li>
+     <li>
       <a href="visualizer/README.md#frontend">
        frontend
       </a>
