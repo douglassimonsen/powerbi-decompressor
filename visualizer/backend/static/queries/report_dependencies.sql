@@ -8,13 +8,13 @@ with base as (
 	select m.id as child_id, 'measure' as child_type
 	from pbi.measures m  
 	inner join pbi."tables" t 
-	on m.tableid = t.id
+	on m.table_id = t.id
 	where t.report_id = %(id)s
 	union all
 	select tc.id as child_id, 'visual' as child_type
 	from pbi.columns tc
 	inner join pbi."tables" t 
-	on tc.tableid = t.id
+	on tc.table_id = t.id
 	where tc."expression" is not null
 	and t.report_id = %(id)s
 )

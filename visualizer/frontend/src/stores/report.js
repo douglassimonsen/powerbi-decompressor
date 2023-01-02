@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from "axios";
-const ENDPOINT = `http://${window.location.hostname}:5000/`
+const ENDPOINT = `http://${window.location.hostname}:3000/`
 const HEADERS = {
   'Access-Control-Allow-Origin': '*',
 };

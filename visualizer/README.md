@@ -2,6 +2,9 @@
 
 To allow Data Engineers and Analysts alike to visualize relationships between reports and data sources.
 
+# Notes
+To get psycopg2 working in lambda, we use the special version found [here](https://github.com/jkehler/awslambda-psycopg2)
+
 # frontend
 
 This template should help get you started developing with Vue 3 in Vite.

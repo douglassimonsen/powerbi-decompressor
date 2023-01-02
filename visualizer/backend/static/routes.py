@@ -16,7 +16,6 @@ def reports(query):
     kwargs = (
         flask.request.get_json() or dict(flask.request.args) or {}
     )  # dict not really necessary, but prints nicer
-    print(flask.request.get_json())
     return flask.jsonify(util.read_query(queries[query], kwargs))
 
 
