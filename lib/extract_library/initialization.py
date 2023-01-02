@@ -109,7 +109,7 @@ class AnalysisService:
         logger.info("SSAS init complete")
 
     @staticmethod
-    def valid_sku(port, include_in_logs=True):
+    def valid_sku(port):
         logger.debug("Checking SKU", port=port)
         CONN_STR = f"Provider=MSOLAP;Data Source=localhost:{port};"
         try:
@@ -118,7 +118,10 @@ class AnalysisService:
             # nothing here because we know the load test will fail
         except Exception as e:
             error_type = str(e.Message)
-            if include_in_logs:
+            if (
+                error_type
+                != "ImageLoad/ImageSave commands supports loading/saving data for Excel, Power BI Desktop or Zip files. File extension can be only .XLS?, .PBIX or .ZIP."
+            ):
                 logger.warn("bad SSAS instance", port=port, error_type=error_type)
             return (
                 error_type
@@ -194,7 +197,7 @@ class AnalysisService:
         self.active = True
         self.port = port
         for _ in range(30):
-            if self.valid_sku(port, include_in_logs=False):
+            if self.valid_sku(port):
                 break
             time.sleep(1)
         else:
