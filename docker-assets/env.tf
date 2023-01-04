@@ -180,3 +180,88 @@ resource "aws_ssm_parameter" "website" {
     bucket     = var.bucket_name
   })
 }
+resource "aws_api_gateway_deployment" "main" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  stage_name = "Stage2"
+}
+resource "aws_api_gateway_rest_api" "main" {
+  name = "visualizer-backend"
+  body = jsonencode({
+    "info": {
+      "version": "1.0",
+      "title": "visualizer-backend"
+    },
+    "paths": {
+      "/{proxy+}": {
+        "x-amazon-apigateway-any-method": {
+          "x-amazon-apigateway-integration": {
+            "httpMethod": "ANY",
+            "type": "aws_proxy",
+            "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:111263457661:function:sam-app2-LambdaFunctionOverHttp-M4mBgJtmTNzx/invocations"
+          },
+
+          "responses": {}
+        }
+      }
+    },
+    "swagger": "2.0"
+  })
+}
+resource "aws_api_gateway_stage" "main" {
+  stage_name = "Stage"
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  deployment_id = aws_api_gateway_deployment.main.id
+}
+#     "LambdaFunctionOverHttpRole": {
+#       "Type": "AWS::IAM::Role",
+#       "Properties": {
+#         "AssumeRolePolicyDocument": {
+#           "Version": "2012-10-17",
+#           "Statement": [
+#             {
+#               "Action": [
+#                 "sts:AssumeRole"
+#               ],
+#               "Effect": "Allow",
+#               "Principal": {
+#                 "Service": [
+#                   "lambda.amazonaws.com"
+#                 ]
+#               }
+#             }
+#           ]
+#         },
+#         "ManagedPolicyArns": [
+#           "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+#         ],
+#         "Tags": [
+#           {
+#             "Key": "lambda:createdBy",
+#             "Value": "SAM"
+#           }
+#         ]
+#       }
+#     },
+#     "LambdaFunctionOverHttpHttpPostPermissionProd": {
+#       "Type": "AWS::Lambda::Permission",
+#       "Properties": {
+#         "Action": "lambda:InvokeFunction",
+#         "FunctionName": {
+#           "Ref": "LambdaFunctionOverHttp"
+#         },
+#         "Principal": "apigateway.amazonaws.com",
+#         "SourceArn": {
+#           "Fn::Sub": [
+#             "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/*$default",
+#             {
+#               "__ApiId__": {
+#                 "Ref": "ServerlessRestApi"
+#               },
+#               "__Stage__": "*"
+#             }
+#           ]
+#         }
+#       }
+#     }
+#   }
+# }
