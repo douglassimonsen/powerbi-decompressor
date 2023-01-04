@@ -7,7 +7,8 @@ flask_cors.CORS(app)
 
 @app.after_request
 def add_header_after(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
+    if flask.request.method.lower() != "options":
+        response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 

@@ -12,5 +12,5 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: '/'
-            Method: get
+            Path: $default
+            Method: GET, POST

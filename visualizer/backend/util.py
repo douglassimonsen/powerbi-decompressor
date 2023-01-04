@@ -1,18 +1,21 @@
 import psycopg2
 from pathlib import Path
 import json
+import os
 
 
-try:
-    creds = json.load(open(Path(__file__).parents[2] / "creds.json"))["db"]
-except:
-    creds = {
-        "host": "localhost",
-        "port": 5432,
-        "dbname": "postgres",
-        "user": "postgres",
-        "password": "postgres",
-    }
+creds = {
+    "host": "localhost",
+    "port": 5432,
+    "dbname": "postgres",
+    "user": "postgres",
+    "password": "postgres",
+}
+for i in range(2):
+    candidate = Path(__file__).parents[i] / "creds.json"
+    if os.path.exists(candidate):
+        creds = json.load(open(candidate))["db"]
+        break
 
 
 def get_conn():

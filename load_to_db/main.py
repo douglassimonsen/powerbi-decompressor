@@ -27,7 +27,7 @@ def main():
     static_tables = initialize_db.main()
     pbis = get_pbis()
     failed = 0
-    for pbi_path in pbis:
+    for pbi_path in pbis[:3]:
         print(pbi_path)
         data = parse_pbi.main(pbi_path)
         load_data.main(data, static_tables)
