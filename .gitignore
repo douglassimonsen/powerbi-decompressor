@@ -14,7 +14,7 @@ debug.log
 *.pbiviz
 *.zip
 creds.json
-lib/deployment/token.txt
+token.txt
 
 .terraform*
 terraform.tfstate*

@@ -2,7 +2,7 @@ import setuptools
 import sys
 from pathlib import Path
 
-sys.path.insert(0, Path(__file__).parent)
+sys.path.insert(0, str(Path(__file__).parent))
 from extract_library import __version__
 
 

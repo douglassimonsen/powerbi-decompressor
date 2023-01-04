@@ -1,15 +1,11 @@
-from deployment import export, release, tagger
-import git
-import sys
+import auto_deployer
+from pathlib import Path
+import os
 
 
 def main():
-    repo = git.Repo(search_parent_directories=True).remote().push()[0]
-    if (
-        tagger.main() or "--force" in sys.argv
-    ):  # we really only need to do the work if a new tag has been added
-        export.main()
-        release.main()
+    os.environ["github_token"] = open(Path(__file__).parent / "token.txt").read()
+    auto_deployer.main(Path(__file__).parent)
 
 
 if __name__ == "__main__":
