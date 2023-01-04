@@ -12,5 +12,5 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: $default
-            Method: GET, POST
+            Path: {proxy+}
+            Method: ANY

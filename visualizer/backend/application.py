@@ -10,9 +10,9 @@ def lambda_handler(event, context):
         try:
             return json.loads(body)
         except:
-            return {k: v[0] for k, v in parse_qs(event["body"]).items()}
+            return {k: v[0] for k, v in parse_qs(body).items()}
 
-    method_name = event["requestContext"]["http"]["method"].lower()
+    method_name = event["httpMethod"].lower()
     if method_name == "options":
         return {
             "headers": {
@@ -24,9 +24,9 @@ def lambda_handler(event, context):
     method = getattr(lambda_client, method_name)
     data = {
         **get_body_data(event["body"]),
-        **event.get("queryStringParameters", {}),
+        **(event.get("queryStringParameters", {}) or {}),
     }
-    x = method(event["rawPath"], json=data)
+    x = method(event["path"], json=data)
     headers = dict(x.headers)
     headers["Content-Type"] = headers.get("Content-Type", "application/json")
     return {
