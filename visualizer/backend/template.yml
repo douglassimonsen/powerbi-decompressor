@@ -12,5 +12,5 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: {proxy+}
+            Path: /{proxy+}
             Method: ANY
