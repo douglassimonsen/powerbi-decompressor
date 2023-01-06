@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from "axios";
-const ENDPOINT = `https://zoo9nr56c4.execute-api.us-east-1.amazonaws.com/Stage/`
+const ENDPOINT = import.meta.env.VITE_BACKEND_BASE_URL + '/';
 const HEADERS = {
   'Access-Control-Allow-Origin': '*',
 };

@@ -22,6 +22,12 @@ def save_config():
     }
     with open(Path(__file__).parents[1] / "creds.json", "w") as f:
         json.dump(ret, f, indent=4)
+
+    base_url = ssm.get_parameter(Name="visualizer-backend")["Parameter"]["Value"]
+    vue_env = f'VITE_BACKEND_BASE_URL = "{base_url}"'
+    with open(Path(__file__).parents[1] / "visualizer" / "frontend" / ".env", "w") as f:
+        f.write(vue_env)
+    exit()
     return ret
 
 
