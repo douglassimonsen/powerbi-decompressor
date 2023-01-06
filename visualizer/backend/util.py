@@ -1,21 +1,27 @@
 import psycopg2
-from pathlib import Path
+import boto3
 import json
-import os
+import structlog
+
+logger = structlog.get_logger()
 
 
-creds = {
-    "host": "localhost",
-    "port": 5432,
-    "dbname": "postgres",
-    "user": "postgres",
-    "password": "postgres",
-}
-for i in range(2):
-    candidate = Path(__file__).parents[i] / "creds.json"
-    if os.path.exists(candidate):
-        creds = json.load(open(candidate))["db"]
-        break
+def get_creds():
+    ssm = boto3.client("ssm")
+    return json.loads(ssm.get_parameter(Name="db")["Parameter"]["Value"])
+
+
+try:
+    creds = get_creds()
+except:
+    logger.warn("Failed to get credentials")
+    creds = {
+        "host": "localhost",
+        "port": 5432,
+        "dbname": "postgres",
+        "user": "postgres",
+        "password": "postgres",
+    }
 
 
 def get_conn():
